@@ -88,7 +88,7 @@ namespace ArmaforcesMissionBot.Modules
 
                         // Prevent users from importing commands which should not be accessible to them
                         var preconditions = await commandInfo.CheckPreconditionsAsync(Context, _map);
-                        //if (!preconditions.IsSuccess) continue;
+                        if (!preconditions.IsSuccess) continue;
 
                         var parameterString = command.Substring(commandName.Length).Trim();
 
