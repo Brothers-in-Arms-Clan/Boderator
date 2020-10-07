@@ -12,9 +12,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Extensions;
 using static ArmaforcesMissionBot.DataClasses.OpenedDialogs;
 
 namespace ArmaforcesMissionBot.Modules
@@ -31,6 +34,81 @@ namespace ArmaforcesMissionBot.Modules
         public Signups()
         {
             //_map = map;
+        }
+
+        [Command("importuj-zapisy")]
+        [Summary("Importuje zapisy z pliku.")]
+        [ContextDMOrChannel]
+        public async Task ImportSignups([Remainder]string missionContent)
+        {
+            var signups = _map.GetService<SignupsData>();
+            var commandService = new CommandService();
+            await commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _map);
+
+            if (signups.Missions.Any(x => 
+                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New  || 
+                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
+                x.Owner == Context.User.Id))
+                await ReplyAsync("O ty luju, najpierw dokończ definiowanie poprzednich zapisów!");
+            else
+            {
+                if (_client.GetGuild(_config.AFGuild).GetUser(Context.User.Id).Roles.Any(x => x.Id == _config.MissionMakerRole)) {
+                    if (Context.Message.Attachments.Any(x => x.Filename.Contains(".txt"))) {
+                        using var client = new HttpClient();
+                        var response = await client.GetAsync(Context.Message.Attachments.First().Url);
+                        missionContent = await response.Content.ReadAsStringAsync();
+                    }
+
+                    var loadedCommands = new LinkedList<string>();
+
+                    var endline = missionContent.Contains("\r\n")
+                        ? "\r\n"
+                        : "\n";
+
+                    var splitLines = missionContent.Split(endline)
+                        .Select(x => x + endline);
+
+                    foreach (var line in splitLines) {
+                        if (line.StartsWith('#')) continue;
+                        if (line.StartsWith("AF!")) {
+                            loadedCommands.AddLast(line.Substring("AF!".Length));
+                            continue;
+                        }
+                        if (!loadedCommands.Any()) continue;
+                        // ReSharper disable once PossibleNullReferenceException
+                        var previousCommand = loadedCommands.Last.Value;
+                        loadedCommands.RemoveLast();
+                        loadedCommands.AddLast(previousCommand + line);
+                    }
+                    
+                    foreach (var command in loadedCommands) {
+                        if (string.IsNullOrEmpty(command)) continue;
+                        var commandName = command.Substring(0, command.IndexOf(' '));
+                        var commandInfo = commandService.Commands.First(x => x.Name == commandName);
+
+                        // Prevent users from importing commands which should not be accessible to them
+                        var preconditions = await commandInfo.CheckPreconditionsAsync(Context, _map);
+                        //if (!preconditions.IsSuccess) continue;
+
+                        var parameterString = command.Substring(commandName.Length).Trim();
+
+                        var parameterDateTime = commandInfo.Parameters.Count == 1 &&
+                                                commandInfo.Parameters.First().Type == typeof(DateTime)
+                            ? DateTimeExtensions.ParseOrNull(parameterString)
+                            : null;
+
+                        var commandParameter = (object) parameterDateTime ?? parameterString;
+
+                        await commandInfo
+                            .ExecuteAsync(Context, new List<object> { commandParameter }, new List<object> {commandParameter}, _map);
+                    }
+                    
+
+                    await ReplyAsync("Zdefiniuj reszte misji.");
+                }
+                else
+                    await ReplyAsync("Luju ty, nie jestes uprawniony do tworzenia misji!");
+            }
         }
 
         [Command("zrob-zapisy")]
