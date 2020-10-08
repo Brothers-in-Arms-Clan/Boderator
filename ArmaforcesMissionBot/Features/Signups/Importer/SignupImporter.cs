@@ -28,8 +28,9 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         }
 
         public async Task ProcessMessage(string message) {
-            var lines = ReadLines(message);
-            var commands = ParseCommands(lines);
+            var lineBreak = GetLineEnding(message);
+            var lines = ReadLines(message, lineBreak);
+            var commands = ParseCommands(lines, lineBreak);
 
             if (!commands.Any())
                 await Module.ReplyWithException<InvalidCommandParametersException>("Nie udało się odczytać komend.");
@@ -42,13 +43,17 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         /// </summary>
         /// <returns></returns>
         public async Task ProcessCommand(string command) {
+            // This might be just empty string sometimes
             if (string.IsNullOrEmpty(command)) return;
 
             var commandName = GetCommandName(command);
             var commandInfo = GetCommandInfoByName(commandName);
 
-            if (commandInfo is null) return;
-            if (!await UserCanUseCommand(commandInfo)) return;
+            if (commandInfo is null)
+                await Module.ReplyWithException<CommandNotFound>($"Nie znaleziono komendy {commandName}");
+
+            if (!await UserCanUseCommand(commandInfo))
+                await Module.ReplyWithException<NotAuthorizedException>($"Nie jesteś uprawiony do użycia komendy {commandInfo.Name}.");
 
             var parameterString = GetParameterString(command, commandName);
 
@@ -90,7 +95,12 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         ///     Extracts command name string from command line.
         /// </summary>
         /// <returns></returns>
-        public static string GetCommandName(string command) => command.Substring(0, command.IndexOf(' '));
+        public static string GetCommandName(string command) {
+            var possibleCommandNameLength = command.IndexOf(' ');
+            return possibleCommandNameLength == -1
+                ? ""
+                :command.Substring(0, possibleCommandNameLength);
+        }
 
         /// <summary>
         ///     Tries to retrieve <see cref="CommandInfo" /> of command with given <paramref name="commandName" />.
@@ -116,7 +126,7 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         ///     Ignores lines starting with # or //.
         /// </summary>
         /// <returns><see cref="LinkedList{T}" /> containing commands for <seealso cref="CommandService" /></returns>
-        public static LinkedList<string> ParseCommands(IEnumerable<string> lines) {
+        public static LinkedList<string> ParseCommands(IEnumerable<string> lines, string lineBreak = "\n") {
             var loadedCommands = new LinkedList<string>();
 
             foreach (var line in lines) {
@@ -130,7 +140,7 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
                 // ReSharper disable once PossibleNullReferenceException
                 var previousCommand = loadedCommands.Last.Value;
                 loadedCommands.RemoveLast();
-                loadedCommands.AddLast(previousCommand + line);
+                loadedCommands.AddLast(previousCommand + lineBreak + line);
             }
 
             return loadedCommands;
@@ -142,8 +152,11 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         /// </summary>
         /// <param name="message">Message to convert.</param>
         /// <returns><see cref="IEnumerable{T}" /> of lines.</returns>
-        public static IEnumerable<string> ReadLines(string message) {
-            var lineEnding = GetLineEnding(message);
+        public static IEnumerable<string> ReadLines(string message, string lineBreak = null) {
+            var lineEnding = string.IsNullOrEmpty(lineBreak)
+                ? GetLineEnding(message)
+                : lineBreak;
+
             return message.Split(lineEnding)
                 .Select(x => x + lineEnding);
         }
