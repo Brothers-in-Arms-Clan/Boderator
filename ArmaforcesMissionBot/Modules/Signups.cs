@@ -18,6 +18,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.Extensions;
+using ArmaforcesMissionBot.Helpers;
 using static ArmaforcesMissionBot.DataClasses.OpenedDialogs;
 
 namespace ArmaforcesMissionBot.Modules
@@ -94,7 +95,7 @@ namespace ArmaforcesMissionBot.Modules
 
                         var parameterDateTime = commandInfo.Parameters.Count == 1 &&
                                                 commandInfo.Parameters.First().Type == typeof(DateTime)
-                            ? DateTimeExtensions.ParseOrNull(parameterString)
+                            ? DateTimeParser.ParseOrNull(parameterString)
                             : null;
 
                         var commandParameter = (object) parameterDateTime ?? parameterString;
