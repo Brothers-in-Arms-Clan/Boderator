@@ -33,7 +33,10 @@ namespace ArmaforcesMissionBot.Modules
         public SignupsData SignupsData { get; set; }
 
         [Command("importuj-zapisy")]
-        [Summary("Importuje zapisy z pliku.")]
+        [Summary("Importuje zapisy z załączonego pliku *.txt. lub z wiadomości (preferując plik txt jeżeli obie rzeczy są). " +
+                 "Czyta plik/wiadomość linia po linii, dołączając linie bez prefixu 'AF!' do poprzedniej komendy " +
+                 "a następnie wywołuje komendy w kolejności. " +
+                 "Ignoruje linie zaczynające się od '#' oraz '//' umożliwiając komentarze.")]
         [ContextDMOrChannel]
         public async Task ImportSignups([Remainder]string missionContent = null) {
             if (_client.GetGuild(_config.AFGuild)

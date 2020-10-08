@@ -37,6 +37,7 @@ namespace ArmaforcesMissionBot.Tests.Features.Signups.Importer {
         [InlineData(new[] {"AF!dsdsd", "hsda", "#AF!dsds", "asdas"}, new[] { "dsdsd\nhsda\nasdas" })]
         [InlineData(new[] {"AF!dsdsd", "", "asdas"}, new[] { "dsdsd\n\nasdas" })]
         [InlineData(new[] {"dsdsd", "hsda", "#AF!dsds", "asdas"}, new string[0])]
+        [InlineData(new[] {"dsdsd", "hsda", "//AF!dsds", "asdas"}, new string[0])]
         public void ParseCommands(IEnumerable<string> lines, IEnumerable<string> expectedCommandsList) {
             var parsedCommands = (IEnumerable<string>) SignupImporter.ParseCommands(lines);
 
