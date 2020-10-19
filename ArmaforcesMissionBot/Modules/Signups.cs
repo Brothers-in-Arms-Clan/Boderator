@@ -15,6 +15,8 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Extensions;
+using ArmaforcesMissionBotSharedClasses;
 using static ArmaforcesMissionBot.DataClasses.OpenedDialogs;
 
 namespace ArmaforcesMissionBot.Modules
@@ -136,65 +138,56 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("data")]
-        [Summary("Definicja daty w formacie RRRR-MM-DD GG:MM")]
+        [Summary("Definicja daty rozpoczęcia misji w formacie RRRR-MM-DD GG:MM.")]
         [ContextDMOrChannel]
-        public async Task Date([Remainder]DateTime date)
-        {
+        public async Task Date([Remainder] DateTime date) {
+            if (date.IsInPast())
+                await ReplyAsync(":warning: Podana data jest w przeszłości!");
+            else if (date.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
+
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                x.Owner == Context.User.Id))
-            {
-                var mission = signups.Missions.Single(x =>
-                    (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                        x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                    x.Owner == Context.User.Id);
+            var mission = signups.Missions.SingleOrDefault(
+                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
+                                 && x.Owner == Context.User.Id);
 
-                mission.Date = date;
-                if (!mission.CustomClose)
-                    mission.CloseTime = date.AddMinutes(-60);
+            if (mission is null) {
+                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                return;
+            }
 
-                await ReplyAsync("Teraz zdefiniuj zespoły.");
-            }
-            else
-            {
-                await ReplyAsync("Najpierw zdefiniuj nazwę misji cymbale.");
-            }
+            mission.Date = date;
+            if (!mission.CustomClose)
+                mission.CloseTime = date.AddMinutes(-60);
+
+            await ReplyAsync($"Data misji ustawiona na {date}, za {date.FromNow()}.");
         }
 
         [Command("zamkniecie")]
-        [Summary("Definiowanie czasu kiedy powinny zamknąć się zapisy, tak jak data w formacie RRRR-MM-DD GG:MM")]
+        [Summary("Definiowanie czasu kiedy powinny zamknąć się zapisy, tak jak data w formacie RRRR-MM-DD GG:MM.")]
         [ContextDMOrChannel]
-        public async Task Close([Remainder]DateTime closeDate)
-        {
+        public async Task Close([Remainder] DateTime closeDate) {
+            if (closeDate.IsInPast())
+                await ReplyAsync(":warning: Podana data jest w przeszłości!");
+            else if (closeDate.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
+
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                x.Owner == Context.User.Id))
-            {
-                var mission = signups.Missions.Single(x =>
-                    (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                        x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                    x.Owner == Context.User.Id);
+            var mission = signups.Missions.SingleOrDefault(
+                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
+                     && x.Owner == Context.User.Id);
 
-                if (closeDate < mission.Date)
-                {
-                    mission.CloseTime = closeDate;
-                    mission.CustomClose = true;
-                    await ReplyAsync("Wspaniale!");
-                }
-                else
-                {
-                    await ReplyAsync("Zamknięcie zapisów musi być przed datą misji baranie!");
-                }
+            if (mission is null) {
+                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                return;
             }
-            else
-            {
-                await ReplyAsync("Najpierw zdefiniuj nazwę misji cymbale.");
+
+            if (closeDate < mission.Date) {
+                mission.CloseTime = closeDate;
+                mission.CustomClose = true;
+                await ReplyAsync($"Data zamknięcia zapisów ustawiona na {closeDate}, za {closeDate.FromNow()}!");
+            } else {
+                await ReplyAsync(":warning: Zamknięcie zapisów musi być przed datą misji!");
             }
         }
 
