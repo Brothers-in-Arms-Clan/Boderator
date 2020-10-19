@@ -60,8 +60,10 @@ namespace ArmaforcesMissionBot.Features.RichPresence {
 
             _statusCounter = AdjustCounter(missionsWithFreeSlotsCount);
 
-            if (status != _currentStatus)
-                _discordSocketClient.SetActivityAsync(_currentStatus);
+            if (status.Name == _currentStatus?.Name) return;
+
+            _currentStatus = status;
+            _discordSocketClient.SetActivityAsync(_currentStatus);
         }
 
         private int AdjustCounter(int missionsWithFreeSlotsCount) 
