@@ -76,7 +76,10 @@ namespace ArmaforcesMissionBot
         {
             _instance = this;
 
-            var config = new DiscordSocketConfig();
+            var config = new DiscordSocketConfig
+            {
+                AlwaysDownloadUsers = true
+            };
             config.MessageCacheSize = 100000;
             //config.LogLevel = LogSeverity.Verbose;
             _client = new DiscordSocketClient(config: config);
