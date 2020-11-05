@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Attributes;
 
 namespace ArmaforcesMissionBot.Modules
 {
@@ -23,6 +24,7 @@ namespace ArmaforcesMissionBot.Modules
 
         [Command("snipe")]
         [Summary("Wyświetla ostatnio usunięte wiadomości z tego kanału.")]
+        [RequireRank(RanksEnum.Recruiter)]
         public async Task Snipe(int count = 1)
         {
             count = Math.Min(count, 5);
@@ -48,6 +50,7 @@ namespace ArmaforcesMissionBot.Modules
 
         [Command("editsnipe")]
         [Summary("Wyświetla ostatnio edytowane wiadomości z tego kanału.")]
+        [RequireRank(RanksEnum.Recruiter)]
         public async Task EditSnipe(int count = 1)
         {
             count = Math.Min(count, 5);
