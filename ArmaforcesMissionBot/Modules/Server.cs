@@ -1,4 +1,4 @@
-﻿using ArmaforcesMissionBot.Attributes;
+using ArmaforcesMissionBot.Attributes;
 using ArmaforcesMissionBot.DataClasses;
 using Discord.Commands;
 using System;
@@ -49,6 +49,19 @@ namespace ArmaforcesMissionBot.Modules
                 onFailure: error => ReplyAsync(error));
         }
         
+
+        [Command("serverConfig")]
+        [Summary("Pobiera główny config serwera.")]
+        [RequireRank(RanksEnum.Recruiter)]
+        public async Task ServerConfig()
+        {
+            var result = ConfigurationManagerClient.GetServerConfiguration();
+            
+            result.Match(
+                onSuccess: stream => Context.Channel.SendFileAsync(stream, "serverConfig.json"),
+                onFailure: error => ReplyAsync(error));
+        }
+
         private static Embed CreateServerStatusEmbed(ServerStatus serverStatus)
         {
             var embedBuilder = new EmbedBuilder
