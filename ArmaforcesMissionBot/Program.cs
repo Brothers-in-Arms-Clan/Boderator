@@ -1,4 +1,4 @@
-﻿using ArmaforcesMissionBot.DataClasses;
+using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Handlers;
 using Discord;
 using Discord.WebSocket;
@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.Features.RichPresence;
+using ArmaforcesMissionBot.Features.ServerManager.Server;
 
 namespace ArmaforcesMissionBot
 {
@@ -126,6 +127,7 @@ namespace ArmaforcesMissionBot
         .AddSingleton<OpenedDialogs>()
         .AddSingleton<MissionsArchiveData>()
         .AddSingleton<GameStatusUpdater>()
+        .AddSingleton<IServerManagerClient, ServerManagerClient>()
         .BuildServiceProvider();
 
         private async Task Load(SocketGuild guild)

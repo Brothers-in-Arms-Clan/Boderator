@@ -14,12 +14,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.12.2" />
     <PackageReference Include="Discord.Net" Version="2.2.0" />
     <PackageReference Include="dotenv.net" Version="1.0.6" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
 	<PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
   </ItemGroup>
 
   <ItemGroup>
