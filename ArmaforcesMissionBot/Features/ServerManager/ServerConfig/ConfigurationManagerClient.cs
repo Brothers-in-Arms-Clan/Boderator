@@ -31,24 +31,24 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
                 : ReturnFailureFromResponse<Stream>(result);
         }
 
-        public Result RequestStartServer(ServerStartRequest serverStartRequest)
+        public Result<Stream> GetModsetConfiguration(string modsetName)
         {
             var restClient = new RestClient(ManagerUrl);
 
             var resource = string.Join(
                 '/',
                 ConfigurationApiPath,
-                "start");
-            var restRequest = new RestRequest(resource, Method.POST);
-            restRequest.AddJsonBody(serverStartRequest);
+                "modset",
+                modsetName);
+            var restRequest = new RestRequest(resource, Method.GET);
 
             var result = restClient.Execute(restRequest);
             return result.IsSuccessful
-                ? Result.Success()
-                : ReturnFailureFromResponse<ServerStatus>(result);
+                ? Result.Success(CreateStreamFromJsonString(result.Content))
+                : ReturnFailureFromResponse<Stream>(result);
         }
 
-        private Stream CreateStreamFromJsonString(string jsonString)
+        private static Stream CreateStreamFromJsonString(string jsonString)
         {
             var bytes = Encoding.UTF8.GetBytes(jsonString);
             
@@ -59,5 +59,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
     public interface IConfigurationManagerClient
     {
         Result<Stream> GetServerConfiguration();
+
+        Result<Stream> GetModsetConfiguration(string modsetName);
     }
 }

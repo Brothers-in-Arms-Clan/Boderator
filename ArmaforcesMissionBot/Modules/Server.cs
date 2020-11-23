@@ -49,7 +49,18 @@ namespace ArmaforcesMissionBot.Modules
                 onFailure: error => ReplyAsync(error));
         }
         
-
+        [Command("modsetConfig")]
+        [Summary("Pobiera config serwera dla danego modsetu.")]
+        [RequireRank(RanksEnum.Recruiter)]
+        public async Task ModsetConfig(string modsetName)
+        {
+            var result = ConfigurationManagerClient.GetModsetConfiguration(modsetName);
+            
+            result.Match(
+                onSuccess: stream => Context.Channel.SendFileAsync(stream, $"{modsetName}-config.json"),
+                onFailure: error => ReplyAsync(error));
+        }
+        
         [Command("serverConfig")]
         [Summary("Pobiera główny config serwera.")]
         [RequireRank(RanksEnum.Recruiter)]
@@ -58,7 +69,7 @@ namespace ArmaforcesMissionBot.Modules
             var result = ConfigurationManagerClient.GetServerConfiguration();
             
             result.Match(
-                onSuccess: stream => Context.Channel.SendFileAsync(stream, "serverConfig.json"),
+                onSuccess: stream => Context.Channel.SendFileAsync(stream, "server-config.json"),
                 onFailure: error => ReplyAsync(error));
         }
 
