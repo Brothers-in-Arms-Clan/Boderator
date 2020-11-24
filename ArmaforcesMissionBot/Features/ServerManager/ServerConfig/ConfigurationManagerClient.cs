@@ -17,15 +17,13 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
 
         public Result<string> GetServerConfiguration()
         {
-            var restClient = new RestClient(ManagerUrl);
-
             var resource = string.Join(
                 '/',
                 ConfigurationApiPath,
                 "server");
             var restRequest = new RestRequest(resource, Method.GET);
 
-            var result = restClient.Execute(restRequest);
+            var result = ManagerClient.Execute(restRequest);
             return result.IsSuccessful
                 ? Result.Success(result.Content)
                 : ReturnFailureFromResponse<string>(result);
@@ -33,8 +31,6 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
 
         public Result<string> GetModsetConfiguration(string modsetName)
         {
-            var restClient = new RestClient(ManagerUrl);
-
             var resource = string.Join(
                 '/',
                 ConfigurationApiPath,
@@ -42,7 +38,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
                 modsetName);
             var restRequest = new RestRequest(resource, Method.GET);
 
-            var result = restClient.Execute(restRequest);
+            var result = ManagerClient.Execute(restRequest);
             return result.IsSuccessful
                 ? Result.Success(result.Content)
                 : ReturnFailureFromResponse<string>(result);
@@ -50,8 +46,6 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
 
         public Result<string> PutServerConfiguration(string configContent)
         {
-            var restClient = new RestClient(ManagerUrl);
-            
             var resource = string.Join(
                 '/',
                 ConfigurationApiPath,
@@ -65,7 +59,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
                 "config.json",
                 "application/json");
 
-            var result = restClient.Execute<string>(restRequest);
+            var result = ManagerClient.Execute<string>(restRequest);
 
             return result.IsSuccessful
                 ? Result.Success(result.Content)
@@ -74,8 +68,6 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
 
         public Result<string> PutModsetConfiguration(string modsetName, string configContent)
         {
-            var restClient = new RestClient(ManagerUrl);
-            
             var resource = string.Join(
                 '/',
                 ConfigurationApiPath,
@@ -90,7 +82,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
                 "config.json",
                 "application/json");
 
-            var result = restClient.Execute<string>(restRequest);
+            var result = ManagerClient.Execute<string>(restRequest);
 
             return result.IsSuccessful
                 ? Result.Success(result.Content)

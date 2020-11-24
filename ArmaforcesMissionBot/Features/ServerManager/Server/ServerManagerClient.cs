@@ -18,16 +18,13 @@ namespace ArmaforcesMissionBot.Features.ServerManager.Server
 
         public Result<ServerStatus> GetServerStatus()
         {
-            var restClient = new RestClient(ManagerUrl);
-
             var resource = string.Join(
                 '/',
-                ManagerUrl,
                 ServerApiPath,
                 Port);
             var restRequest = new RestRequest(resource, Method.GET);
 
-            var result = restClient.Execute<ServerStatus>(restRequest);
+            var result = ManagerClient.Execute<ServerStatus>(restRequest);
             return result.IsSuccessful
                 ? Result.Success(result.Data)
                 : ReturnFailureFromResponse<ServerStatus>(result);
@@ -35,17 +32,14 @@ namespace ArmaforcesMissionBot.Features.ServerManager.Server
 
         public Result RequestStartServer(ServerStartRequest serverStartRequest)
         {
-            var restClient = new RestClient(ManagerUrl);
-
             var resource = string.Join(
                 '/',
-                ManagerUrl,
                 ServerApiPath,
                 "start");
             var restRequest = new RestRequest(resource, Method.POST);
             restRequest.AddJsonBody(serverStartRequest);
 
-            var result = restClient.Execute(restRequest);
+            var result = ManagerClient.Execute(restRequest);
             return result.IsSuccessful
                 ? Result.Success()
                 : ReturnFailureFromResponse<ServerStatus>(result);

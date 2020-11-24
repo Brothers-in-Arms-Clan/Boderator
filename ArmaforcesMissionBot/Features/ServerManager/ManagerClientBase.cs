@@ -5,11 +5,11 @@ namespace ArmaforcesMissionBot.Features.ServerManager
 {
     public abstract class ManagerClientBase
     {
-        protected string ManagerUrl { get; }
+        protected IRestClient ManagerClient { get; set; }
 
         protected ManagerClientBase(string managerUrl)
         {
-            ManagerUrl = managerUrl;
+            ManagerClient = CreateRestClient(managerUrl);
         }
 
         protected static Result<T> ReturnFailureFromResponse<T>(IRestResponse restResponse)
@@ -18,5 +18,8 @@ namespace ArmaforcesMissionBot.Features.ServerManager
                 ? Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.Content}")
                 : Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
         }
+
+        private static IRestClient CreateRestClient(string url)
+            => new RestClient(url);
     }
 }
