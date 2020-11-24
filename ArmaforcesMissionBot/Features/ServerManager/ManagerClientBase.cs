@@ -12,8 +12,19 @@ namespace ArmaforcesMissionBot.Features.ServerManager
             ManagerClient = CreateRestClient(managerUrl);
         }
 
+        protected static Result ReturnFailureFromResponse(IRestResponse restResponse)
+        {
+            // It is not always false.
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            return restResponse.ErrorMessage is null && restResponse.ErrorException is null
+                ? Result.Failure($"{restResponse.StatusCode}: {restResponse.Content}")
+                : Result.Failure($"{restResponse.StatusCode}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
+        }
+
         protected static Result<T> ReturnFailureFromResponse<T>(IRestResponse restResponse)
         {
+            // It is not always false.
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             return restResponse.ErrorMessage is null && restResponse.ErrorException is null
                 ? Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.Content}")
                 : Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
