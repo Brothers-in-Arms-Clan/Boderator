@@ -15,7 +15,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
         {
         }
 
-        public Result<Stream> GetServerConfiguration()
+        public Result<string> GetServerConfiguration()
         {
             var restClient = new RestClient(ManagerUrl);
 
@@ -27,11 +27,11 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
 
             var result = restClient.Execute(restRequest);
             return result.IsSuccessful
-                ? Result.Success(CreateStreamFromJsonString(result.Content))
-                : ReturnFailureFromResponse<Stream>(result);
+                ? Result.Success(result.Content)
+                : ReturnFailureFromResponse<string>(result);
         }
 
-        public Result<Stream> GetModsetConfiguration(string modsetName)
+        public Result<string> GetModsetConfiguration(string modsetName)
         {
             var restClient = new RestClient(ManagerUrl);
 
@@ -44,22 +44,68 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
 
             var result = restClient.Execute(restRequest);
             return result.IsSuccessful
-                ? Result.Success(CreateStreamFromJsonString(result.Content))
-                : ReturnFailureFromResponse<Stream>(result);
+                ? Result.Success(result.Content)
+                : ReturnFailureFromResponse<string>(result);
         }
 
-        private static Stream CreateStreamFromJsonString(string jsonString)
+        public Result<string> PutServerConfiguration(string configContent)
         {
-            var bytes = Encoding.UTF8.GetBytes(jsonString);
+            var restClient = new RestClient(ManagerUrl);
             
-            return new MemoryStream(bytes);
+            var resource = string.Join(
+                '/',
+                ConfigurationApiPath,
+                "server");
+
+            var restRequest = new RestRequest(resource, Method.PUT);
+
+            restRequest.AddFileBytes(
+                "file",
+                Encoding.UTF8.GetBytes(configContent),
+                "config.json",
+                "application/json");
+
+            var result = restClient.Execute<string>(restRequest);
+
+            return result.IsSuccessful
+                ? Result.Success(result.Content)
+                : ReturnFailureFromResponse<string>(result);
+        }
+
+        public Result<string> PutModsetConfiguration(string modsetName, string configContent)
+        {
+            var restClient = new RestClient(ManagerUrl);
+            
+            var resource = string.Join(
+                '/',
+                ConfigurationApiPath,
+                "modset",
+                modsetName);
+
+            var restRequest = new RestRequest(resource, Method.PUT);
+
+            restRequest.AddFileBytes(
+                "file",
+                Encoding.UTF8.GetBytes(configContent),
+                "config.json",
+                "application/json");
+
+            var result = restClient.Execute<string>(restRequest);
+
+            return result.IsSuccessful
+                ? Result.Success(result.Content)
+                : ReturnFailureFromResponse<string>(result);
         }
     }
 
     public interface IConfigurationManagerClient
     {
-        Result<Stream> GetServerConfiguration();
+        Result<string> GetServerConfiguration();
 
-        Result<Stream> GetModsetConfiguration(string modsetName);
+        Result<string> GetModsetConfiguration(string modsetName);
+
+        Result<string> PutServerConfiguration(string configContent);
+
+        Result<string> PutModsetConfiguration(string modsetName, string configContent);
     }
 }

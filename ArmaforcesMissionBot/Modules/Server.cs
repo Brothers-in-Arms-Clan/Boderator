@@ -3,6 +3,10 @@ using ArmaforcesMissionBot.DataClasses;
 using Discord.Commands;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.Features.ServerManager.Server;
 using ArmaforcesMissionBot.Features.ServerManager.Server.DTOs;
@@ -56,8 +60,36 @@ namespace ArmaforcesMissionBot.Modules
         {
             var result = ConfigurationManagerClient.GetModsetConfiguration(modsetName);
             
-            result.Match(
-                onSuccess: stream => Context.Channel.SendFileAsync(stream, $"{modsetName}-config.json"),
+            await result.Match(
+                onSuccess: config => ReplyWithConfigContent(config, modsetName),
+                onFailure: error => ReplyAsync(error));
+        }
+        
+        [Command("putModsetConfig")]
+        [Summary("Wrzuca config serwera dla danego modsetu.")]
+        [RequireRank(RanksEnum.Recruiter)]
+        public async Task PutModsetConfig(string modsetName, [Remainder]string configContent = null)
+        {
+            if (Context.Message.Attachments.Any(x => x.Filename.EndsWith(".json")))
+            {
+                using var client = new HttpClient();
+                var response = await client.GetAsync(
+                    Context.Message.Attachments
+                        .First(x => x.Filename.EndsWith(".json"))
+                        .Url);
+                configContent = await response.Content.ReadAsStringAsync();
+            }
+
+            if (configContent is null)
+            {
+                await ReplyAsync("No configuration specified or attached file has incorrect extension. Only *.json files are allowed.");
+                return;
+            }
+
+            var result = ConfigurationManagerClient.PutModsetConfiguration(modsetName, configContent);
+            
+            await result.Match(
+                onSuccess: modset => ReplyAsync($"Configuration for {modset} modset updated."),
                 onFailure: error => ReplyAsync(error));
         }
         
@@ -68,9 +100,58 @@ namespace ArmaforcesMissionBot.Modules
         {
             var result = ConfigurationManagerClient.GetServerConfiguration();
             
-            result.Match(
-                onSuccess: stream => Context.Channel.SendFileAsync(stream, "server-config.json"),
+            await result.Match(
+                onSuccess: config => ReplyWithConfigContent(config),
                 onFailure: error => ReplyAsync(error));
+        }
+
+        [Command("putServerConfig")]
+        [Summary("Wrzuca główny config serwera.")]
+        [RequireRank(RanksEnum.Recruiter)]
+        public async Task PutServerConfig([Remainder] string configContent = null)
+        {
+            if (Context.Message.Attachments.Any(x => x.Filename.EndsWith(".json")))
+            {
+                using var client = new HttpClient();
+                var response = await client.GetAsync(
+                    Context.Message.Attachments
+                        .First(x => x.Filename.EndsWith(".json"))
+                        .Url);
+                configContent = await response.Content.ReadAsStringAsync();
+            }
+
+            if (configContent is null)
+            {
+                await ReplyAsync("No configuration specified or attached file has incorrect extension. Only *.json files are allowed.");
+                return;
+            }
+
+            var result = ConfigurationManagerClient.PutServerConfiguration(configContent);
+
+            await result.Match(
+                onSuccess: modset => ReplyAsync($"Configuration for {modset} modset updated."),
+                onFailure: error => ReplyAsync(error));
+        }
+
+        private async Task ReplyWithConfigContent(string configString, string modsetName = "server")
+        {
+            if (configString.Length > 1900)
+            {
+                await Context.Channel.SendFileAsync(
+                    CreateStreamFromJsonString(configString),
+                    $"{modsetName}-config.json",
+                    $"Config for {modsetName} is too long to fit in message. Please see attached file.");
+                return;
+            }
+
+            await ReplyAsync($"Config for {modsetName}:\n```json\n{configString}\n```");
+        }
+        
+        private static Stream CreateStreamFromJsonString(string jsonString)
+        {
+            var bytes = Encoding.UTF8.GetBytes(jsonString);
+
+            return new MemoryStream(bytes);
         }
 
         private static Embed CreateServerStatusEmbed(ServerStatus serverStatus)

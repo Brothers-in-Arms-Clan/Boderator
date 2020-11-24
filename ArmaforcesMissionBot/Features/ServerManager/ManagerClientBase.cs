@@ -14,7 +14,9 @@ namespace ArmaforcesMissionBot.Features.ServerManager
 
         protected static Result<T> ReturnFailureFromResponse<T>(IRestResponse restResponse)
         {
-            return Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
+            return restResponse.ErrorMessage is null && restResponse.ErrorException is null
+                ? Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.Content}")
+                : Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
         }
     }
 }
