@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Features.ServerManager.Mods;
 using ArmaforcesMissionBot.Features.ServerManager.Server;
 using ArmaforcesMissionBot.Features.ServerManager.Server.DTOs;
 using ArmaforcesMissionBot.Features.ServerManager.ServerConfig;
@@ -47,6 +48,24 @@ namespace ArmaforcesMissionBot.Modules
             
             await result.Match(
                 onSuccess: serverStatus => ReplyAsync(embed: CreateServerStatusEmbed(serverStatus)),
+                onFailure: ReplyAsyncTruncate);
+        }
+
+        [Command("updateMods")]
+        [Summary("Pozwala zaplanować aktualizację wszystkich modyfikacji lub wybranego modsetu.")]
+        [RequireRank(RanksEnum.Recruiter)]
+        public async Task UpdateMods(DateTime? scheduleAt = null) 
+            => await UpdateMods(null, scheduleAt);
+
+        [Command("updateMods")]
+        [Summary("Pozwala zaplanować aktualizację wszystkich modyfikacji lub wybranego modsetu.")]
+        [RequireRank(RanksEnum.Recruiter)]
+        public async Task UpdateMods(string modsetName = null, DateTime? scheduleAt = null)
+        {
+            var result = await ModsManagerClient.UpdateMods(modsetName, scheduleAt);
+            
+            await result.Match(
+                onSuccess: () => ReplyAsync($"Aktualizacja modyfikacji {modsetName} zaplanowana na {scheduleAt ?? DateTime.Now}"),
                 onFailure: ReplyAsyncTruncate);
         }
         
