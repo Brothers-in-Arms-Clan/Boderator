@@ -18,7 +18,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             return restResponse.ErrorMessage is null && restResponse.ErrorException is null
                 ? Result.Failure($"{restResponse.StatusCode}: {restResponse.Content}")
-                : Result.Failure($"{restResponse.StatusCode}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
+                : Result.Failure($"{restResponse.StatusCode}: {restResponse.ErrorException.Message} | Exception: {restResponse.ErrorException.Source} \n {restResponse.ErrorException.StackTrace}");
         }
 
         protected static Result<T> ReturnFailureFromResponse<T>(IRestResponse restResponse)

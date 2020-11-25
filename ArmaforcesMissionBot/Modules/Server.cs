@@ -20,14 +20,11 @@ namespace ArmaforcesMissionBot.Modules
     [Name("Server")]
     public class Server : ModuleBase<SocketCommandContext>
     {
-        public IServerManagerClient ServerManagerClient { get; set; }
         public IConfigurationManagerClient ConfigurationManagerClient { get; set; }
 
-        //public Server(IServerManagerClient serverManagerClient, IConfigurationManagerClient configurationManagerClient)
-        //{
-            //ServerManagerClient = serverManagerClient;
-            //ConfigurationManagerClient = configurationManagerClient;
-        //}
+        public IModsManagerClient ModsManagerClient { get; set; }
+
+        public IServerManagerClient ServerManagerClient { get; set; }
 
         [Command("startServer")]
         [Summary("Pozwala uruchomić serwer z zadanym modsetem o zadanej godzinie w danym dniu. Na przykład: AF!startServer default 2020-07-17T19:00.")]
@@ -38,7 +35,7 @@ namespace ArmaforcesMissionBot.Modules
 
             await result.Match(
                 onSuccess: () => ReplyAsync($"Server startup scheduled {(dateTime.HasValue ? $"at {dateTime.Value}" : "now")}."),
-                onFailure: error => ReplyAsync(error));
+                onFailure: ReplyAsyncTruncate);
         }
 
         [Command("serverStatus")]
@@ -50,7 +47,7 @@ namespace ArmaforcesMissionBot.Modules
             
             await result.Match(
                 onSuccess: serverStatus => ReplyAsync(embed: CreateServerStatusEmbed(serverStatus)),
-                onFailure: error => ReplyAsync(error));
+                onFailure: ReplyAsyncTruncate);
         }
         
         [Command("modsetConfig")]
@@ -62,7 +59,7 @@ namespace ArmaforcesMissionBot.Modules
             
             await result.Match(
                 onSuccess: config => ReplyWithConfigContent(config, modsetName),
-                onFailure: error => ReplyAsync(error));
+                onFailure: ReplyAsyncTruncate);
         }
         
         [Command("putModsetConfig")]
@@ -90,7 +87,7 @@ namespace ArmaforcesMissionBot.Modules
             
             await result.Match(
                 onSuccess: modset => ReplyAsync($"Configuration for {modset} modset updated."),
-                onFailure: error => ReplyAsync(error));
+                onFailure: ReplyAsyncTruncate);
         }
         
         [Command("serverConfig")]
@@ -102,7 +99,7 @@ namespace ArmaforcesMissionBot.Modules
             
             await result.Match(
                 onSuccess: config => ReplyWithConfigContent(config),
-                onFailure: error => ReplyAsync(error));
+                onFailure: ReplyAsyncTruncate);
         }
 
         [Command("putServerConfig")]
@@ -130,7 +127,14 @@ namespace ArmaforcesMissionBot.Modules
 
             await result.Match(
                 onSuccess: modset => ReplyAsync($"Configuration for {modset} modset updated."),
-                onFailure: error => ReplyAsync(error));
+                onFailure: ReplyAsyncTruncate);
+        }
+
+        private async Task<IUserMessage> ReplyAsyncTruncate(string message)
+        {
+            return message.Length > 2000
+                ? await ReplyAsync(message.Remove(2000))
+                : await ReplyAsync(message);
         }
 
         private async Task ReplyWithConfigContent(string configString, string modsetName = "server")

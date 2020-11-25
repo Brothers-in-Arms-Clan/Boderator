@@ -24,10 +24,10 @@ namespace ArmaforcesMissionBot.Features.ServerManager.Server
                 Port);
             var restRequest = new RestRequest(resource, Method.GET);
 
-            var result = ManagerClient.Execute<ServerStatus>(restRequest);
-            return result.IsSuccessful
-                ? Result.Success(result.Data)
-                : ReturnFailureFromResponse<ServerStatus>(result);
+            var response = ManagerClient.Execute<ServerStatus>(restRequest);
+            return response.IsSuccessful
+                ? Result.Success(response.Data)
+                : ReturnFailureFromResponse<ServerStatus>(response);
         }
 
         public Result RequestStartServer(ServerStartRequest serverStartRequest)
@@ -39,10 +39,10 @@ namespace ArmaforcesMissionBot.Features.ServerManager.Server
             var restRequest = new RestRequest(resource, Method.POST);
             restRequest.AddJsonBody(serverStartRequest);
 
-            var result = ManagerClient.Execute(restRequest);
-            return result.IsSuccessful
+            var response = ManagerClient.Execute(restRequest);
+            return response.IsSuccessful
                 ? Result.Success()
-                : ReturnFailureFromResponse<ServerStatus>(result);
+                : ReturnFailureFromResponse<ServerStatus>(response);
         }
     }
 
