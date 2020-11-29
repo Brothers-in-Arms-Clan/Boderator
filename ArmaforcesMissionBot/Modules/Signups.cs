@@ -1,4 +1,4 @@
-﻿using ArmaforcesMissionBot.Attributes;
+using ArmaforcesMissionBot.Attributes;
 using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Handlers;
 using Discord;
@@ -427,6 +427,34 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
+        [Command("przelacz-wolanie")]
+        [Summary("")]
+        [ContextDMOrChannel]
+        public async Task ToggleMentionEveryone()
+        {
+            var signups = _map.GetService<SignupsData>();
+
+            var mission = signups.Missions.SingleOrDefault(
+                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
+                     && x.Owner == Context.User.Id);
+
+            if (mission is null)
+            {
+                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                return;
+            }
+
+            mission.MentionEveryone = !mission.MentionEveryone;
+            if (mission.MentionEveryone)
+            {
+                await ReplyAsync($"Wołanie wszystkich zostało włączone.");
+            }
+            else
+            {
+                await ReplyAsync($"Wołanie wszystkich zostało wyłączone.");
+            }
+        }
+
         [Command("koniec")]
         [Summary("Wyświetla dialog z potwierdzeniem zebranych informacji o misji.")]
         [ContextDMOrChannel]
@@ -445,13 +473,13 @@ namespace ArmaforcesMissionBot.Modules
                         .WithDescription(mission.Description)
                         .WithFooter(mission.Date.ToString())
                         .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
+                        .AddField("Wołanie wszystkich:", mission.MentionEveryone)
                         .WithAuthor(Context.User);
 
                     if (mission.Attachment != null)
                         embed.WithImageUrl(mission.Attachment);
 
-                    if (mission.Modlist == null)
-                        mission.Modlist = "https://modlist.armaforces.com/#/download/default";
+                    mission.Modlist ??= "https://modlist.armaforces.com/#/download/default";
 
                     embed.AddField("Modlista:", mission.Modlist);
 
