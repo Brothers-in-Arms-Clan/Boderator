@@ -428,7 +428,7 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("przelacz-wolanie")]
-        [Summary("")]
+        [Summary("Pozwala włączyć/wyłączyć wołanie wszystkich do zapisów.")]
         [ContextDMOrChannel]
         public async Task ToggleMentionEveryone()
         {
