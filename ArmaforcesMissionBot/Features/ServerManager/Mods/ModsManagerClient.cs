@@ -11,7 +11,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.Mods
     {
         private string ModsApiPath { get; } = "api/mods";
 
-        public ModsManagerClient(Config config) : base(config.ServerManagerUrl)
+        public ModsManagerClient(Config config) : base(config)
         {
         }
 

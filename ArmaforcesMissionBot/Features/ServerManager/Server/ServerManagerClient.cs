@@ -12,7 +12,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.Server
 
         private string ServerApiPath { get; } = "api/server";
         
-        public ServerManagerClient(Config config) : base(config.ServerManagerUrl)
+        public ServerManagerClient(Config config) : base(config)
         {
         }
 

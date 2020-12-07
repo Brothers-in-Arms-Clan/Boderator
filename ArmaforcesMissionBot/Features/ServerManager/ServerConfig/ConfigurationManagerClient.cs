@@ -1,7 +1,5 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Text;
 using ArmaforcesMissionBot.DataClasses;
-using ArmaforcesMissionBot.Features.ServerManager.Server.DTOs;
 using CSharpFunctionalExtensions;
 using RestSharp;
 
@@ -11,7 +9,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager.ServerConfig
     {
         private string ConfigurationApiPath { get; } = "api/configuration";
 
-        public ConfigurationManagerClient(Config config) : base(config.ServerManagerUrl)
+        public ConfigurationManagerClient(Config config) : base(config)
         {
         }
 

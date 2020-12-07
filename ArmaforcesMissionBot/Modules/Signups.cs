@@ -394,7 +394,7 @@ namespace ArmaforcesMissionBot.Modules
 		        await ReplyAsync("A ta rezerwa to do czego?");
 	        }
         }
-
+        
         [Command("edytuj-sekcje")]
         [Summary("Wyświetla panel do ustawiania kolejnosci sekcji oraz usuwania. Strzałki przesuwają zaznaczenie/sekcje. " +
                  "Pinezka jest do \"złapania\" sekcji w celu przesunięcia. Nożyczki usuwają zaznaczoną sekcję. Kłódka kończy edycję sekcji.")]

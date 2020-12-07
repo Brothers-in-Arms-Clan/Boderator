@@ -84,7 +84,7 @@ namespace ArmaforcesMissionBot.Modules
         [Command("putModsetConfig")]
         [Summary("Wrzuca config serwera dla danego modsetu.")]
         [RequireRank(RanksEnum.Recruiter)]
-        public async Task PutModsetConfig(string modsetName, [Remainder]string configContent = null)
+        public async Task PutModsetConfig(string modsetName, [Remainder] string configContent = null)
         {
             if (Context.Message.Attachments.Any(x => x.Filename.EndsWith(".json")))
             {

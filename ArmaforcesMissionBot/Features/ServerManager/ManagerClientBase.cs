@@ -1,15 +1,20 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System;
+using ArmaforcesMissionBot.DataClasses;
+using CSharpFunctionalExtensions;
 using RestSharp;
 
 namespace ArmaforcesMissionBot.Features.ServerManager
 {
     public abstract class ManagerClientBase
     {
+        private readonly Config _config;
         protected IRestClient ManagerClient { get; set; }
 
-        protected ManagerClientBase(string managerUrl)
+        protected ManagerClientBase(Config config)
         {
-            ManagerClient = CreateRestClient(managerUrl);
+            _config = config;
+
+            ManagerClient = CreateRestClient(_config.ServerManagerUrl);
         }
 
         protected static Result ReturnFailureFromResponse(IRestResponse restResponse)
@@ -18,7 +23,7 @@ namespace ArmaforcesMissionBot.Features.ServerManager
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             return restResponse.ErrorMessage is null && restResponse.ErrorException is null
                 ? Result.Failure($"{restResponse.StatusCode}: {restResponse.Content}")
-                : Result.Failure($"{restResponse.StatusCode}: {restResponse.ErrorException.Message} | Exception: {restResponse.ErrorException.Source} \n {restResponse.ErrorException.StackTrace}");
+                : Result.Failure($"{restResponse.StatusCode}: {restResponse.Content}: {restResponse.ErrorException.Message} | Exception: {restResponse.ErrorException.Source} \n {restResponse.ErrorException.StackTrace}");
         }
 
         protected static Result<T> ReturnFailureFromResponse<T>(IRestResponse restResponse)
@@ -27,10 +32,16 @@ namespace ArmaforcesMissionBot.Features.ServerManager
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             return restResponse.ErrorMessage is null && restResponse.ErrorException is null
                 ? Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.Content}")
-                : Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
+                : Result.Failure<T>($"{restResponse.StatusCode}: {restResponse.Content}: {restResponse.ErrorMessage} | Exception: {restResponse.ErrorException}");
         }
 
-        private static IRestClient CreateRestClient(string url)
-            => new RestClient(url);
+        private IRestClient CreateRestClient(string url)
+        {
+            return new RestClient
+            {
+                BaseUrl = new Uri(url),
+                Authenticator = new ApiKeyAuthenticator(_config)
+            };
+        }
     }
 }
