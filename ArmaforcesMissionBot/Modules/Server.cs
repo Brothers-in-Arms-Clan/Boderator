@@ -30,6 +30,12 @@ namespace ArmaforcesMissionBot.Modules
         [Command("startServer")]
         [Summary("Pozwala uruchomić serwer z zadanym modsetem o zadanej godzinie w danym dniu. Na przykład: AF!startServer default 2020-07-17T19:00.")]
         [RequireRank(RanksEnum.Recruiter)]
+        public async Task StartServer(string modsetName)
+            => await StartServer(modsetName, null);
+
+        [Command("startServer")]
+        [Summary("Pozwala uruchomić serwer z zadanym modsetem o zadanej godzinie w danym dniu. Na przykład: AF!startServer default 2020-07-17T19:00.")]
+        [RequireRank(RanksEnum.Recruiter)]
         public async Task StartServer(string modsetName, DateTime? dateTime)
         {
             var result = ServerManagerClient.RequestStartServer(modsetName, dateTime);
@@ -189,8 +195,8 @@ namespace ArmaforcesMissionBot.Modules
                         new EmbedFieldBuilder
                         {
                             IsInline = false,
-                            Name = nameof(serverStatus.IsServerRunning),
-                            Value = serverStatus.IsServerRunning
+                            Name = $"server:{serverStatus.Port}",
+                            Value = ":x: Server unavailable"
                         }
                     }
                 }.Build();
@@ -204,50 +210,32 @@ namespace ArmaforcesMissionBot.Modules
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.IsServerRunning),
-                        Value = serverStatus.IsServerRunning
+                        Name = $"server:{serverStatus.Port}",
+                        Value = $@":white_check_mark: Server ""{serverStatus.Name}"" online"
                     },
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.HeadlessClientsConnected),
-                        Value = serverStatus.HeadlessClientsConnected ?? 0
+                        Name = "Players online",
+                        Value = $"{serverStatus.Players}/{serverStatus.PlayersMax}"
                     },
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.ModsetName),
+                        Name = "Modset name",
                         Value = serverStatus.ModsetName ?? "No modset"
                     },
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.Port),
-                        Value = serverStatus.Port
-                    },
-                    new EmbedFieldBuilder
-                    {
-                        IsInline = false,
-                        Name = nameof(serverStatus.Name),
-                        Value = serverStatus.Name ?? "Unknown"
-                    },
-                    new EmbedFieldBuilder
-                    {
-                        IsInline = false,
-                        Name = nameof(serverStatus.Map),
+                        Name = "Current map",
                         Value = serverStatus.Map ?? "Unknown"
                     },
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.Players),
-                        Value = serverStatus.Players
-                    },
-                    new EmbedFieldBuilder
-                    {
-                        IsInline = false,
-                        Name = nameof(serverStatus.PlayersMax),
-                        Value = serverStatus.PlayersMax
+                        Name = "Connected Headless Clients",
+                        Value = serverStatus.HeadlessClientsConnected ?? 0
                     }
                 }
             };
