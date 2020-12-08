@@ -179,6 +179,23 @@ namespace ArmaforcesMissionBot.Modules
 
         private static Embed CreateServerStatusEmbed(ServerStatus serverStatus)
         {
+            if (!serverStatus.IsServerRunning)
+            {
+                return new EmbedBuilder
+                {
+                    Title = "Server Status",
+                    Fields = new List<EmbedFieldBuilder>
+                    {
+                        new EmbedFieldBuilder
+                        {
+                            IsInline = false,
+                            Name = nameof(serverStatus.IsServerRunning),
+                            Value = serverStatus.IsServerRunning
+                        }
+                    }
+                }.Build();
+            }
+
             var embedBuilder = new EmbedBuilder
             {
                 Title = "Server Status",
@@ -187,14 +204,20 @@ namespace ArmaforcesMissionBot.Modules
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.ModsetName),
-                        Value = serverStatus.ModsetName ?? "No modset"
+                        Name = nameof(serverStatus.IsServerRunning),
+                        Value = serverStatus.IsServerRunning
                     },
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.IsServerRunning),
-                        Value = serverStatus.IsServerRunning
+                        Name = nameof(serverStatus.HeadlessClientsConnected),
+                        Value = serverStatus.HeadlessClientsConnected ?? 0
+                    },
+                    new EmbedFieldBuilder
+                    {
+                        IsInline = false,
+                        Name = nameof(serverStatus.ModsetName),
+                        Value = serverStatus.ModsetName ?? "No modset"
                     },
                     new EmbedFieldBuilder
                     {
@@ -205,8 +228,26 @@ namespace ArmaforcesMissionBot.Modules
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
-                        Name = nameof(serverStatus.HeadlessClientsConnected),
-                        Value = serverStatus.HeadlessClientsConnected ?? 0
+                        Name = nameof(serverStatus.Name),
+                        Value = serverStatus.Name ?? "Unknown"
+                    },
+                    new EmbedFieldBuilder
+                    {
+                        IsInline = false,
+                        Name = nameof(serverStatus.Map),
+                        Value = serverStatus.Map ?? "Unknown"
+                    },
+                    new EmbedFieldBuilder
+                    {
+                        IsInline = false,
+                        Name = nameof(serverStatus.Players),
+                        Value = serverStatus.Players
+                    },
+                    new EmbedFieldBuilder
+                    {
+                        IsInline = false,
+                        Name = nameof(serverStatus.PlayersMax),
+                        Value = serverStatus.PlayersMax
                     }
                 }
             };
