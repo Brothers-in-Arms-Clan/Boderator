@@ -14,7 +14,7 @@ namespace ArmaforcesMissionBot.Helpers
 {
     public class SignupHelper
     {
-        public static bool CheckMissionComplete(ArmaforcesMissionBotSharedClasses.Mission mission)
+        public static bool CheckMissionComplete(Mission mission)
         {
             if (mission.Title == null ||
                 mission.Description == null ||
@@ -171,7 +171,7 @@ namespace ArmaforcesMissionBot.Helpers
         {
             var mainEmbed = await CreateMainEmbed(guild, mission);
 
-            if(mission.AttachmentBytes != null)
+            if (mission.AttachmentBytes != null)
             {
                 mainEmbed.ImageUrl = $"attachment://{mission.FileName}";
                 Stream stream = new MemoryStream(mission.AttachmentBytes);
@@ -185,7 +185,7 @@ namespace ArmaforcesMissionBot.Helpers
 
             foreach (var team in mission.Teams)
             {
-                var description = Helpers.MiscHelper.BuildTeamSlots(team);
+                var description = MiscHelper.BuildTeamSlots(team);
 
                 var teamEmbed = new EmbedBuilder()
                     .WithColor(Color.Green)
@@ -201,7 +201,7 @@ namespace ArmaforcesMissionBot.Helpers
                 team.TeamMsg = teamMsg.Id;
 
                 var reactions = new IEmote[team.Slots.Count];
-                int num = 0;
+                var num = 0;
                 foreach (var slot in team.Slots)
                 {
                     try
@@ -221,7 +221,10 @@ namespace ArmaforcesMissionBot.Helpers
             // Make channel visible and notify everyone
             var everyone = guild.EveryoneRole;
             await signupChannel.RemovePermissionOverwriteAsync(everyone);
-            await signupChannel.SendMessageAsync("@everyone");
+            if (mission.MentionEveryone)
+            {
+                await signupChannel.SendMessageAsync("@everyone");
+            }
         }
 
         public static async Task<SocketTextChannel> UpdateMission(SocketGuild guild, Mission mission, SignupsData signups)
@@ -269,22 +272,22 @@ namespace ArmaforcesMissionBot.Helpers
 
         public static async Task CreateSignupChannel(SignupsData signups, ulong ownerID, ISocketMessageChannel channnel)
         {
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == ownerID))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == ownerID))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == ownerID);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == ownerID);
                 await mission.Access.WaitAsync(-1);
                 try
                 {
-                    if (Helpers.SignupHelper.CheckMissionComplete(mission))
+                    if (CheckMissionComplete(mission))
                     {
                         var guild = Program.GetClient().GetGuild(Program.GetConfig().AFGuild);
 
-                        var signupChannel = await Helpers.SignupHelper.CreateChannelForMission(guild, mission, signups);
+                        var signupChannel = await CreateChannelForMission(guild, mission, signups);
                         mission.SignupChannel = signupChannel.Id;
 
-                        await Helpers.SignupHelper.CreateMissionMessagesOnChannel(guild, mission, signupChannel);
+                        await CreateMissionMessagesOnChannel(guild, mission, signupChannel);
 
-                        mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing;
+                        mission.Editing = Mission.EditEnum.NotEditing;
                     }
                     else
                     {

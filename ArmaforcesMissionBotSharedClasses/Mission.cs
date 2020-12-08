@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace ArmaforcesMissionBotSharedClasses
 {
@@ -65,22 +66,26 @@ namespace ArmaforcesMissionBotSharedClasses
         public ulong SignupChannel;
         public List<ulong> SignedUsers = new List<ulong>();
         [NonSerialized]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public EditEnum Editing = EditEnum.NotEditing;
         [NonSerialized]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public ulong EditTeamsMessage = 0;
         [NonSerialized]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public int HighlightedTeam = 0;
         [NonSerialized]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public bool IsMoving = false;
         [NonSerialized]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public SemaphoreSlim Access = new SemaphoreSlim(1);
         [NonSerialized]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public bool CustomClose = false;
+
+        [NonSerialized]
+        [JsonIgnore]
+        public bool MentionEveryone = true;
     }
 }
