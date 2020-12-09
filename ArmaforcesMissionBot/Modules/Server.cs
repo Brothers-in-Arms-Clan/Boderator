@@ -185,7 +185,7 @@ namespace ArmaforcesMissionBot.Modules
 
         private static Embed CreateServerStatusEmbed(ServerStatus serverStatus)
         {
-            if (!serverStatus.IsServerRunning)
+            if (!serverStatus.IsServerRunning && !serverStatus.IsServerStarting)
             {
                 return new EmbedBuilder
                 {
@@ -197,6 +197,29 @@ namespace ArmaforcesMissionBot.Modules
                             IsInline = false,
                             Name = $"server:{serverStatus.Port}",
                             Value = ":x: Server unavailable"
+                        }
+                    }
+                }.Build();
+            }
+
+            if (serverStatus.IsServerStarting)
+            {
+                return new EmbedBuilder
+                {
+                    Title = "Server Status",
+                    Fields = new List<EmbedFieldBuilder>
+                    {
+                        new EmbedFieldBuilder()
+                        {
+                            IsInline = false,
+                            Name = $"server:{serverStatus.Port}",
+                            Value = ":arrows_counterclockwise: Server starting"
+                        },
+                        new EmbedFieldBuilder
+                        {
+                            IsInline = false,
+                            Name = "Modset name",
+                            Value = string.IsNullOrWhiteSpace(serverStatus.ModsetName) ? "No modset" : serverStatus.ModsetName
                         }
                     }
                 }.Build();

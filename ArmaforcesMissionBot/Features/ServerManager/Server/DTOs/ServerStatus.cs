@@ -4,6 +4,8 @@
     {
         public int? HeadlessClientsConnected { get; set; }
 
+        public bool IsServerStarting { get; set; }
+        
         public bool IsServerRunning { get; set; }
 
         public string ModsetName { get; set; }
