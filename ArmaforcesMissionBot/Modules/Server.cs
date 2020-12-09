@@ -223,13 +223,13 @@ namespace ArmaforcesMissionBot.Modules
                     {
                         IsInline = false,
                         Name = "Modset name",
-                        Value = serverStatus.ModsetName ?? "No modset"
+                        Value = string.IsNullOrWhiteSpace(serverStatus.ModsetName) ? "No modset" : serverStatus.ModsetName
                     },
                     new EmbedFieldBuilder
                     {
                         IsInline = false,
                         Name = "Current map",
-                        Value = serverStatus.Map ?? "Unknown"
+                        Value = string.IsNullOrWhiteSpace(serverStatus.Map) ? "No map" : serverStatus.Map
                     },
                     new EmbedFieldBuilder
                     {
