@@ -4,30 +4,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.Exceptions;
 using ArmaforcesMissionBot.Helpers;
-using ArmaforcesMissionBot.Modules;
 using Discord.Commands;
 
-namespace ArmaforcesMissionBot.Features.Signups.Importer {
-    public class SignupImporter {
+namespace ArmaforcesMissionBot.Features.Signups.Importer
+{
+    public class SignupImporter
+    {
         private ICommandContext Context { get; }
         private CommandService CommandService { get; }
         private IServiceProvider ServiceProvider { get; }
         private IModule Module { get; }
 
-        public SignupImporter
-        (
+        public SignupImporter(
             ICommandContext context,
             CommandService commandService,
             IServiceProvider serviceProvider,
-            IModule module
-        ) {
+            IModule module)
+        {
             Context = context;
             CommandService = commandService;
             ServiceProvider = serviceProvider;
             Module = module;
         }
 
-        public async Task ProcessMessage(string message) {
+        public async Task ProcessMessage(string message)
+        {
             var lineBreak = GetLineEnding(message);
             var lines = ReadLines(message, lineBreak);
             var commands = ParseCommands(lines, lineBreak);
@@ -42,7 +43,8 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         ///     Processes and executes given <paramref name="command" /> if everything works correctly.
         /// </summary>
         /// <returns></returns>
-        public async Task ProcessCommand(string command) {
+        public async Task ProcessCommand(string command)
+        {
             // This might be just empty string sometimes
             if (string.IsNullOrEmpty(command)) return;
 
@@ -72,7 +74,8 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         ///     Only one parameter is supported now.
         /// </summary>
         /// <returns></returns>
-        public static List<object> ParseCommandParameters(string parameterString, CommandInfo commandInfo) {
+        public static List<object> ParseCommandParameters(string parameterString, CommandInfo commandInfo)
+        {
             var parameterDateTime = commandInfo.Parameters.Count == 1 &&
                                     commandInfo.Parameters.First().Type == typeof(DateTime)
                 ? DateTimeParser.ParseOrNull(parameterString)
@@ -87,19 +90,19 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         ///     Removes <paramref name="commandName" /> from beginning of given <paramref name="command" /> string.
         /// </summary>
         /// <returns></returns>
-        public static string GetParameterString
-            (string command, string commandName)
+        public static string GetParameterString(string command, string commandName)
             => command.Substring(commandName.Length).Trim();
 
         /// <summary>
         ///     Extracts command name string from command line.
         /// </summary>
         /// <returns></returns>
-        public static string GetCommandName(string command) {
+        public static string GetCommandName(string command)
+        {
             var possibleCommandNameLength = command.IndexOf(' ');
             return possibleCommandNameLength == -1
                 ? ""
-                :command.Substring(0, possibleCommandNameLength);
+                : command.Substring(0, possibleCommandNameLength);
         }
 
         /// <summary>
@@ -115,7 +118,8 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         /// </summary>
         /// <param name="commandInfo"></param>
         /// <returns>False if user didn't meet command preconditions</returns>
-        public async Task<bool> UserCanUseCommand(CommandInfo commandInfo) {
+        public async Task<bool> UserCanUseCommand(CommandInfo commandInfo)
+        {
             var preconditions = await commandInfo.CheckPreconditionsAsync(Context, ServiceProvider);
             return preconditions.IsSuccess;
         }
@@ -126,12 +130,15 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         ///     Ignores lines starting with # or //.
         /// </summary>
         /// <returns><see cref="LinkedList{T}" /> containing commands for <seealso cref="CommandService" /></returns>
-        public static LinkedList<string> ParseCommands(IEnumerable<string> lines, string lineBreak = "\n") {
+        public static LinkedList<string> ParseCommands(IEnumerable<string> lines, string lineBreak = "\n")
+        {
             var loadedCommands = new LinkedList<string>();
 
-            foreach (var line in lines) {
+            foreach (var line in lines)
+            {
                 if (line.StartsWith('#') || line.StartsWith("//")) continue;
-                if (line.StartsWith("AF!")) {
+                if (line.StartsWith("AF!"))
+                {
                     loadedCommands.AddLast(line.Substring("AF!".Length));
                     continue;
                 }
@@ -152,7 +159,8 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer {
         /// </summary>
         /// <param name="message">Message to convert.</param>
         /// <returns><see cref="IEnumerable{T}" /> of lines.</returns>
-        public static IEnumerable<string> ReadLines(string message, string lineBreak = null) {
+        public static IEnumerable<string> ReadLines(string message, string lineBreak = null)
+        {
             var lineEnding = string.IsNullOrEmpty(lineBreak)
                 ? GetLineEnding(message)
                 : lineBreak;
