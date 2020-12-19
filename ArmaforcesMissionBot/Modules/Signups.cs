@@ -1,4 +1,4 @@
-﻿using ArmaforcesMissionBot.Attributes;
+using ArmaforcesMissionBot.Attributes;
 using ArmaforcesMissionBot.DataClasses;
 using Discord;
 using Discord.Commands;
@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.Exceptions;
+using ArmaforcesMissionBot.Extensions;
 using ArmaforcesMissionBot.Features;
 using ArmaforcesMissionBot.Features.Signups.Importer;
 using ArmaforcesMissionBot.Helpers;
@@ -172,65 +173,56 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("data")]
-        [Summary("Definicja daty w formacie RRRR-MM-DD GG:MM")]
+        [Summary("Definicja daty rozpoczęcia misji w formacie RRRR-MM-DD GG:MM.")]
         [ContextDMOrChannel]
-        public async Task Date([Remainder]DateTime date)
-        {
+        public async Task Date([Remainder] DateTime date) {
+            if (date.IsInPast())
+                await ReplyAsync(":warning: Podana data jest w przeszłości!");
+            else if (date.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
+
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                x.Owner == Context.User.Id))
-            {
-                var mission = signups.Missions.Single(x =>
-                    (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                        x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                    x.Owner == Context.User.Id);
+            var mission = signups.Missions.SingleOrDefault(
+                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
+                                 && x.Owner == Context.User.Id);
 
-                mission.Date = date;
-                if (!mission.CustomClose)
-                    mission.CloseTime = date.AddMinutes(-60);
+            if (mission is null) {
+                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                return;
+            }
 
-                await ReplyAsync("Teraz zdefiniuj zespoły.");
-            }
-            else
-            {
-                await ReplyAsync("Najpierw zdefiniuj nazwę misji cymbale.");
-            }
+            mission.Date = date;
+            if (!mission.CustomClose)
+                mission.CloseTime = date.AddMinutes(-60);
+
+            await ReplyAsync($"Data misji ustawiona na {date}, za {date.FromNow()}.");
         }
 
         [Command("zamkniecie")]
-        [Summary("Definiowanie czasu kiedy powinny zamknąć się zapisy, tak jak data w formacie RRRR-MM-DD GG:MM")]
+        [Summary("Definiowanie czasu kiedy powinny zamknąć się zapisy, tak jak data w formacie RRRR-MM-DD GG:MM.")]
         [ContextDMOrChannel]
-        public async Task Close([Remainder]DateTime closeDate)
-        {
+        public async Task Close([Remainder] DateTime closeDate) {
+            if (closeDate.IsInPast())
+                await ReplyAsync(":warning: Podana data jest w przeszłości!");
+            else if (closeDate.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
+
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                x.Owner == Context.User.Id))
-            {
-                var mission = signups.Missions.Single(x =>
-                    (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                        x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                    x.Owner == Context.User.Id);
+            var mission = signups.Missions.SingleOrDefault(
+                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
+                     && x.Owner == Context.User.Id);
 
-                if (closeDate < mission.Date)
-                {
-                    mission.CloseTime = closeDate;
-                    mission.CustomClose = true;
-                    await ReplyAsync("Wspaniale!");
-                }
-                else
-                {
-                    await ReplyAsync("Zamknięcie zapisów musi być przed datą misji baranie!");
-                }
+            if (mission is null) {
+                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                return;
             }
-            else
-            {
-                await ReplyAsync("Najpierw zdefiniuj nazwę misji cymbale.");
+
+            if (closeDate < mission.Date) {
+                mission.CloseTime = closeDate;
+                mission.CustomClose = true;
+                await ReplyAsync($"Data zamknięcia zapisów ustawiona na {closeDate}, za {closeDate.FromNow()}!");
+            } else {
+                await ReplyAsync(":warning: Zamknięcie zapisów musi być przed datą misji!");
             }
         }
 
@@ -470,6 +462,34 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
+        [Command("przelacz-wolanie")]
+        [Summary("Pozwala włączyć/wyłączyć wołanie wszystkich do zapisów.")]
+        [ContextDMOrChannel]
+        public async Task ToggleMentionEveryone()
+        {
+            var signups = _map.GetService<SignupsData>();
+
+            var mission = signups.Missions.SingleOrDefault(
+                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
+                     && x.Owner == Context.User.Id);
+
+            if (mission is null)
+            {
+                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                return;
+            }
+
+            mission.MentionEveryone = !mission.MentionEveryone;
+            if (mission.MentionEveryone)
+            {
+                await ReplyAsync($"Wołanie wszystkich zostało włączone.");
+            }
+            else
+            {
+                await ReplyAsync($"Wołanie wszystkich zostało wyłączone.");
+            }
+        }
+
         [Command("koniec")]
         [Summary("Wyświetla dialog z potwierdzeniem zebranych informacji o misji.")]
         [ContextDMOrChannel]
@@ -488,13 +508,13 @@ namespace ArmaforcesMissionBot.Modules
                         .WithDescription(mission.Description)
                         .WithFooter(mission.Date.ToString())
                         .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
+                        .AddField("Wołanie wszystkich:", mission.MentionEveryone)
                         .WithAuthor(Context.User);
 
                     if (mission.Attachment != null)
                         embed.WithImageUrl(mission.Attachment);
 
-                    if (mission.Modlist == null)
-                        mission.Modlist = "https://modlist.armaforces.com/#/download/default";
+                    mission.Modlist ??= "https://modlist.armaforces.com/#/download/default";
 
                     embed.AddField("Modlista:", mission.Modlist);
 

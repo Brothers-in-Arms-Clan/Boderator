@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Timers;
+using ArmaforcesMissionBot.Features.RichPresence;
 
 namespace ArmaforcesMissionBot
 {
@@ -23,8 +23,6 @@ namespace ArmaforcesMissionBot
         private IServiceProvider    _services;
         private List<IInstallable>  _handlers;
         private Config              _config;
-        private Timer               _timer;
-        private int                 _statusCounter;
         private static Program _instance;
         private static bool _botStarted;
 
@@ -78,7 +76,10 @@ namespace ArmaforcesMissionBot
         {
             _instance = this;
 
-            var config = new DiscordSocketConfig();
+            var config = new DiscordSocketConfig
+            {
+                AlwaysDownloadUsers = true
+            };
             config.MessageCacheSize = 100000;
             //config.LogLevel = LogSeverity.Verbose;
             _client = new DiscordSocketClient(config: config);
@@ -106,12 +107,7 @@ namespace ArmaforcesMissionBot
             await _client.LoginAsync(TokenType.Bot, _config.DiscordToken);
             await _client.StartAsync();
 
-            _timer = new Timer();
-            _timer.Interval = 5000;
-
-            _timer.Elapsed += UpdateStatus;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
+            _services.GetService<GameStatusUpdater>().StartTimer();
 
             WebHost.CreateDefaultBuilder(args)
                 .UseUrls("http://*:5555")
@@ -123,34 +119,13 @@ namespace ArmaforcesMissionBot
             await Task.Delay(-1);
         }
 
-        private void UpdateStatus(object sender, ElapsedEventArgs e)
-        {
-            var signups = _services.GetService<SignupsData>();
-            Game status;
-            if (_statusCounter < signups.Missions.Where(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing).Count())
-            {
-                var mission = signups.Missions.Where(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing).ElementAt(_statusCounter);
-                status = new Game($"Miejsc: {Helpers.MiscHelper.CountFreeSlots(mission)}/{Helpers.MiscHelper.CountAllSlots(mission)} - {mission.Title}");
-            }
-            else
-            {
-                status = new Game($"Prowadzone zapisy: {signups.Missions.Where(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing).Count()}");
-            }
-
-            if (_statusCounter >= signups.Missions.Where(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing).Count())
-                _statusCounter = 0;
-            else
-                _statusCounter++;
-
-            _client.SetActivityAsync(status);
-        }
-
         public IServiceProvider BuildServiceProvider() => new ServiceCollection()
         .AddSingleton(_client)
         .AddSingleton<SignupsData>()
         .AddSingleton(_config)
         .AddSingleton<OpenedDialogs>()
         .AddSingleton<MissionsArchiveData>()
+        .AddSingleton<GameStatusUpdater>()
         .BuildServiceProvider();
 
         private async Task Load(SocketGuild guild)
