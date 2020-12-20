@@ -11,6 +11,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using ArmaForces.ArmaServerManager.Discord.Extensions;
+using ArmaforcesMissionBot.Features.Modsets;
+using ArmaforcesMissionBot.Features.Modsets.Legacy;
 using ArmaforcesMissionBot.Features.RichPresence;
 using ArmaforcesMissionBot.Features.ServerManager;
 
@@ -128,6 +130,12 @@ namespace ArmaforcesMissionBot
             .AddSingleton<OpenedDialogs>()
             .AddSingleton<MissionsArchiveData>()
             .AddSingleton<GameStatusUpdater>()
+
+            .AddSingleton<IModsetsApiClient, ModsetsApiClient>()
+            .AddSingleton(provider => string.IsNullOrWhiteSpace(_config.ModsetsApiUrl) 
+                ? (IModsetProvider) new LegacyModsetProvider()
+                : new ModsetProvider(provider.GetService<IModsetsApiClient>()))
+            
             .AddServerManager<ServerManagerConfiguration>()
             .BuildServiceProvider();
 

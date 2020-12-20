@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 using ArmaforcesMissionBot.Attributes;
 using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Extensions;
+using ArmaforcesMissionBot.Features.Modsets;
+using ArmaforcesMissionBot.Features.Modsets.Constants;
 using ArmaforcesMissionBot.Helpers;
 using ArmaforcesMissionBotSharedClasses;
+using CSharpFunctionalExtensions;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -24,6 +27,7 @@ namespace ArmaforcesMissionBot.Modules
         public OpenedDialogs _dialogs { get; set; }
         public CommandService _commands { get; set; }
         public SignupsData SignupsData { get; set; }
+        public IModsetProvider ModsetProvider { get; set; }
         
         [Command("zrob-zapisy")]
         [Summary("Tworzy nową misję, jako parametr przyjmuje nazwę misji.")]
@@ -101,19 +105,14 @@ namespace ArmaforcesMissionBot.Modules
                         x.Editing == Mission.EditEnum.Started) && 
                     x.Owner == Context.User.Id);
 
-                var request = WebRequest.Create($"https://server.armaforces.com:8888/modsets/{modlist.Split('/').Last()}.csv");
-                //request.Method = "HEAD";
-                try
-                {
-                    WebResponse response = request.GetResponse();
-                    mission.Modlist = $"https://modlist.armaforces.com/#/download/{modlist.Split('/').Last()}";
-
-                    await ReplyAsync("Teraz podaj datę misji.");
-                }
-                catch(Exception e)
-                {
-                    await ReplyAsync("Ten link lub nazwa modlisty nie jest prawidłowy dzbanie!");
-                }
+                var modsetName = modlist.Split('/').Last();
+                await ModsetProvider.GetModsetDownloadUrl(modsetName).Match(
+                        onSuccess: url =>
+                        {
+                            mission.Modlist = url;
+                            return ReplyAsync($"Modset {modsetName} was found under {url}.");
+                        },
+                        onFailure: error => ReplyAsync(error));
             }
             else
             {
