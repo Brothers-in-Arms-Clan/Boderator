@@ -10,10 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using ArmaForces.ArmaServerManager.Discord.Extensions;
 using ArmaforcesMissionBot.Features.RichPresence;
-using ArmaforcesMissionBot.Features.ServerManager.Mods;
-using ArmaforcesMissionBot.Features.ServerManager.Server;
-using ArmaforcesMissionBot.Features.ServerManager.ServerConfig;
+using ArmaforcesMissionBot.Features.ServerManager;
 
 namespace ArmaforcesMissionBot
 {
@@ -123,16 +122,14 @@ namespace ArmaforcesMissionBot
         }
 
         public IServiceProvider BuildServiceProvider() => new ServiceCollection()
-        .AddSingleton(_client)
-        .AddSingleton<SignupsData>()
-        .AddSingleton(_config)
-        .AddSingleton<OpenedDialogs>()
-        .AddSingleton<MissionsArchiveData>()
-        .AddSingleton<GameStatusUpdater>()
-        .AddSingleton<IServerManagerClient, ServerManagerClient>()
-        .AddSingleton<IConfigurationManagerClient, ConfigurationManagerClient>()
-        .AddSingleton<IModsManagerClient, ModsManagerClient>()
-        .BuildServiceProvider();
+            .AddSingleton(_client)
+            .AddSingleton<SignupsData>()
+            .AddSingleton(_config)
+            .AddSingleton<OpenedDialogs>()
+            .AddSingleton<MissionsArchiveData>()
+            .AddSingleton<GameStatusUpdater>()
+            .AddServerManager<ServerManagerConfiguration>()
+            .BuildServiceProvider();
 
         private async Task Load(SocketGuild guild)
         {
