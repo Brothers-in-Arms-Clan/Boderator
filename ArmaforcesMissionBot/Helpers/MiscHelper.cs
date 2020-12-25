@@ -15,7 +15,7 @@ namespace ArmaforcesMissionBot.Helpers
 {
     public class MiscHelper
     {
-        public static List<string> BuildTeamSlots(Mission.Team team)
+        public static List<string> BuildTeamSlots(Team team)
         {
             List<string> results = new List<string>();
             results.Add("");
@@ -53,7 +53,7 @@ namespace ArmaforcesMissionBot.Helpers
             return results;
         }
 
-        public static void BuildTeamsEmbed(List<Mission.Team> teams, EmbedBuilder builder, bool removeSlotNamesFromName = false)
+        public static void BuildTeamsEmbed(List<Team> teams, EmbedBuilder builder, bool removeSlotNamesFromName = false)
         {
             foreach (var team in teams)
             {
@@ -81,7 +81,7 @@ namespace ArmaforcesMissionBot.Helpers
             }
         }
 
-        public static string BuildEditTeamsPanel(List<Mission.Team> teams, int highlightIndex)
+        public static string BuildEditTeamsPanel(List<Team> teams, int highlightIndex)
         {
             string result = "";
 

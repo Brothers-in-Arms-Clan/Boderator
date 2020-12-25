@@ -247,7 +247,7 @@ namespace ArmaforcesMissionBot.Modules
 
                 if (slotTexts.Length > 1)
                 {
-                    var team = new Mission.Team();
+                    var team = new Team();
                     team.Name = slotTexts[0];
                     team.Pattern = "";
 
@@ -261,7 +261,7 @@ namespace ArmaforcesMissionBot.Modules
 
                         if(match.Success)
                         {
-                            var slot = new Mission.Team.Slot(match.Groups[1].Value, int.Parse(match.Groups[2].Value.Substring(1, match.Groups[2].Value.Length - 2)));
+                            var slot = new Slot(match.Groups[1].Value, int.Parse(match.Groups[2].Value.Substring(1, match.Groups[2].Value.Length - 2)));
                             if(match.Groups.Count == 4)
                             {
                                 slot.Name = match.Groups[3].Value;
@@ -332,15 +332,15 @@ namespace ArmaforcesMissionBot.Modules
             {
                 var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
                 // SL
-                var team = new Mission.Team();
+                var team = new Team();
                 team.Name = teamName + " SL | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1]";
-                var slot = new Mission.Team.Slot(
+                var slot = new Slot(
                     "Dowódca",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new Mission.Team.Slot(
+                slot = new Slot(
                     "Medyk",
                     "🚑",
                     1);
@@ -349,21 +349,21 @@ namespace ArmaforcesMissionBot.Modules
                 mission.Teams.Add(team);
 
                 // team 1
-                team = new Mission.Team();
+                team = new Team();
                 team.Name = teamName + " 1 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize-2).ToString() + "]";
-                slot = new Mission.Team.Slot(
+                slot = new Slot(
                     "Dowódca",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new Mission.Team.Slot(
+                slot = new Slot(
                     "Medyk",
                     "🚑",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new Mission.Team.Slot(
+                slot = new Slot(
                     "BPP",
                     "<:beton:437603383373987853>",
                     teamSize - 2);
@@ -372,21 +372,21 @@ namespace ArmaforcesMissionBot.Modules
                 mission.Teams.Add(team);
 
                 // team 2
-                team = new Mission.Team();
+                team = new Team();
                 team.Name = teamName + " 2 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2).ToString() + "]";
-                slot = new Mission.Team.Slot(
+                slot = new Slot(
                     "Dowódca",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new Mission.Team.Slot(
+                slot = new Slot(
                     "Medyk",
                     "🚑",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new Mission.Team.Slot(
+                slot = new Slot(
                     "BPP",
                     "<:beton:437603383373987853>",
                     teamSize - 2);
@@ -414,8 +414,8 @@ namespace ArmaforcesMissionBot.Modules
 	        {
 		        var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
 		        // SL
-		        var team = new Mission.Team();
-                team.Slots.Add(new Mission.Team.Slot(
+		        var team = new Team();
+                team.Slots.Add(new Slot(
 	                "Rezerwa",
                     "🚑",
 	                slots));

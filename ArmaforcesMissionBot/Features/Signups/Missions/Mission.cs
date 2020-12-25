@@ -15,44 +15,6 @@ namespace ArmaforcesMissionBot.Features.Signups.Missions
             Started,
             NotEditing
         }
-
-        [Serializable]
-        public class Team
-        {
-            public class Slot
-            {
-                public string Name;
-                public string Emoji; // slotID
-                public int Count;
-                public List<ulong> Signed = new List<ulong>();
-
-                public Slot()
-                {
-                    Name = "";
-                    Emoji = "";
-                    Count = 0;
-                }
-
-                public Slot(string emoji, int count)
-                {
-                    Name = "";
-                    Emoji = emoji;
-                    Count = count;
-                }
-
-                public Slot(string name, string emoji, int count)
-                {
-                    Name = name;
-                    Emoji = emoji;
-                    Count = count;
-                }
-            }
-            public string Name;
-            public string Pattern;
-            public List<Slot> Slots = new List<Slot>();
-            public ulong TeamMsg;
-            public ulong Reserve = 0;
-        }
         public string Title;
         public DateTime Date;
         public DateTime? CloseTime = null;
