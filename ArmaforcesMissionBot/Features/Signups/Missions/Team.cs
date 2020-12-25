@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ArmaforcesMissionBot.Features.Signups.Missions.Slots;
 
 namespace ArmaforcesMissionBot.Features.Signups.Missions
 {

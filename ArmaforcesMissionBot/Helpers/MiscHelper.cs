@@ -23,7 +23,7 @@ namespace ArmaforcesMissionBot.Helpers
             {
                 for (var i = 0; i < slot.Count; i++)
                 {
-                    string description = $"{HttpUtility.HtmlDecode(slot.Emoji)}";
+                    string description = $"{HttpUtility.HtmlDecode(slot.Emoji.Name)}";
                     if (slot.Name != "" && i == 0)
                         description += $"({slot.Name})";
                     description += "-";
@@ -64,8 +64,8 @@ namespace ArmaforcesMissionBot.Helpers
                 {
                     foreach (var slot in team.Slots)
                     {
-                        if (teamName.Contains(slot.Emoji))
-                            teamName = teamName.Remove(teamName.IndexOf(slot.Emoji));
+                        if (teamName.Contains(slot.Emoji.Name))
+                            teamName = teamName.Remove(teamName.IndexOf(slot.Emoji.Name));
                     }
                 }
 

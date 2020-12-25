@@ -149,15 +149,7 @@ namespace ArmaforcesMissionBot.Helpers
                             {
                                 var channel = guild.GetTextChannel(mission.SignupChannel);
                                 var message = await channel.GetMessageAsync(team.TeamMsg) as IUserMessage;
-                                IEmote reaction;
-                                try
-                                {
-                                    reaction = Emote.Parse(team.Slots.Single(x => x.Signed.Contains(user.Id)).Emoji);
-                                }
-                                catch (Exception e)
-                                {
-                                    reaction = new Emoji(team.Slots.Single(x => x.Signed.Contains(user.Id)).Emoji);
-                                }
+                                var reaction = team.Slots.Single(x => x.Signed.Contains(user.Id)).Emoji;
                                 await message.RemoveReactionAsync(reaction, user);
                             }
                         }

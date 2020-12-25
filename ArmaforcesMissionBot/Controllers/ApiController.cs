@@ -144,7 +144,7 @@ namespace ArmaforcesMissionBot.Controllers
                         {
                             var team = mission.Teams.Single(x => x.TeamMsg == teamID);
 
-                            if (team.Slots.Any(x => x.Emoji == slotID && x.Count > x.Signed.Count()))
+                            if (team.Slots.Any(x => x.Emoji.Name == slotID && x.Count > x.Signed.Count()))
                             {
                                 var channel = Program.GetChannel(missionID);
                                 var teamMsg = await channel.GetMessageAsync(teamID) as IUserMessage;
@@ -153,7 +153,7 @@ namespace ArmaforcesMissionBot.Controllers
 
                                 if (!mission.SignedUsers.Contains(userID))
                                 {
-                                    var slot = team.Slots.Single(x => x.Emoji == slotID);
+                                    var slot = team.Slots.Single(x => x.Emoji.Name == slotID);
                                     slot.Signed.Add(userID);
                                     mission.SignedUsers.Add(userID);
 
@@ -225,7 +225,7 @@ namespace ArmaforcesMissionBot.Controllers
                         {
                             var team = mission.Teams.Single(x => x.TeamMsg == teamID);
 
-                            if (team.Slots.Any(x => x.Emoji == slotID))
+                            if (team.Slots.Any(x => x.Emoji.Name == slotID))
                             {
                                 var channel = Program.GetChannel(missionID);
                                 var teamMsg = await channel.GetMessageAsync(teamID) as IUserMessage;
@@ -234,7 +234,7 @@ namespace ArmaforcesMissionBot.Controllers
 
                                 if (mission.SignedUsers.Contains(userID))
                                 {
-                                    var slot = team.Slots.Single(x => x.Emoji == slotID);
+                                    var slot = team.Slots.Single(x => x.Emoji.Name == slotID);
                                     slot.Signed.Remove(userID);
                                     mission.SignedUsers.Remove(userID);
 

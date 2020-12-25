@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Features.Signups.Missions;
+using ArmaforcesMissionBot.Features.Signups.Missions.Slots;
 using ArmaforcesMissionBot.Helpers;
 using Discord;
 using Discord.WebSocket;
@@ -19,11 +20,13 @@ namespace ArmaforcesMissionBot.Handlers
         private DiscordSocketClient _client;
         private IServiceProvider _services;
         private Config _config;
+        private ISlotFactory _slotFactory;
 
         public async Task Install(IServiceProvider map)
         {
             _client = map.GetService<DiscordSocketClient>();
             _config = map.GetService<Config>();
+            _slotFactory = map.GetService<ISlotFactory>();
             _services = map;
             // Hook the MessageReceived event into our command handler
             _client.GuildAvailable += Load;
@@ -107,7 +110,7 @@ namespace ArmaforcesMissionBot.Handlers
 
                                 var count = match.Groups[2].Value;
                                 var name = match.Groups[3].Success ? match.Groups[3].Value : "";
-                                var slot = new Slot(
+                                var slot = _slotFactory.CreateSlot(
                                     name,
                                     icon,
                                     int.Parse(count.Substring(1, count.Length - 2)));
@@ -136,7 +139,7 @@ namespace ArmaforcesMissionBot.Handlers
                                         mission.SignedUsers.Add(signedID);
                                         Console.WriteLine(
                                             $"{match.Groups[1].Value} : {match.Groups[2].Value} ({signedID})");
-                                        team.Slots.Single(x => x.Emoji == match.Groups[1].Value).Signed.Add(signedID);
+                                        team.Slots.Single(x => x.Emoji.Name == match.Groups[1].Value).Signed.Add(signedID);
                                     }
                                 }
                                 catch (Exception e)

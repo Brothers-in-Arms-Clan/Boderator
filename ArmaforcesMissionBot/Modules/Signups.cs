@@ -1,25 +1,26 @@
-using ArmaforcesMissionBot.Attributes;
-using ArmaforcesMissionBot.DataClasses;
-using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Attributes;
+using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Exceptions;
 using ArmaforcesMissionBot.Extensions;
 using ArmaforcesMissionBot.Features;
+using ArmaforcesMissionBot.Features.Emojis.Constants;
 using ArmaforcesMissionBot.Features.Signups.Importer;
 using ArmaforcesMissionBot.Features.Signups.Missions;
+using ArmaforcesMissionBot.Features.Signups.Missions.Slots;
+using ArmaforcesMissionBot.Features.Signups.Missions.Slots.Extensions;
 using ArmaforcesMissionBot.Helpers;
-using static ArmaforcesMissionBot.DataClasses.OpenedDialogs;
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace ArmaforcesMissionBot.Modules
 {
@@ -32,6 +33,7 @@ namespace ArmaforcesMissionBot.Modules
         public OpenedDialogs _dialogs { get; set; }
         public CommandService _commands { get; set; }
         public SignupsData SignupsData { get; set; }
+        public ISlotFactory SlotFactory { get; set; }
 
         [Command("importuj-zapisy")]
         [Summary("Importuje zapisy z załączonego pliku *.txt. lub z wiadomości (preferując plik txt jeżeli obie rzeczy są). " +
@@ -253,7 +255,7 @@ namespace ArmaforcesMissionBot.Modules
 
                     foreach (var slotText in slotTexts)
                     {
-                        MatchCollection matches = Helpers.MiscHelper.GetSlotMatchesFromText(slotText);
+                        MatchCollection matches = MiscHelper.GetSlotMatchesFromText(slotText);
                         if (matches.Count == 0)
                             continue;
 
@@ -261,7 +263,7 @@ namespace ArmaforcesMissionBot.Modules
 
                         if(match.Success)
                         {
-                            var slot = new Slot(match.Groups[1].Value, int.Parse(match.Groups[2].Value.Substring(1, match.Groups[2].Value.Length - 2)));
+                            var slot = SlotFactory.CreateSlot(match.Groups[1].Value, int.Parse(match.Groups[2].Value.Substring(1, match.Groups[2].Value.Length - 2)));
                             if(match.Groups.Count == 4)
                             {
                                 slot.Name = match.Groups[3].Value;
@@ -285,13 +287,13 @@ namespace ArmaforcesMissionBot.Modules
                     var embed = new EmbedBuilder()
                         .WithColor(Color.Green)
                         .WithTitle(team.Name)
-                        .WithDescription(Helpers.MiscHelper.BuildTeamSlots(team)[0])
+                        .WithDescription(MiscHelper.BuildTeamSlots(team)[0])
                         .WithFooter(team.Pattern);
 
-                    Helpers.MiscHelper.CreateConfirmationDialog(
+                    MiscHelper.CreateConfirmationDialog(
                         Context,
                         embed.Build(),
-                        (Dialog dialog) =>
+                        dialog =>
                         {
                             Context.Channel.DeleteMessageAsync(dialog.DialogID);
                             _dialogs.Dialogs.Remove(dialog);
@@ -305,7 +307,7 @@ namespace ArmaforcesMissionBot.Modules
                             }
                             ReplyAsync("OK!");
                         }, 
-                        (Dialog dialog) =>
+                        dialog =>
                         {
                             Context.Channel.DeleteMessageAsync(dialog.DialogID);
                             _dialogs.Dialogs.Remove(dialog);
@@ -326,79 +328,86 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task AddTeam(string teamName, int teamSize = 6)
         {
-            var signups = _map.GetService<SignupsData>();
-
-            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
+            if (SignupsData.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
+                var mission =
+                    SignupsData.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
                 // SL
-                var team = new Team();
-                team.Name = teamName + " SL | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1]";
-                var slot = new Slot(
-                    "Dowódca",
-                    "<:wsciekly_zulu:426139721001992193>",
-                    1);
-                team.Slots.Add(slot);
+                mission.Teams.Add(
+                    new Team
+                    {
+                        Name = teamName + $" SL | {EmoteConstants.WscieklyZulu} [1] | {EmojiConstants.Ambulance} [1]",
+                        Slots = new List<Slot>
+                        {
+                            new Slot(
+                                "Dowódca",
+                                EmoteConstants.WscieklyZulu,
+                                1),
+                            new Slot(
+                                "Medyk",
+                                EmojiConstants.Ambulance,
+                                1)
+                        },
+                        Pattern = $"{EmoteConstants.WscieklyZulu} [1] | {EmojiConstants.Ambulance} [1]"
+                    });
 
-                slot = new Slot(
-                    "Medyk",
-                    "🚑",
-                    1);
-                team.Slots.Add(slot);
-                team.Pattern = "<:wsciekly_zulu:426139721001992193> [1] | 🚑 [1]";
-                mission.Teams.Add(team);
+                mission.Teams.Add(
+                    new Team
+                    {
+                        Name = teamName +
+                               $" 1 | {EmoteConstants.WscieklyZulu} [1] | {EmojiConstants.Ambulance} [1] | {EmoteConstants.Beton} [" +
+                               (teamSize - 2) + "]",
+                        Slots = new List<Slot>
+                        {
+                            new Slot(
+                                "Dowódca",
+                                EmoteConstants.WscieklyZulu,
+                                1),
+                            new Slot(
+                                "Medyk",
+                                EmojiConstants.Ambulance,
+                                1),
+                            new Slot(
+                                "BPP",
+                                EmoteConstants.Beton,
+                                teamSize - 2)
+                        },
+                        Pattern =
+                            $"{EmoteConstants.WscieklyZulu} [1] | {EmojiConstants.Ambulance} [1] | {EmoteConstants.Beton} [" +
+                            (teamSize - 2) + "]"
+                    });
 
-                // team 1
-                team = new Team();
-                team.Name = teamName + " 1 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize-2).ToString() + "]";
-                slot = new Slot(
-                    "Dowódca",
-                    "<:wsciekly_zulu:426139721001992193>",
-                    1);
-                team.Slots.Add(slot);
-
-                slot = new Slot(
-                    "Medyk",
-                    "🚑",
-                    1);
-                team.Slots.Add(slot);
-
-                slot = new Slot(
-                    "BPP",
-                    "<:beton:437603383373987853>",
-                    teamSize - 2);
-                team.Slots.Add(slot);
-                team.Pattern = "<:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2).ToString() + "]";
-                mission.Teams.Add(team);
-
-                // team 2
-                team = new Team();
-                team.Name = teamName + " 2 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2).ToString() + "]";
-                slot = new Slot(
-                    "Dowódca",
-                    "<:wsciekly_zulu:426139721001992193>",
-                    1);
-                team.Slots.Add(slot);
-
-                slot = new Slot(
-                    "Medyk",
-                    "🚑",
-                    1);
-                team.Slots.Add(slot);
-
-                slot = new Slot(
-                    "BPP",
-                    "<:beton:437603383373987853>",
-                    teamSize - 2);
-                team.Slots.Add(slot);
-                team.Pattern = "<:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2).ToString() + "]";
-                mission.Teams.Add(team);
+                mission.Teams.Add(
+                    new Team
+                    {
+                        Name = teamName +
+                               $" 2 | {EmoteConstants.WscieklyZulu} [1] | {EmojiConstants.Ambulance} [1] | {EmoteConstants.Beton} [" +
+                               (teamSize - 2) + "]",
+                        Slots = new List<Slot>
+                        {
+                            new Slot(
+                                "Dowódca",
+                                EmoteConstants.WscieklyZulu,
+                                1),
+                            new Slot(
+                                "Medyk",
+                                EmojiConstants.Ambulance,
+                                1),
+                            new Slot(
+                                "BPP",
+                                EmoteConstants.Beton,
+                                teamSize - 2)
+                        },
+                        Pattern =
+                            $"{EmoteConstants.WscieklyZulu} [1] | {EmojiConstants.Ambulance} [1] | {EmoteConstants.Beton} [" +
+                            (teamSize - 2) + "]"
+                    });
 
                 await ReplyAsync("Jeszcze coś?");
             }
             else
             {
-                await ReplyAsync("A może byś mi najpierw powiedział do jakiej misji chcesz dodać ten zespół?");
+                await ReplyWithError("A może byś mi najpierw powiedział do jakiej misji chcesz dodać ten zespół?");
             }
         }
 
@@ -417,9 +426,9 @@ namespace ArmaforcesMissionBot.Modules
 		        var team = new Team();
                 team.Slots.Add(new Slot(
 	                "Rezerwa",
-                    "🚑",
+                    EmojiConstants.Ambulance,
 	                slots));
-                team.Pattern = $"Rezerwa 🚑 [{slots}]";
+                team.Pattern = $"Rezerwa {EmojiConstants.Ambulance} [{slots}]";
                 mission.Teams.Add(team);
 
                 await ReplyAsync("Jeszcze coś?");
@@ -445,7 +454,7 @@ namespace ArmaforcesMissionBot.Modules
                 var embed = new EmbedBuilder()
                 .WithColor(Color.Green)
                 .WithTitle("Sekcje:")
-                .WithDescription(Helpers.MiscHelper.BuildEditTeamsPanel(mission.Teams, mission.HighlightedTeam));
+                .WithDescription(MiscHelper.BuildEditTeamsPanel(mission.Teams, mission.HighlightedTeam));
 
                 var message = await Context.Channel.SendMessageAsync(embed: embed.Build());
                 mission.EditTeamsMessage = message.Id;
@@ -482,11 +491,11 @@ namespace ArmaforcesMissionBot.Modules
             mission.MentionEveryone = !mission.MentionEveryone;
             if (mission.MentionEveryone)
             {
-                await ReplyAsync($"Wołanie wszystkich zostało włączone.");
+                await ReplyAsync("Wołanie wszystkich zostało włączone.");
             }
             else
             {
-                await ReplyAsync($"Wołanie wszystkich zostało wyłączone.");
+                await ReplyAsync("Wołanie wszystkich zostało wyłączone.");
             }
         }
 
@@ -500,7 +509,7 @@ namespace ArmaforcesMissionBot.Modules
             if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
             {
                 var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
-                if (Helpers.SignupHelper.CheckMissionComplete(mission))
+                if (SignupHelper.CheckMissionComplete(mission))
                 {
                     var embed = new EmbedBuilder()
                         .WithColor(Color.Green)
@@ -518,18 +527,18 @@ namespace ArmaforcesMissionBot.Modules
 
                     embed.AddField("Modlista:", mission.Modlist);
 
-                    Helpers.MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                    MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
-                    Helpers.MiscHelper.CreateConfirmationDialog(
+                    MiscHelper.CreateConfirmationDialog(
                        Context,
                        embed.Build(),
-                       (Dialog dialog) =>
+                       dialog =>
                        {
                            _dialogs.Dialogs.Remove(dialog);
-                           _ = Helpers.SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
+                           _ = SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
                            ReplyAsync("No to lecim!");
                        },
-                       (Dialog dialog) =>
+                       dialog =>
                        {
                            Context.Channel.DeleteMessageAsync(dialog.DialogID);
                            _dialogs.Dialogs.Remove(dialog);
@@ -572,7 +581,7 @@ namespace ArmaforcesMissionBot.Modules
                 else
                     embed.AddField("Modlista:", "Default");
 
-                Helpers.MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
                 var builtEmbed = embed.Build();
 
@@ -689,11 +698,11 @@ namespace ArmaforcesMissionBot.Modules
                 await mission.Access.WaitAsync(-1);
                 try
                 {
-                    if (Helpers.SignupHelper.CheckMissionComplete(mission))
+                    if (SignupHelper.CheckMissionComplete(mission))
                     {
                         var guild = Program.GetClient().GetGuild(Program.GetConfig().AFGuild);
 
-                        var channel = await Helpers.SignupHelper.UpdateMission(guild, mission, signups);
+                        var channel = await SignupHelper.UpdateMission(guild, mission, signups);
 
                         mission.Editing = Mission.EditEnum.NotEditing;
 
@@ -776,7 +785,7 @@ namespace ArmaforcesMissionBot.Modules
                         {
                             mission.Modlist = $"https://modlist.armaforces.com/#/download/{mission.Modlist}";
                             var guild = _client.GetGuild(_config.AFGuild);
-                            var channel = await Helpers.SignupHelper.UpdateMission(guild, mission, signups);
+                            var channel = await SignupHelper.UpdateMission(guild, mission, signups);
                             await ReplyAsync($"Misja {mission.Title} zaktualizowana.");
                         }
                     }
@@ -789,7 +798,7 @@ namespace ArmaforcesMissionBot.Modules
 
             await ReplyAsync("No i cyk, gotowe.");
 
-            await Helpers.BanHelper.MakeBanHistoryMessage(_map, Context.Guild);
+            await BanHelper.MakeBanHistoryMessage(_map, Context.Guild);
         }
 
         /// <summary>

@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Features.Emojis;
 using ArmaforcesMissionBot.Features.RichPresence;
+using ArmaforcesMissionBot.Features.Signups.Missions.Slots;
 
 namespace ArmaforcesMissionBot
 {
@@ -126,6 +128,8 @@ namespace ArmaforcesMissionBot
         .AddSingleton<OpenedDialogs>()
         .AddSingleton<MissionsArchiveData>()
         .AddSingleton<GameStatusUpdater>()
+        .AddSingleton<IEmoteProvider, EmoteProvider>()
+        .AddSingleton<ISlotFactory, SlotFactory>()
         .BuildServiceProvider();
 
         private async Task Load(SocketGuild guild)
