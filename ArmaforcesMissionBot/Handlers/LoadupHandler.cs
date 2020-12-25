@@ -1,4 +1,4 @@
-﻿using ArmaforcesMissionBot.DataClasses;
+using ArmaforcesMissionBot.DataClasses;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 using static ArmaforcesMissionBot.DataClasses.SignupsData;
 
 namespace ArmaforcesMissionBot.Handlers
@@ -50,7 +51,7 @@ namespace ArmaforcesMissionBot.Handlers
             {
                 if (signups.Missions.Any(x => x.SignupChannel == channel.Id))
                     continue;
-                var mission = new ArmaforcesMissionBotSharedClasses.Mission();
+                var mission = new Mission();
 
                 var textChannel = channel as SocketTextChannel;
                 var messages = textChannel.GetMessagesAsync();
@@ -86,7 +87,7 @@ namespace ArmaforcesMissionBot.Handlers
 
                         if (matches.Count > 0)
                         {
-                            var team = new ArmaforcesMissionBotSharedClasses.Mission.Team();
+                            var team = new Mission.Team();
                             team.Name = embed.Title;
                             pattern = "";
                             foreach (Match match in matches.Reverse())
@@ -102,7 +103,7 @@ namespace ArmaforcesMissionBot.Handlers
                                 }
                                 var count = match.Groups[2].Value;
                                 var name = match.Groups[3].Success ? match.Groups[3].Value : "";
-                                var slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                                var slot = new Mission.Team.Slot(
                                     name,
                                     icon,
                                     int.Parse(count.Substring(1, count.Length - 2)));

@@ -17,8 +17,8 @@ using ArmaforcesMissionBot.Exceptions;
 using ArmaforcesMissionBot.Extensions;
 using ArmaforcesMissionBot.Features;
 using ArmaforcesMissionBot.Features.Signups.Importer;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 using ArmaforcesMissionBot.Helpers;
-using ArmaforcesMissionBotSharedClasses;
 using static ArmaforcesMissionBot.DataClasses.OpenedDialogs;
 
 namespace ArmaforcesMissionBot.Modules
@@ -78,20 +78,20 @@ namespace ArmaforcesMissionBot.Modules
             var signups = _map.GetService<SignupsData>();
 
             if (signups.Missions.Any(x => 
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New  || 
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
+                (x.Editing == Mission.EditEnum.New  || 
+                    x.Editing == Mission.EditEnum.Started) && 
                 x.Owner == Context.User.Id))
                 await ReplyAsync("O ty luju, najpierw dokończ definiowanie poprzednich zapisów!");
             else
             {
                 if (_client.GetGuild(_config.AFGuild).GetUser(Context.User.Id).Roles.Any(x => x.Id == _config.MissionMakerRole))
                 {
-                    var mission = new ArmaforcesMissionBotSharedClasses.Mission();
+                    var mission = new Mission();
 
                     mission.Title = title;
                     mission.Owner = Context.User.Id;
                     mission.Date = DateTime.Now;
-                    mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New;
+                    mission.Editing = Mission.EditEnum.New;
 
                     signups.Missions.Add(mission);
 
@@ -111,13 +111,13 @@ namespace ArmaforcesMissionBot.Modules
             var signups = _map.GetService<SignupsData>();
 
             if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
+                (x.Editing == Mission.EditEnum.New ||
+                    x.Editing == Mission.EditEnum.Started) && 
                 x.Owner == Context.User.Id))
             {
                 var mission = signups.Missions.Single(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
+                (x.Editing == Mission.EditEnum.New ||
+                    x.Editing == Mission.EditEnum.Started) && 
                 x.Owner == Context.User.Id);
 
                 mission.Description = description;
@@ -143,13 +143,13 @@ namespace ArmaforcesMissionBot.Modules
             var signups = _map.GetService<SignupsData>();
 
             if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                (x.Editing == Mission.EditEnum.New ||
+                    x.Editing == Mission.EditEnum.Started) &&
                 x.Owner == Context.User.Id))
             {
                 var mission = signups.Missions.Single(x => 
-                    (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                        x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
+                    (x.Editing == Mission.EditEnum.New ||
+                        x.Editing == Mission.EditEnum.Started) && 
                     x.Owner == Context.User.Id);
 
                 var request = WebRequest.Create($"https://server.armaforces.com:8888/modsets/{modlist.Split('/').Last()}.csv");
@@ -239,15 +239,15 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
 
                 var slotTexts = teamText.Split("|");
 
                 if (slotTexts.Length > 1)
                 {
-                    var team = new ArmaforcesMissionBotSharedClasses.Mission.Team();
+                    var team = new Mission.Team();
                     team.Name = slotTexts[0];
                     team.Pattern = "";
 
@@ -261,7 +261,7 @@ namespace ArmaforcesMissionBot.Modules
 
                         if(match.Success)
                         {
-                            var slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(match.Groups[1].Value, int.Parse(match.Groups[2].Value.Substring(1, match.Groups[2].Value.Length - 2)));
+                            var slot = new Mission.Team.Slot(match.Groups[1].Value, int.Parse(match.Groups[2].Value.Substring(1, match.Groups[2].Value.Length - 2)));
                             if(match.Groups.Count == 4)
                             {
                                 slot.Name = match.Groups[3].Value;
@@ -328,19 +328,19 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
                 // SL
-                var team = new ArmaforcesMissionBotSharedClasses.Mission.Team();
+                var team = new Mission.Team();
                 team.Name = teamName + " SL | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1]";
-                var slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                var slot = new Mission.Team.Slot(
                     "Dowódca",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                slot = new Mission.Team.Slot(
                     "Medyk",
                     "🚑",
                     1);
@@ -349,21 +349,21 @@ namespace ArmaforcesMissionBot.Modules
                 mission.Teams.Add(team);
 
                 // team 1
-                team = new ArmaforcesMissionBotSharedClasses.Mission.Team();
+                team = new Mission.Team();
                 team.Name = teamName + " 1 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize-2).ToString() + "]";
-                slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                slot = new Mission.Team.Slot(
                     "Dowódca",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                slot = new Mission.Team.Slot(
                     "Medyk",
                     "🚑",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                slot = new Mission.Team.Slot(
                     "BPP",
                     "<:beton:437603383373987853>",
                     teamSize - 2);
@@ -372,21 +372,21 @@ namespace ArmaforcesMissionBot.Modules
                 mission.Teams.Add(team);
 
                 // team 2
-                team = new ArmaforcesMissionBotSharedClasses.Mission.Team();
+                team = new Mission.Team();
                 team.Name = teamName + " 2 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2).ToString() + "]";
-                slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                slot = new Mission.Team.Slot(
                     "Dowódca",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                slot = new Mission.Team.Slot(
                     "Medyk",
                     "🚑",
                     1);
                 team.Slots.Add(slot);
 
-                slot = new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+                slot = new Mission.Team.Slot(
                     "BPP",
                     "<:beton:437603383373987853>",
                     teamSize - 2);
@@ -410,12 +410,12 @@ namespace ArmaforcesMissionBot.Modules
         {
 	        var signups = _map.GetService<SignupsData>();
 
-	        if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id))
+	        if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
 	        {
-		        var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id);
+		        var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
 		        // SL
-		        var team = new ArmaforcesMissionBotSharedClasses.Mission.Team();
-                team.Slots.Add(new ArmaforcesMissionBotSharedClasses.Mission.Team.Slot(
+		        var team = new Mission.Team();
+                team.Slots.Add(new Mission.Team.Slot(
 	                "Rezerwa",
                     "🚑",
 	                slots));
@@ -438,9 +438,9 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
 
                 var embed = new EmbedBuilder()
                 .WithColor(Color.Green)
@@ -497,9 +497,9 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
                 if (Helpers.SignupHelper.CheckMissionComplete(mission))
                 {
                     var embed = new EmbedBuilder()
@@ -587,9 +587,9 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
             {
-                signups.Missions.Remove(signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == Context.User.Id));
+                signups.Missions.Remove(signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id));
 
                 await ReplyAsync("I tak nikt nie chce grać na twoich misjach.");
             }
@@ -604,14 +604,14 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing))
+            if (signups.Missions.Any(x => x.Owner == Context.User.Id && x.Editing == Mission.EditEnum.NotEditing))
             {
                 var mainEmbed = new EmbedBuilder()
                             .WithColor(Color.Orange);
 
                 int index = 0;
 
-                foreach (var mission in signups.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing))
+                foreach (var mission in signups.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == Mission.EditEnum.NotEditing))
                 {
                     mainEmbed.AddField(index++.ToString(), mission.Title);
                 }
@@ -633,7 +633,7 @@ namespace ArmaforcesMissionBot.Modules
 
             int index = 0;
 
-            foreach (var mission in signups.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing))
+            foreach (var mission in signups.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == Mission.EditEnum.NotEditing))
             {
                 if (index++ == missionNo)
                 {
@@ -662,14 +662,14 @@ namespace ArmaforcesMissionBot.Modules
 
             int index = 0;
 
-            foreach (var mission in signups.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing))
+            foreach (var mission in signups.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == Mission.EditEnum.NotEditing))
             {
                 if (index++ == missionNo)
                 {
                     // Don't want to write another function just to copy class, and performance isn't a problem here so just serialize it and deserialize
                     var serialized = JsonConvert.SerializeObject(mission);
-                    signups.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
-                    mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
+                    signups.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<Mission>(serialized);
+                    mission.Editing = Mission.EditEnum.Started;
                     await ReplyAsync("Luzik, co chcesz zmienić?");
                 }
             }
@@ -682,9 +682,9 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started && x.Owner == Context.User.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.Started && x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started && x.Owner == Context.User.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.Started && x.Owner == Context.User.Id);
 
                 await mission.Access.WaitAsync(-1);
                 try
@@ -695,7 +695,7 @@ namespace ArmaforcesMissionBot.Modules
 
                         var channel = await Helpers.SignupHelper.UpdateMission(guild, mission, signups);
 
-                        mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing;
+                        mission.Editing = Mission.EditEnum.NotEditing;
 
                         if(announce)
                             await channel.SendMessageAsync("@everyone Misja uległa modyfikacji, proszę zapoznać się z nowymi informacjami i dostosować swój beton.");
@@ -725,9 +725,9 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started && x.Owner == Context.User.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.Started && x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started && x.Owner == Context.User.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.Started && x.Owner == Context.User.Id);
                 
                 await mission.Access.WaitAsync(-1);
                 try
@@ -735,10 +735,10 @@ namespace ArmaforcesMissionBot.Modules
                     // Don't want to write another function just to copy class, and performance isn't a problem here so just serialize it and deserialize
                     signups.Missions.Remove(mission);
                     var serialized = JsonConvert.SerializeObject(signups.BeforeEditMissions[Context.User.Id]);
-                    var oldMission = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
+                    var oldMission = JsonConvert.DeserializeObject<Mission>(serialized);
                     signups.Missions.Add(oldMission);
 
-                    oldMission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing;
+                    oldMission.Editing = Mission.EditEnum.NotEditing;
                     await ReplyAsync("I dobrze, tylko byś ludzi wkurwiał...");
                 }
                 catch (Exception e)

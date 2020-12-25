@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using ArmaforcesMissionBotSharedClasses;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 using Discord;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +36,7 @@ namespace ArmaforcesMissionBot.Controllers
             var missions = Program.GetMissions();
             JArray missionArray = new JArray();
             var openMissionsEnumerable = missions.Missions
-                .Where(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing)
+                .Where(x => x.Editing == Features.Signups.Missions.Mission.EditEnum.NotEditing)
                 .Where(x => x.Date >= fromDateTime)
                 .Where(x => x.Date <= toDateTime)
                 .Reverse();
@@ -314,7 +314,7 @@ namespace ArmaforcesMissionBot.Controllers
             Console.WriteLine(JsonConvert.SerializeObject(mission));
             var signups = Program.GetMissions();
 
-            mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New;
+            mission.Editing = Features.Signups.Missions.Mission.EditEnum.New;
             signups.Missions.Add(mission);
 
             if (Helpers.SignupHelper.CheckMissionComplete(mission))

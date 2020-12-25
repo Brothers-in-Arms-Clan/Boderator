@@ -1,5 +1,4 @@
 ﻿using ArmaforcesMissionBot.DataClasses;
-using ArmaforcesMissionBotSharedClasses;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
@@ -9,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 
 namespace ArmaforcesMissionBot.Helpers
 {

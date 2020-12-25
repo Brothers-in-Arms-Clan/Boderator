@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 
 namespace ArmaforcesMissionBot.Handlers
 {
@@ -30,9 +31,9 @@ namespace ArmaforcesMissionBot.Handlers
         {
             var signups = _services.GetService<SignupsData>();
 
-            if (reaction.User.IsSpecified && signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == reaction.User.Value.Id && x.EditTeamsMessage == message.Id))
+            if (reaction.User.IsSpecified && signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == reaction.User.Value.Id && x.EditTeamsMessage == message.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == reaction.User.Value.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == reaction.User.Value.Id);
 
                 var reactedMessage = await channel.GetMessageAsync(message.Id) as IUserMessage;
 
@@ -122,9 +123,9 @@ namespace ArmaforcesMissionBot.Handlers
         {
             var signups = _services.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && reaction.User.IsSpecified && x.Owner == reaction.User.Value.Id && x.EditTeamsMessage == message.Id))
+            if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && reaction.User.IsSpecified && x.Owner == reaction.User.Value.Id && x.EditTeamsMessage == message.Id))
             {
-                var mission = signups.Missions.Single(x => x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New && x.Owner == reaction.User.Value.Id);
+                var mission = signups.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == reaction.User.Value.Id);
                 switch (reaction.Emote.ToString())
                 {
                     case "📍":

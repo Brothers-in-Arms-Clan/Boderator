@@ -8,13 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 using static ArmaforcesMissionBot.DataClasses.OpenedDialogs;
 
 namespace ArmaforcesMissionBot.Helpers
 {
     public class MiscHelper
     {
-        public static List<string> BuildTeamSlots(ArmaforcesMissionBotSharedClasses.Mission.Team team)
+        public static List<string> BuildTeamSlots(Mission.Team team)
         {
             List<string> results = new List<string>();
             results.Add("");
@@ -52,7 +53,7 @@ namespace ArmaforcesMissionBot.Helpers
             return results;
         }
 
-        public static void BuildTeamsEmbed(List<ArmaforcesMissionBotSharedClasses.Mission.Team> teams, EmbedBuilder builder, bool removeSlotNamesFromName = false)
+        public static void BuildTeamsEmbed(List<Mission.Team> teams, EmbedBuilder builder, bool removeSlotNamesFromName = false)
         {
             foreach (var team in teams)
             {
@@ -80,7 +81,7 @@ namespace ArmaforcesMissionBot.Helpers
             }
         }
 
-        public static string BuildEditTeamsPanel(List<ArmaforcesMissionBotSharedClasses.Mission.Team> teams, int highlightIndex)
+        public static string BuildEditTeamsPanel(List<Mission.Team> teams, int highlightIndex)
         {
             string result = "";
 
@@ -99,12 +100,12 @@ namespace ArmaforcesMissionBot.Helpers
             return result;
         }
 
-        public static int CountFreeSlots(ArmaforcesMissionBotSharedClasses.Mission mission)
+        public static int CountFreeSlots(Mission mission)
         {
             return CountAllSlots(mission) - mission.SignedUsers.Count;
         }
 
-        public static int CountAllSlots(ArmaforcesMissionBotSharedClasses.Mission mission)
+        public static int CountAllSlots(Mission mission)
         {
             int slots = 0;
             foreach (var team in mission.Teams)

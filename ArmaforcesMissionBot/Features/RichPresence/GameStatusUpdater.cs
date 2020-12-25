@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Timers;
 using ArmaforcesMissionBot.DataClasses;
-using ArmaforcesMissionBotSharedClasses;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 using Discord;
 using Discord.WebSocket;
 
