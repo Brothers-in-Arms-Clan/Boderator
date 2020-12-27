@@ -4,7 +4,6 @@ using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +13,23 @@ namespace ArmaforcesMissionBot.Helpers
 {
     public class SignupHelper
     {
+        private readonly DiscordSocketClient _client;
+        private readonly Config _config;
+        private readonly MiscHelper _miscHelper;
+        private readonly SignupsData _signupsData;
+
+        public SignupHelper(
+            DiscordSocketClient client,
+            Config config,
+            MiscHelper miscHelper,
+            SignupsData signupsData)
+        {
+            _client = client;
+            _config = config;
+            _miscHelper = miscHelper;
+            _signupsData = signupsData;
+        }
+
         public static bool CheckMissionComplete(Mission mission)
         {
             if (mission.Title == null ||
@@ -26,7 +42,7 @@ namespace ArmaforcesMissionBot.Helpers
                 return true;
         }
 
-        public static async Task<RestTextChannel> CreateChannelForMission(SocketGuild guild, Mission mission, SignupsData signups)
+        public async Task<RestTextChannel> CreateChannelForMission(SocketGuild guild, Mission mission, SignupsData signups)
         {
             // Sort channels by date
             signups.Missions.Sort((x, y) =>
@@ -36,7 +52,7 @@ namespace ArmaforcesMissionBot.Helpers
 
             var signupChannel = await guild.CreateTextChannelAsync(mission.Title, x =>
             {
-                x.CategoryId = Program.GetConfig().SignupsCategory;
+                x.CategoryId = _config.SignupsCategory;
                 // Kurwa dlaczego to nie działa
                 var index = (int)(mission.Date - new DateTime(2019, 1, 1)).TotalMinutes;
                 // really hacky solution to avoid recalculating indexes for each channel integer should have 
@@ -45,8 +61,8 @@ namespace ArmaforcesMissionBot.Helpers
             });
 
             var everyone = guild.EveryoneRole;
-            var armaforces = guild.GetRole(Program.GetConfig().SignupRole);
-            var botRole = guild.GetRole(Program.GetConfig().BotRole);
+            var armaforces = guild.GetRole(_config.SignupRole);
+            var botRole = guild.GetRole(_config.BotRole);
 
             var banPermissions = new OverwritePermissions(
                 PermValue.Deny,
@@ -123,7 +139,7 @@ namespace ArmaforcesMissionBot.Helpers
                 {
                     foreach (var ban in signups.SpamBans)
                     {
-                        await signupChannel.AddPermissionOverwriteAsync(Program.GetGuildUser(ban.Key), banPermissions);
+                        await signupChannel.AddPermissionOverwriteAsync(_client.GetGuild(_config.AFGuild).GetUser(ban.Key), banPermissions);
                     }
                 }
                 catch (Exception e)
@@ -167,7 +183,24 @@ namespace ArmaforcesMissionBot.Helpers
             return mainEmbed;
         }
 
-        public static async Task CreateMissionMessagesOnChannel(SocketGuild guild, Mission mission, RestTextChannel signupChannel)
+        public bool ShowMissionToUser(ulong userID, ulong missionID)
+        {
+            bool showMission = false;
+
+            _signupsData.BanAccess.Wait(-1);
+            try
+            {
+                showMission = !(_signupsData.SignupBans.ContainsKey(userID) && _signupsData.Missions.Any(x => x.SignupChannel == missionID && x.Date < _signupsData.SignupBans[userID]));
+            }
+            finally
+            {
+                _signupsData.BanAccess.Release();
+            }
+
+            return showMission;
+        }
+
+        public async Task CreateMissionMessagesOnChannel(SocketGuild guild, Mission mission, RestTextChannel signupChannel)
         {
             var mainEmbed = await CreateMainEmbed(guild, mission);
 
@@ -185,7 +218,7 @@ namespace ArmaforcesMissionBot.Helpers
 
             foreach (var team in mission.Teams)
             {
-                var description = MiscHelper.BuildTeamSlots(team);
+                var description = _miscHelper.BuildTeamSlots(team);
 
                 var teamEmbed = new EmbedBuilder()
                     .WithColor(Color.Green)
@@ -227,7 +260,7 @@ namespace ArmaforcesMissionBot.Helpers
             }
         }
 
-        public static async Task<SocketTextChannel> UpdateMission(SocketGuild guild, Mission mission, SignupsData signups)
+        public async Task<SocketTextChannel> UpdateMission(SocketGuild guild, Mission mission, SignupsData signups)
         {
             // Sort channels by date
             signups.Missions.Sort((x, y) =>
@@ -239,7 +272,7 @@ namespace ArmaforcesMissionBot.Helpers
 
             await signupChannel.ModifyAsync(x =>
             {
-                x.CategoryId = Program.GetConfig().SignupsCategory;
+                x.CategoryId = _config.SignupsCategory;
                 // Kurwa dlaczego to nie działa
                 var index = (int)(mission.Date - new DateTime(2019, 1, 1)).TotalMinutes;
                 // really hacky solution to avoid recalculating indexes for each channel integer should have 
@@ -256,7 +289,7 @@ namespace ArmaforcesMissionBot.Helpers
                 foreach (var missionMsg in x)
                 {
                     if (missionMsg.Embeds.Count != 0 &&
-                        missionMsg.Author.Id == Program.GetClient().CurrentUser.Id)
+                        missionMsg.Author.Id == _client.CurrentUser.Id)
                     {
                         var embed = missionMsg.Embeds.Single();
                         if (embed.Author != null)
@@ -270,7 +303,7 @@ namespace ArmaforcesMissionBot.Helpers
             return signupChannel;
         }
 
-        public static async Task CreateSignupChannel(SignupsData signups, ulong ownerID, ISocketMessageChannel channnel)
+        public async Task CreateSignupChannel(SignupsData signups, ulong ownerID, ISocketMessageChannel channnel)
         {
             if (signups.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == ownerID))
             {
@@ -280,7 +313,7 @@ namespace ArmaforcesMissionBot.Helpers
                 {
                     if (CheckMissionComplete(mission))
                     {
-                        var guild = Program.GetClient().GetGuild(Program.GetConfig().AFGuild);
+                        var guild = _client.GetGuild(_config.AFGuild);
 
                         var signupChannel = await CreateChannelForMission(guild, mission, signups);
                         mission.SignupChannel = signupChannel.Id;

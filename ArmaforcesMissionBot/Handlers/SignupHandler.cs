@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
+using ArmaforcesMissionBot.Helpers;
 
 namespace ArmaforcesMissionBot.Handlers
 {
@@ -27,6 +28,7 @@ namespace ArmaforcesMissionBot.Handlers
     public class SignupHandler : IInstallable
     {
         private DiscordSocketClient _client;
+        private MiscHelper _miscHelper;
         private IServiceProvider _services;
         private Config _config;
         private Timer _timer;
@@ -35,6 +37,7 @@ namespace ArmaforcesMissionBot.Handlers
         {
             _client = map.GetService<DiscordSocketClient>();
             _config = map.GetService<Config>();
+            _miscHelper = map.GetService<MiscHelper>();
             _services = map;
             // Hook the MessageReceived event into our command handler
             _client.ReactionAdded += HandleReactionAdded;
@@ -90,7 +93,7 @@ namespace ArmaforcesMissionBot.Handlers
                                 if (!mission.SignedUsers.Contains(reaction.User.Value.Id))
                                     mission.SignedUsers.Add(reaction.User.Value.Id);
 
-                                var newDescription = Helpers.MiscHelper.BuildTeamSlots(team);
+                                var newDescription = _miscHelper.BuildTeamSlots(team);
 
                                 var newEmbed = new EmbedBuilder
                                 {
@@ -164,7 +167,7 @@ namespace ArmaforcesMissionBot.Handlers
                             slot.Signed.Remove(user.Id);
                             mission.SignedUsers.Remove(user.Id);
 
-                            var newDescription = Helpers.MiscHelper.BuildTeamSlots(team);
+                            var newDescription = _miscHelper.BuildTeamSlots(team);
 
                             var newEmbed = new EmbedBuilder
                             {
