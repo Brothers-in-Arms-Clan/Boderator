@@ -20,7 +20,7 @@ RUN dotnet publish "ArmaforcesMissionBot.csproj" -c Release -o /app/publish
 
 FROM base AS final
 
-HEALTHCHECK --start-period=30 \
+HEALTHCHECK --start-period=30s \
     CMD curl --fail http://localhost:5555/health || exit 1  
 
 WORKDIR /app
