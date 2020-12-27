@@ -6,11 +6,9 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.Exceptions;
@@ -32,6 +30,8 @@ namespace ArmaforcesMissionBot.Modules
         public OpenedDialogs _dialogs { get; set; }
         public CommandService _commands { get; set; }
         public SignupsData SignupsData { get; set; }
+        public SignupHelper SignupHelper { get; set; }
+        public MiscHelper _miscHelper { get; set; }
 
         [Command("importuj-zapisy")]
         [Summary("Importuje zapisy z załączonego pliku *.txt. lub z wiadomości (preferując plik txt jeżeli obie rzeczy są). " +
@@ -285,10 +285,11 @@ namespace ArmaforcesMissionBot.Modules
                     var embed = new EmbedBuilder()
                         .WithColor(Color.Green)
                         .WithTitle(team.Name)
-                        .WithDescription(Helpers.MiscHelper.BuildTeamSlots(team)[0])
+                        .WithDescription(_miscHelper.BuildTeamSlots(team)[0])
                         .WithFooter(team.Pattern);
 
-                    Helpers.MiscHelper.CreateConfirmationDialog(
+                    _miscHelper.CreateConfirmationDialog(
+                        _dialogs,
                         Context,
                         embed.Build(),
                         (Dialog dialog) =>
@@ -518,15 +519,16 @@ namespace ArmaforcesMissionBot.Modules
 
                     embed.AddField("Modlista:", mission.Modlist);
 
-                    Helpers.MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                    _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
-                    Helpers.MiscHelper.CreateConfirmationDialog(
+                    _miscHelper.CreateConfirmationDialog(
+                        _dialogs,
                        Context,
                        embed.Build(),
                        (Dialog dialog) =>
                        {
                            _dialogs.Dialogs.Remove(dialog);
-                           _ = Helpers.SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
+                           _ = SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
                            ReplyAsync("No to lecim!");
                        },
                        (Dialog dialog) =>
@@ -572,7 +574,7 @@ namespace ArmaforcesMissionBot.Modules
                 else
                     embed.AddField("Modlista:", "Default");
 
-                Helpers.MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
                 var builtEmbed = embed.Build();
 
@@ -691,9 +693,9 @@ namespace ArmaforcesMissionBot.Modules
                 {
                     if (Helpers.SignupHelper.CheckMissionComplete(mission))
                     {
-                        var guild = Program.GetClient().GetGuild(Program.GetConfig().AFGuild);
+                        var guild = _client.GetGuild(_config.AFGuild);
 
-                        var channel = await Helpers.SignupHelper.UpdateMission(guild, mission, signups);
+                        var channel = await SignupHelper.UpdateMission(guild, mission, signups);
 
                         mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing;
 
@@ -776,7 +778,7 @@ namespace ArmaforcesMissionBot.Modules
                         {
                             mission.Modlist = $"https://modlist.armaforces.com/#/download/{mission.Modlist}";
                             var guild = _client.GetGuild(_config.AFGuild);
-                            var channel = await Helpers.SignupHelper.UpdateMission(guild, mission, signups);
+                            var channel = await SignupHelper.UpdateMission(guild, mission, signups);
                             await ReplyAsync($"Misja {mission.Title} zaktualizowana.");
                         }
                     }

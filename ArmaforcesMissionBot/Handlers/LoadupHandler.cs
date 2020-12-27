@@ -94,7 +94,7 @@ namespace ArmaforcesMissionBot.Handlers
                                 var icon = match.Groups[1].Value;
                                 if (icon[0] == ':')
                                 {
-                                    var emotes = Program.GetEmotes();
+                                    var emotes = _client.GetGuild(_config.AFGuild).Emotes;
                                     var foundEmote = emotes.Single(x => x.Name == icon.Substring(1, icon.Length - 2));
                                     var animated = foundEmote.Animated ? "a" : "";
                                     icon = $"<{animated}:{foundEmote.Name}:{foundEmote.Id}>";

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Helpers;
 
 namespace ArmaforcesMissionBot.Modules
 {
@@ -19,6 +20,8 @@ namespace ArmaforcesMissionBot.Modules
         public DiscordSocketClient _client { get; set; }
         public Config _config { get; set; }
         public CommandService _commands { get; set; }
+
+        public MiscHelper MiscHelper { get; set; }
 
         public Bans()
         {
@@ -185,7 +188,7 @@ namespace ArmaforcesMissionBot.Modules
                             team.Slots.Single(x => x.Signed.Contains(userID)).Signed.Remove(userID);
                             mission.SignedUsers.Remove(userID);
 
-                            var newDescription = Helpers.MiscHelper.BuildTeamSlots(team);
+                            var newDescription = MiscHelper.BuildTeamSlots(team);
 
                             var newEmbed = new EmbedBuilder
                             {
