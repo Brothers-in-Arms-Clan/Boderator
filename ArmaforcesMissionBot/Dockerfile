@@ -19,6 +19,10 @@ FROM build AS publish
 RUN dotnet publish "ArmaforcesMissionBot.csproj" -c Release -o /app/publish
 
 FROM base AS final
+
+HEALTHCHECK --start-period=30 \
+    CMD curl --fail http://localhost:5555/health || exit 1  
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ArmaforcesMissionBot.dll"]
