@@ -5,13 +5,19 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ArmaforcesMissionBot.Helpers
 {
     public class BanHelper
     {
+        private readonly SignupsData _signupsData;
+
+        public BanHelper(SignupsData signupsData)
+        {
+            _signupsData = signupsData;
+        }
+
         public static async Task<ulong> MakeBanMessage(IServiceProvider map, SocketGuild guild, Dictionary<ulong, DateTime> bans, ulong banMessageId, ulong banAnnouncementChannel, string messageText)
         {
             try
@@ -277,6 +283,23 @@ namespace ArmaforcesMissionBot.Helpers
                     Console.WriteLine($"Woops, banning user from channel failed : {e.Message}");
                 }
             }
+        }
+
+        public bool IsUserSpamBanned(ulong userID)
+        {
+            bool isBanned = true;
+
+            _signupsData.BanAccess.Wait(-1);
+            try
+            {
+                isBanned = _signupsData.SpamBans.ContainsKey(userID);
+            }
+            finally
+            {
+                _signupsData.BanAccess.Release();
+            }
+
+            return isBanned;
         }
     }
 }

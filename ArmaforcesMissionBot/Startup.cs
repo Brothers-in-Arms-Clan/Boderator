@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
+using ArmaforcesMissionBot.DependencyInjection;
+using ArmaforcesMissionBot.Services;
 using Discord;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,6 +60,8 @@ namespace ArmaforcesMissionBot
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddLocalization();
+
+            services.AddBoderatorModules();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,13 +1,24 @@
+using ArmaforcesMissionBot.Attributes;
+using ArmaforcesMissionBot.DataClasses;
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.Attributes;
 using ArmaforcesMissionBot.DataClasses;
+using ArmaforcesMissionBot.Exceptions;
 using ArmaforcesMissionBot.Extensions;
+using ArmaforcesMissionBot.Features;
 using ArmaforcesMissionBot.Features.Modsets;
 using ArmaforcesMissionBot.Features.Modsets.Constants;
+using ArmaforcesMissionBot.Features.Signups.Importer;
 using ArmaforcesMissionBot.Helpers;
 using ArmaforcesMissionBotSharedClasses;
 using CSharpFunctionalExtensions;
@@ -19,16 +30,55 @@ using Newtonsoft.Json;
 namespace ArmaforcesMissionBot.Modules
 {
     [Name("Zapisy")]
-    public class Signups : ModuleBase<SocketCommandContext>
+    public class Signups : ModuleBase<SocketCommandContext>, IModule
     {
         public IServiceProvider _map { get; set; }
         public DiscordSocketClient _client { get; set; }
         public Config _config { get; set; }
         public OpenedDialogs _dialogs { get; set; }
         public CommandService _commands { get; set; }
-        public SignupsData SignupsData { get; set; }
         public IModsetProvider ModsetProvider { get; set; }
-        
+        public SignupsData SignupsData { get; set; }
+        public SignupHelper SignupHelper { get; set; }
+        public MiscHelper _miscHelper { get; set; }
+
+        [Command("importuj-zapisy")]
+        [Summary("Importuje zapisy z załączonego pliku *.txt. lub z wiadomości (preferując plik txt jeżeli obie rzeczy są). " +
+                 "Czyta plik/wiadomość linia po linii, dołączając linie bez prefixu 'AF!' do poprzedniej komendy " +
+                 "a następnie wywołuje komendy w kolejności. " +
+                 "Ignoruje linie zaczynające się od '#' oraz '//' umożliwiając komentarze.")]
+        [ContextDMOrChannel]
+        public async Task ImportSignups([Remainder]string missionContent = null) {
+            if (_client.GetGuild(_config.AFGuild)
+                .GetUser(Context.User.Id)
+                .Roles.All(x => x.Id != _config.MissionMakerRole))
+                await ReplyWithException<NotAuthorizedException>("Nie jesteś uprawniony do tworzenia misji.");
+
+            if (SignupsData.Missions.Any(
+                x =>
+                    (x.Editing == Mission.EditEnum.New ||
+                     x.Editing == Mission.EditEnum.Started) &&
+                    x.Owner == Context.User.Id))
+                await ReplyWithException<MissionEditionInProgressException>(
+                    "Edytujesz bądź tworzysz już misję!");
+
+
+            if (Context.Message.Attachments.Any(x => x.Filename.Contains(".txt"))) {
+                using var client = new HttpClient();
+                var response = await client.GetAsync(Context.Message.Attachments.First().Url);
+                missionContent = await response.Content.ReadAsStringAsync();
+            }
+
+            if (missionContent is null)
+                await ReplyWithException<InvalidCommandParametersException>("Niepoprawne parametry komendy.");
+
+            var signupImporter = new SignupImporter(Context, _commands, _map, this);
+
+            await signupImporter.ProcessMessage(missionContent);
+            
+            await ReplyAsync("Zdefiniuj reszte misji.");
+        }
+
         [Command("zrob-zapisy")]
         [Summary("Tworzy nową misję, jako parametr przyjmuje nazwę misji.")]
         [ContextDMOrChannel]
@@ -227,10 +277,11 @@ namespace ArmaforcesMissionBot.Modules
                     var embed = new EmbedBuilder()
                         .WithColor(Color.Green)
                         .WithTitle(team.Name)
-                        .WithDescription(MiscHelper.BuildTeamSlots(team)[0])
+                        .WithDescription(_miscHelper.BuildTeamSlots(team)[0])
                         .WithFooter(team.Pattern);
 
-                    MiscHelper.CreateConfirmationDialog(
+                    _miscHelper.CreateConfirmationDialog(
+                        _dialogs,
                         Context,
                         embed.Build(),
                         dialog =>
@@ -450,15 +501,16 @@ namespace ArmaforcesMissionBot.Modules
 
                     embed.AddField("Modlista:", mission.Modlist);
 
-                    MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                    _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
-                    MiscHelper.CreateConfirmationDialog(
+                    _miscHelper.CreateConfirmationDialog(
+                        _dialogs,
                        Context,
                        embed.Build(),
                        dialog =>
                        {
                            _dialogs.Dialogs.Remove(dialog);
-                           _ = SignupHelper.CreateSignupChannel(SignupsData, Context.User.Id, Context.Channel);
+                           _ = SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
                            ReplyAsync("No to lecim!");
                        },
                        dialog =>
@@ -502,7 +554,7 @@ namespace ArmaforcesMissionBot.Modules
                 else
                     embed.AddField("Modlista:", "Default");
 
-                MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
                 var builtEmbed = embed.Build();
 
@@ -611,9 +663,9 @@ namespace ArmaforcesMissionBot.Modules
                 {
                     if (SignupHelper.CheckMissionComplete(mission))
                     {
-                        var guild = Program.GetClient().GetGuild(Program.GetConfig().AFGuild);
+                        var guild = _client.GetGuild(_config.AFGuild);
 
-                        var channel = await SignupHelper.UpdateMission(guild, mission, SignupsData);
+                        var channel = await SignupHelper.UpdateMission(guild, mission, signups);
 
                         mission.Editing = Mission.EditEnum.NotEditing;
 
@@ -692,7 +744,7 @@ namespace ArmaforcesMissionBot.Modules
                         {
                             mission.Modlist = $"https://modlist.armaforces.com/#/download/{mission.Modlist}";
                             var guild = _client.GetGuild(_config.AFGuild);
-                            var channel = await SignupHelper.UpdateMission(guild, mission, SignupsData);
+                            var channel = await SignupHelper.UpdateMission(guild, mission, signups);
                             await ReplyAsync($"Misja {mission.Title} zaktualizowana.");
                         }
                     }
@@ -706,6 +758,31 @@ namespace ArmaforcesMissionBot.Modules
             await ReplyAsync("No i cyk, gotowe.");
 
             await BanHelper.MakeBanHistoryMessage(_map, Context.Guild);
+        }
+
+        /// <summary>
+        /// Replies to user with message and throws <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Exception type to throw</typeparam>
+        /// <param name="message">Exception message</param>
+        /// <returns>Throws <typeparamref name="T"/></returns>
+        public async Task ReplyWithException<T>(string message = null) where T : Exception, new()
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            if (message != null)
+            {
+                await ReplyWithError(message);
+                throw (T)Activator.CreateInstance(typeof(T), message);
+            }
+
+            var exception = new T();
+            await ReplyWithError(exception.Message);
+            throw exception;
+        }
+
+        private async Task ReplyWithError(string message)
+        {
+            await ReplyAsync(message ?? "Error when processing command.");
         }
     }
 }
