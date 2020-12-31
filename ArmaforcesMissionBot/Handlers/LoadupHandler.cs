@@ -1,4 +1,4 @@
-using ArmaforcesMissionBot.DataClasses;
+﻿using ArmaforcesMissionBot.DataClasses;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -382,7 +382,12 @@ namespace ArmaforcesMissionBot.Handlers
                 var newArchiveMission = new MissionsArchiveData.Mission();
 
                 newArchiveMission.Title = embed.Title;
-                if(!DateTime.TryParse(embed.Footer.Value.Text, out newArchiveMission.Date))
+                if (!DateTime.TryParseExact(
+                    embed.Footer.Value.Text,
+                    "dd.MM.yyyy HH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind,
+                    out newArchiveMission.Date))
                 {
                     Console.WriteLine($"Loading failed on mission date: {embed.Footer.Value.Text}");
                     continue;
