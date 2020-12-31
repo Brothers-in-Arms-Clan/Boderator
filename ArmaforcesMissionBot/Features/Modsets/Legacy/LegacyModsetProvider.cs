@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using CSharpFunctionalExtensions;
 
@@ -19,6 +20,13 @@ namespace ArmaforcesMissionBot.Features.Modsets.Legacy
             }
 
             return Result.Success();
+        }
+
+        public string GetModsetNameFromUrl(string modsetNameOrUrl)
+        {
+            return modsetNameOrUrl.Contains('/')
+                ? modsetNameOrUrl.Split('/').Last()
+                : modsetNameOrUrl;
         }
 
         public Result<string> GetModsetDownloadUrl(string modsetName) 

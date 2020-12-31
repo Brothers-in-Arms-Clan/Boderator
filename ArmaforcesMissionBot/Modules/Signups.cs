@@ -143,7 +143,7 @@ namespace ArmaforcesMissionBot.Modules
         [Command("modlista")]
         [Summary("Nazwa modlisty lub link do niej.")]
         [ContextDMOrChannel]
-        public async Task Modlist([Remainder]string modlist)
+        public async Task Modlist([Remainder]string modsetNameOrUrl)
         {
             if (SignupsData.Missions.Any(x =>
                 (x.Editing == Mission.EditEnum.New ||
@@ -155,7 +155,7 @@ namespace ArmaforcesMissionBot.Modules
                         x.Editing == Mission.EditEnum.Started) && 
                     x.Owner == Context.User.Id);
 
-                var modsetName = modlist.Split('/').Last();
+                var modsetName = ModsetProvider.GetModsetNameFromUrl(modsetNameOrUrl);
                 await ModsetProvider.GetModsetDownloadUrl(modsetName).Match(
                         onSuccess: url =>
                         {
