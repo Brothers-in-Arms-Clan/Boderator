@@ -510,7 +510,7 @@ namespace ArmaforcesMissionBot.Modules
                        dialog =>
                        {
                            _dialogs.Dialogs.Remove(dialog);
-                           _ = SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
+                           _ = SignupHelper.CreateSignupChannel(SignupsData, Context.User.Id, Context.Channel);
                            ReplyAsync("No to lecim!");
                        },
                        dialog =>
@@ -665,7 +665,7 @@ namespace ArmaforcesMissionBot.Modules
                     {
                         var guild = _client.GetGuild(_config.AFGuild);
 
-                        var channel = await SignupHelper.UpdateMission(guild, mission, signups);
+                        var channel = await SignupHelper.UpdateMission(guild, mission, SignupsData);
 
                         mission.Editing = Mission.EditEnum.NotEditing;
 
@@ -744,7 +744,7 @@ namespace ArmaforcesMissionBot.Modules
                         {
                             mission.Modlist = $"https://modlist.armaforces.com/#/download/{mission.Modlist}";
                             var guild = _client.GetGuild(_config.AFGuild);
-                            var channel = await SignupHelper.UpdateMission(guild, mission, signups);
+                            var channel = await SignupHelper.UpdateMission(guild, mission, SignupsData);
                             await ReplyAsync($"Misja {mission.Title} zaktualizowana.");
                         }
                     }
