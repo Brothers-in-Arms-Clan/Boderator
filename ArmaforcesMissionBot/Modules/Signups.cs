@@ -159,7 +159,8 @@ namespace ArmaforcesMissionBot.Modules
                 await ModsetProvider.GetModsetDownloadUrl(modsetName).Match(
                         onSuccess: url =>
                         {
-                            mission.Modlist = url;
+                            mission.ModlistUrl = mission.Modlist = url;
+                            mission.ModlistName = modsetName;
                             return ReplyAsync($"Modset {modsetName} was found under {url}.");
                         },
                         onFailure: error => ReplyAsync(error));
