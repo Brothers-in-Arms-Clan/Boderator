@@ -281,6 +281,14 @@ namespace ArmaforcesMissionBot.Modules
                             team.Pattern += $"{slot.Emoji} [{slot.Count}] {slot.Name} ";
                         }
                     }
+                    
+                   if (team.Slots
+                        .GroupBy(x => x.Emoji)
+                        .Any(x => x.Count() > 1))
+                    {
+                        await ReplyAsync("Zdublowałeś reakcje. Poprawiaj to!");
+                        return;
+                    }
 
                     var embed = new EmbedBuilder()
                         .WithColor(Color.Green)
