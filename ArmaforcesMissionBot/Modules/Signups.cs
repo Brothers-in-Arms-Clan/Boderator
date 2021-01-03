@@ -282,13 +282,12 @@ namespace ArmaforcesMissionBot.Modules
                         }
                     }
                     
-                    foreach (var slotEmoji in team.Slots)
+                   if (team.Slots
+                        .GroupBy(x => x.Emoji)
+                        .Any(x => x.Count() > 1))
                     {
-                        if (team.Slots.FindAll(x => x.Emoji == slotEmoji.Emoji).Count > 1)
-                        {
-                            await ReplyAsync("Zdublowałeś reakcje. Poprawiaj to!");
-                            return;
-                        }
+                        await ReplyAsync("Zdublowałeś reakcje. Poprawiaj to!");
+                        return;
                     }
 
                     var embed = new EmbedBuilder()
