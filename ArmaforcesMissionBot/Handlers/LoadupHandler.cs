@@ -146,7 +146,7 @@ namespace ArmaforcesMissionBot.Handlers
 					{
 						mission.Title = embed.Title;
                         mission.Description = embed.Description;
-                        mission.Owner = ulong.Parse(embed.Author.Value.Url.Substring(26));
+                        mission.Owner = ulong.Parse(embed.Author.Value.Url.Substring(BotConstants.DISCORD_USER_URL_PREFIX.Length));
                         // Do I need author id again?
                         mission.Attachment = embed.Image.HasValue ? embed.Image.Value.Url : null;
                         foreach (var field in embed.Fields)

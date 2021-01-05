@@ -172,7 +172,7 @@ namespace ArmaforcesMissionBot.Helpers
                     .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
                     .WithAuthor(guild.GetUser(mission.Owner));
 
-            mainEmbed.Author.Url = "https://discord.com/users/" + (mission.Owner).ToString();
+            mainEmbed.Author.Url = BotConstants.DISCORD_USER_URL_PREFIX + (mission.Owner).ToString();
             
             if (mission.Attachment != null)
                 mainEmbed.WithImageUrl(mission.Attachment);
