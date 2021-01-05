@@ -59,6 +59,8 @@ namespace ArmaforcesMissionBot.Handlers
                             .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
                             .WithAuthor(_client.GetUser(mission.Owner).Username)
                             .AddField("Modlista:", mission.Modlist);
+							
+						archiveEmbed.Author.Url = BotConstants.DISCORD_USER_URL_PREFIX + (mission.Owner).ToString();	
 
                         if (mission.Attachment != null)
                             archiveEmbed.WithImageUrl(mission.Attachment);
