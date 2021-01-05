@@ -69,7 +69,7 @@ namespace ArmaforcesMissionBot.Features.RichPresence {
         private int AdjustCounter(int missionsWithFreeSlotsCount) 
             => _statusCounter >= missionsWithFreeSlotsCount
                 ? 0
-                : _statusCounter++;
+                : ++_statusCounter;
 
         private static Game CreateSignupsNoFreeSlotsDetails(int freeSlots, int allSignups) 
             => new Game($"Brak miejsc w zapisach. {freeSlots}/{allSignups}");
