@@ -274,6 +274,14 @@ namespace ArmaforcesMissionBot.Modules
                             team.Pattern += $"{slot.Emoji} [{slot.Count}] {slot.Name} ";
                         }
                     }
+                    
+                   if (team.Slots
+                        .GroupBy(x => x.Emoji)
+                        .Any(x => x.Count() > 1))
+                    {
+                        await ReplyAsync("Zdublowałeś reakcje. Poprawiaj to!");
+                        return;
+                    }
 
                     var embed = new EmbedBuilder()
                         .WithColor(Color.Green)
@@ -647,6 +655,29 @@ namespace ArmaforcesMissionBot.Modules
                     mission.Editing = Mission.EditEnum.Started;
                     await ReplyAsync("Luzik, co chcesz zmienić?");
                 }
+            }
+        }
+
+        [Command("edytuj-nazwe-misji")]
+        [Summary("Edycja nazwy już utworzonej misji.")]
+        [ContextDMOrChannel]
+        public async Task MissionName([Remainder] string newTitle)
+        {
+            if (SignupsData.Missions.Any(x =>
+                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                x.Owner == Context.User.Id))
+            {
+                var mission = SignupsData.Missions.Single(x =>
+                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                x.Owner == Context.User.Id);
+
+                mission.Title = newTitle;
+
+                await ReplyAsync("Niech będzie...");
+            }
+            else
+            {
+                await ReplyAsync("Bez wybrania misji to dupę se edytuj. Pozdrawiam.");
             }
         }
 

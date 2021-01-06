@@ -172,6 +172,8 @@ namespace ArmaforcesMissionBot.Helpers
                     .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
                     .WithAuthor(guild.GetUser(mission.Owner));
 
+            mainEmbed.Author.Url = BotConstants.DISCORD_USER_URL_PREFIX + (mission.Owner).ToString();
+            
             if (mission.Attachment != null)
                 mainEmbed.WithImageUrl(mission.Attachment);
 
@@ -278,6 +280,7 @@ namespace ArmaforcesMissionBot.Helpers
                 // really hacky solution to avoid recalculating indexes for each channel integer should have 
                 // space for around 68 years, and this bot is not going to work this long for sure
                 x.Position = index;
+                x.Name = mission.Title;
             });
 
             var mainEmbed = await CreateMainEmbed(guild, mission);
