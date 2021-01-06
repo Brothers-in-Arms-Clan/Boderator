@@ -690,13 +690,11 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task MissionName([Remainder] string newTitle)
         {
-            var signups = _map.GetService<SignupsData>();
-
-            if (signups.Missions.Any(x =>
+            if (SignupsData.Missions.Any(x =>
                 (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
                 x.Owner == Context.User.Id))
             {
-                var mission = signups.Missions.Single(x =>
+                var mission = SignupsData.Missions.Single(x =>
                 (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
                 x.Owner == Context.User.Id);
 
