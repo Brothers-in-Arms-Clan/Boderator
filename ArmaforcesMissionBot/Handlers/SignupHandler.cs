@@ -200,7 +200,9 @@ namespace ArmaforcesMissionBot.Handlers
         {
             var signups = _services.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => x.SignupChannel == channel.Id))
+            if (signups.Missions.Any(x =>
+                x.SignupChannel == channel.Id &&
+                (x.Editing != ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New)))
             {
                 signups.Missions.RemoveAll(x => x.SignupChannel == channel.Id);
             }

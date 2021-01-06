@@ -685,6 +685,75 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
+        [Command("edytuj-nazwe-misji")]
+        [Summary("Edycja nazwy już utworzonej misji.")]
+        [ContextDMOrChannel]
+        public async Task MissionName([Remainder] string newTitle)
+        {
+            var signups = _map.GetService<SignupsData>();
+
+            if (signups.Missions.Any(x =>
+                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                x.Owner == Context.User.Id))
+            {
+                var mission = signups.Missions.Single(x =>
+                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                x.Owner == Context.User.Id);
+
+                mission.Title = newTitle;
+                mission.MentionEveryone = false;
+
+                var embed = new EmbedBuilder()
+                    .WithColor(Color.Green)
+                    .WithTitle(mission.Title)
+                    .WithDescription(mission.Description)
+                    .WithFooter(mission.Date.ToString())
+                    .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
+                    .AddField("Wołanie wszystkich:", mission.MentionEveryone)
+                    .WithAuthor(Context.User);
+
+                if (mission.Attachment != null)
+                    embed.WithImageUrl(mission.Attachment);
+
+                embed.AddField("Modlista:", mission.Modlist);
+
+                _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
+
+                _miscHelper.CreateConfirmationDialog(
+                        _dialogs,
+                       Context,
+                       embed.Build(),
+                       (Dialog dialog) =>
+                       {
+                           _dialogs.Dialogs.Remove(dialog);
+                           mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New;
+                           _ = SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
+                           ReplyAsync("Pa na to!");
+
+                           try
+                           {
+                               var guild = _client.GetGuild(_config.AFGuild);
+                               guild.GetTextChannel(mission.SignupChannel).DeleteAsync();
+                           }
+                           catch
+                           {
+                               ReplyAsync("Nie mogłem usunąć starego kanału zapisów.");
+                           }
+                       },
+                       (Dialog dialog) =>
+                       {
+                           Context.Channel.DeleteMessageAsync(dialog.DialogID);
+                           _dialogs.Dialogs.Remove(dialog);
+                           ReplyAsync("Co Ci znowu nie pasuje?");
+                       });
+
+            }
+            else
+            {
+                await ReplyAsync("Bez wybrania misji to dupę se edytuj. Pozdrawiam.");
+            }
+        }
+
         [Command("zapisz-zmiany")]
         [Summary("Zapisuje zmiany w aktualnie edytowanej misji, jesli w parametrze zostanie podana wartość true to zostanie wysłane ogłoszenie o zmianach w misji.")]
         [ContextDMOrChannel]
