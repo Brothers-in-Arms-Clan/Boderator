@@ -344,15 +344,5 @@ namespace ArmaforcesMissionBot.Helpers
                 await channnel.SendMessageAsync("A może byś mi najpierw powiedział co ty chcesz potwierdzić?");
             }
         }
-
-        public Mission GetCurrentlyEditedMission(ulong userId, SignupsData signups)
-        {
-            var currentlyEditedMission = signups.Missions.Find(x => 
-                x.Owner == userId && 
-                ((x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New) ||
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started)));
-
-            return currentlyEditedMission;
-        }
     }
 }
