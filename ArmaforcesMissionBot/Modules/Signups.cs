@@ -685,6 +685,29 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
+        [Command("edytuj-nazwe-misji")]
+        [Summary("Edycja nazwy już utworzonej misji.")]
+        [ContextDMOrChannel]
+        public async Task MissionName([Remainder] string newTitle)
+        {
+            if (SignupsData.Missions.Any(x =>
+                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                x.Owner == Context.User.Id))
+            {
+                var mission = SignupsData.Missions.Single(x =>
+                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                x.Owner == Context.User.Id);
+
+                mission.Title = newTitle;
+
+                await ReplyAsync("Niech będzie...");
+            }
+            else
+            {
+                await ReplyAsync("Bez wybrania misji to dupę se edytuj. Pozdrawiam.");
+            }
+        }
+
         [Command("zapisz-zmiany")]
         [Summary("Zapisuje zmiany w aktualnie edytowanej misji, jesli w parametrze zostanie podana wartość true to zostanie wysłane ogłoszenie o zmianach w misji.")]
         [ContextDMOrChannel]
