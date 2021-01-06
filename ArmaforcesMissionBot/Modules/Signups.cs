@@ -77,10 +77,7 @@ namespace ArmaforcesMissionBot.Modules
         {
             var signups = _map.GetService<SignupsData>();
 
-            if (signups.Missions.Any(x => 
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New  || 
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                x.Owner == Context.User.Id))
+            if (SignupsData.GetCurrentlyEditedMission(Context.User.Id) != null)
                 await ReplyAsync("O ty luju, najpierw dokończ definiowanie poprzednich zapisów!");
             else
             {
@@ -108,18 +105,10 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task Description([Remainder]string description)
         {
-            var signups = _map.GetService<SignupsData>();
+            var mission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
 
-            if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                x.Owner == Context.User.Id))
+            if (mission != null)
             {
-                var mission = signups.Missions.Single(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                x.Owner == Context.User.Id);
-
                 mission.Description = description;
 
                 if (Context.Message.Attachments.Count > 0)
@@ -140,17 +129,10 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task Modlist([Remainder]string modlist)
         {
-            var signups = _map.GetService<SignupsData>();
+            var mission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
 
-            if (signups.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                    x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
-                x.Owner == Context.User.Id))
+            if (mission != null)
             {
-                var mission = signups.Missions.Single(x => 
-                    (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New ||
-                        x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) && 
-                    x.Owner == Context.User.Id);
 
                 var request = WebRequest.Create($"https://server.armaforces.com:8888/modsets/{modlist.Split('/').Last()}.csv");
                 //request.Method = "HEAD";
@@ -180,11 +162,7 @@ namespace ArmaforcesMissionBot.Modules
                 await ReplyAsync(":warning: Podana data jest w przeszłości!");
             else if (date.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
 
-            var signups = _map.GetService<SignupsData>();
-
-            var mission = signups.Missions.SingleOrDefault(
-                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
-                                 && x.Owner == Context.User.Id);
+            var mission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
 
             if (mission is null) {
                 await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
@@ -206,11 +184,7 @@ namespace ArmaforcesMissionBot.Modules
                 await ReplyAsync(":warning: Podana data jest w przeszłości!");
             else if (closeDate.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
 
-            var signups = _map.GetService<SignupsData>();
-
-            var mission = signups.Missions.SingleOrDefault(
-                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
-                     && x.Owner == Context.User.Id);
+            var mission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
 
             if (mission is null) {
                 await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
@@ -476,11 +450,7 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task ToggleMentionEveryone()
         {
-            var signups = _map.GetService<SignupsData>();
-
-            var mission = signups.Missions.SingleOrDefault(
-                x => (x.Editing == Mission.EditEnum.New || x.Editing == Mission.EditEnum.Started)
-                     && x.Owner == Context.User.Id);
+            var mission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
 
             if (mission is null)
             {
@@ -668,20 +638,22 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task EditMission(int missionNo)
         {
-           if (SignupHelper.GetCurrentlyEditedMission(Context.User.Id, SignupsData) == null)
+            var currentlyEditedMission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
+
+            if (currentlyEditedMission == null)
             {
-                var userMissions = SignupsData.Missions.FindAll(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing);
-                var editMission = userMissions[missionNo];
+                var userMissions = SignupsData.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing);
+                var missionToBeEdited = userMissions.ElementAt(missionNo);
 
                 // Don't want to write another function just to copy class, and performance isn't a problem here so just serialize it and deserialize
-                var serialized = JsonConvert.SerializeObject(editMission);
+                var serialized = JsonConvert.SerializeObject(missionToBeEdited);
                 SignupsData.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
-                editMission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
-                await ReplyAsync("Luzik, co chcesz zmienić?");
+                missionToBeEdited.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
+                await ReplyAsync($"A więc `{missionToBeEdited.Title}`. Co chcesz zmienić?");
             }
             else
             {
-                await ReplyAsync("Hola hola, nie wszystko naraz. Skończ poprzednią edycję.");
+                await ReplyAsync($"Hola hola, nie wszystko naraz. Skończ edytować `{currentlyEditedMission.Title}`.");
             }
         }
 
