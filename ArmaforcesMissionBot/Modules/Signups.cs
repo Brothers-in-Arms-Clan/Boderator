@@ -668,20 +668,20 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task EditMission(int missionNo)
         {
-            var signups = _map.GetService<SignupsData>();
-
-            int index = 0;
-
-            foreach (var mission in signups.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing))
+           if (SignupHelper.GetCurrentlyEditedMission(Context.User.Id, SignupsData) == null)
             {
-                if (index++ == missionNo)
-                {
-                    // Don't want to write another function just to copy class, and performance isn't a problem here so just serialize it and deserialize
-                    var serialized = JsonConvert.SerializeObject(mission);
-                    signups.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
-                    mission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
-                    await ReplyAsync("Luzik, co chcesz zmienić?");
-                }
+                var userMissions = SignupsData.Missions.FindAll(x => x.Owner == Context.User.Id && x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.NotEditing);
+                var editMission = userMissions[missionNo];
+
+                // Don't want to write another function just to copy class, and performance isn't a problem here so just serialize it and deserialize
+                var serialized = JsonConvert.SerializeObject(editMission);
+                SignupsData.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
+                editMission.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
+                await ReplyAsync("Luzik, co chcesz zmienić?");
+            }
+            else
+            {
+                await ReplyAsync("Hola hola, nie wszystko naraz. Skończ poprzednią edycję.");
             }
         }
 
