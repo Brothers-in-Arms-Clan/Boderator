@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ArmaForces.ArmaServerManager.Discord.Extensions;
 
 namespace ArmaforcesMissionBot.Handlers
 {
@@ -24,6 +25,7 @@ namespace ArmaforcesMissionBot.Handlers
             _client.MessageReceived += HandleCommandAsync;
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+            await _commands.AddServerManagerModules(_services);
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)

@@ -72,6 +72,8 @@ namespace ArmaforcesMissionBot.Controllers
                 objMission.Add("image", mission.Attachment);
                 objMission.Add("description", mission.Description);
                 objMission.Add("modlist", mission.Modlist);
+                objMission.Add("modlistName", mission.ModlistName);
+                objMission.Add("modlistUrl", mission.ModlistUrl);
                 objMission.Add("id", mission.SignupChannel);
                 objMission.Add("freeSlots", Helpers.MiscHelper.CountFreeSlots(mission));
                 objMission.Add("allSlots", Helpers.MiscHelper.CountAllSlots(mission));
@@ -95,6 +97,8 @@ namespace ArmaforcesMissionBot.Controllers
                     objMission.Add("image", mission.Attachment);
                     objMission.Add("description", mission.Description);
                     objMission.Add("modlist", mission.Modlist);
+                    objMission.Add("modlistName", mission.ModlistName);
+                    objMission.Add("modlistUrl", mission.ModlistUrl);
                     objMission.Add("archive", true);
                     objMission.Add("freeSlots", mission.FreeSlots);
                     objMission.Add("allSlots", mission.AllSlots);

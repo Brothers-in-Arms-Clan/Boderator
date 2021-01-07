@@ -1,7 +1,11 @@
 ﻿using System;
+using ArmaForces.ArmaServerManager.Discord.Extensions;
 using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Extensions;
+using ArmaforcesMissionBot.Features.Modsets;
+using ArmaforcesMissionBot.Features.Modsets.Legacy;
 using ArmaforcesMissionBot.Features.RichPresence;
+using ArmaforcesMissionBot.Features.ServerManager;
 using ArmaforcesMissionBot.Helpers;
 using ArmaforcesMissionBot.Services;
 using Discord.WebSocket;
@@ -24,7 +28,12 @@ namespace ArmaforcesMissionBot.DependencyInjection
                 .AddSingleton<SignupHelper>()
                 .AddSingleton<BanHelper>()
                 .AddLogging()
-                .AddHostedService<StartupService>();
+                .AddHostedService<StartupService>()
+                .AddSingleton<IModsetsApiClient, ModsetsApiClient>()
+                .AddSingleton(provider => string.IsNullOrWhiteSpace(provider.GetService<Config>().ModsetsApiUrl)
+                    ? (IModsetProvider) new LegacyModsetProvider()
+                    : new ModsetProvider(provider.GetService<IModsetsApiClient>()))
+                .AddServerManager<ServerManagerConfiguration>();
 
         private static Config CreateConfig(IServiceProvider serviceCollection)
         {

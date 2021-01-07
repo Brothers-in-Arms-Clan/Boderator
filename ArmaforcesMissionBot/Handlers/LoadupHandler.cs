@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ArmaforcesMissionBot.Features.Modsets;
+using ArmaforcesMissionBot.Features.Modsets.Legacy;
 using static ArmaforcesMissionBot.DataClasses.SignupsData;
 
 namespace ArmaforcesMissionBot.Handlers
@@ -18,11 +20,15 @@ namespace ArmaforcesMissionBot.Handlers
         private DiscordSocketClient _client;
         private IServiceProvider _services;
         private Config _config;
+        private ModsetProvider _newModsetProvider;
+        private LegacyModsetProvider _legacyModsetProvider;
 
         public async Task Install(IServiceProvider map)
         {
             _client = map.GetService<DiscordSocketClient>();
             _config = map.GetService<Config>();
+            _newModsetProvider = new ModsetProvider(map.GetService<IModsetsApiClient>());
+            _legacyModsetProvider = new LegacyModsetProvider();
             _services = map;
             // Hook the MessageReceived event into our command handler
             _client.GuildAvailable += Load;
@@ -157,7 +163,8 @@ namespace ArmaforcesMissionBot.Handlers
                                     mission.Date = DateTime.ParseExact(field.Value, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                                     break;
                                 case "Modlista:":
-                                    mission.Modlist = field.Value;
+                                    mission.Modlist = mission.ModlistUrl = field.Value;
+                                    mission.ModlistName = GetModsetNameFromUnknownUrl(mission.ModlistUrl);
                                     break;
                                 case "Zamknięcie zapisów:":
                                     uint timeDifference;
@@ -374,7 +381,12 @@ namespace ArmaforcesMissionBot.Handlers
                 var newArchiveMission = new MissionsArchiveData.Mission();
 
                 newArchiveMission.Title = embed.Title;
-                if(!DateTime.TryParse(embed.Footer.Value.Text, out newArchiveMission.Date))
+                if (!DateTime.TryParseExact(
+                    embed.Footer.Value.Text,
+                    "dd.MM.yyyy HH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind,
+                    out newArchiveMission.Date))
                 {
                     Console.WriteLine($"Loading failed on mission date: {embed.Footer.Value.Text}");
                     continue;
@@ -393,8 +405,8 @@ namespace ArmaforcesMissionBot.Handlers
                         case "Data:":
                             break;
                         case "Modlista:":
-                        case "Modlista":
-                            newArchiveMission.Modlist = field.Value;
+                            newArchiveMission.Modlist = newArchiveMission.ModlistUrl = field.Value;
+                            newArchiveMission.ModlistName = GetModsetNameFromUnknownUrl(newArchiveMission.ModlistUrl);
                             break;
                         default:
                             string signedPattern = @"(.+)(?:\(.*\))?-(\<\@\!([0-9]+)\>)?";
@@ -422,6 +434,13 @@ namespace ArmaforcesMissionBot.Handlers
             });
 
             Console.WriteLine($"[{DateTime.Now.ToString()}] Loaded {archive.ArchiveMissions.Count} archive missions");
+        }
+
+        private string GetModsetNameFromUnknownUrl(string unknownUrl)
+        {
+            return unknownUrl.Contains("modlist.armaforces.com")
+                ? _legacyModsetProvider.GetModsetNameFromUrl(unknownUrl)
+                : _newModsetProvider.GetModsetNameFromUrl(unknownUrl);
         }
     }
 }
