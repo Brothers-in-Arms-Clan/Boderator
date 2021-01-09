@@ -159,9 +159,9 @@ namespace ArmaforcesMissionBot.Modules
                 await ModsetProvider.GetModsetDownloadUrl(modsetName).Match(
                         onSuccess: url =>
                         {
-                            mission.ModlistUrl = mission.Modlist = url;
+                            mission.ModlistUrl = mission.Modlist = url.Replace(" ", "%20");
                             mission.ModlistName = modsetName;
-                            return ReplyAsync($"Modset {modsetName} was found under {url}.");
+                            return ReplyAsync($"Modset {modsetName} was found under {mission.ModlistUrl}.");
                         },
                         onFailure: error => ReplyAsync(error));
             }
