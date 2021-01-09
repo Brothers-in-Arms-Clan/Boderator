@@ -23,7 +23,7 @@ namespace ArmaforcesMissionBot.Features.Modsets
         public string GetModsetNameFromUrl(string modsetNameOrUrl)
         {
             return modsetNameOrUrl.Contains('/')
-                ? modsetNameOrUrl.Split('/').Reverse().ElementAt(1)
+                ? modsetNameOrUrl.Split('/').Last()
                 : modsetNameOrUrl;
         }
 
