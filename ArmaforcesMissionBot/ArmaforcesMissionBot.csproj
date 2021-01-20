@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <!--<OutputType>Exe</OutputType>-->
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ArmaForces.ArmaServerManager.Discord" Version="0.1.0" />
+    <PackageReference Include="ArmaForces.ArmaServerManager.Discord" Version="0.2.0" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.13.3" />
     <PackageReference Include="Discord.Net" Version="2.2.0" />
     <PackageReference Include="dotenv.net" Version="1.0.6" />
