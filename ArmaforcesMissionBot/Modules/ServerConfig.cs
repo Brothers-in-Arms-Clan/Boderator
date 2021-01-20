@@ -18,7 +18,7 @@ namespace ArmaforcesMissionBot.Modules
 
         [Summary("Wrzuca config serwera dla danego modsetu.")]
         [ContextDMOrChannel]
-        public override Task PutModsetConfig(string modsetName, string configContent = null) => base.PutModsetConfig(modsetName, configContent);
+        public override Task PutModsetConfig(string modsetName, [Remainder] string configContent = null) => base.PutModsetConfig(modsetName, configContent);
 
         [Summary("Pobiera główny config serwera.")]
         [ContextDMOrChannel]
@@ -26,6 +26,6 @@ namespace ArmaforcesMissionBot.Modules
 
         [Summary("Wrzuca główny config serwera.")]
         [ContextDMOrChannel]
-        public override Task PutServerConfig(string configContent = null) => base.PutServerConfig(configContent);
+        public override Task PutServerConfig([Remainder] string configContent = null) => base.PutServerConfig(configContent);
     }
 }
