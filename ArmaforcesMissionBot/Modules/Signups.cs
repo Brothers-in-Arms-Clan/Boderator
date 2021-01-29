@@ -657,6 +657,40 @@ namespace ArmaforcesMissionBot.Modules
                 }
             }
         }
+		
+        [Command("edytuj-misje")]
+        [Summary("Po podaniu nazwy misji jako parametru włączy edycje danej misji (część bez zespołów).")]
+        [ContextDMOrChannel]
+        public async Task EditMission([Remainder] string title)
+        {
+            var currentlyEditedMission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
+
+            if (currentlyEditedMission == null)
+            {
+                var missionToBeEdited = SignupsData.Missions.FirstOrDefault(x => x.Title == title);
+                if (missionToBeEdited == null)
+                {
+                    await ReplyAsync($"Nie ma misji o takiej nazwie.");
+                    return;
+                }    
+                
+                if (missionToBeEdited.Owner != Context.User.Id)
+                {
+                    await ReplyAsync($"Nie nauczyli żeby nie ruszać nie swojego?");
+                    return;
+                }
+
+                // Don't want to write another function just to copy class, and performance isn't a problem here so just serialize it and deserialize
+                var serialized = JsonConvert.SerializeObject(missionToBeEdited);
+                SignupsData.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
+                missionToBeEdited.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
+                await ReplyAsync($"A więc `{missionToBeEdited.Title}`. Co chcesz zmienić?");
+            }
+            else
+            {
+                await ReplyAsync($"Hola hola, nie wszystko naraz. Skończ edytować `{currentlyEditedMission.Title}`.");
+            }
+        }
 
         [Command("edytuj-nazwe-misji")]
         [Summary("Edycja nazwy już utworzonej misji.")]
