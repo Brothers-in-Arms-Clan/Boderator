@@ -640,6 +640,8 @@ namespace ArmaforcesMissionBot.Modules
                     return;
                 }
 
+                var serialized = JsonConvert.SerializeObject(missionToBeEdited);
+                SignupsData.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
                 missionToBeEdited.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
                 await ReplyAsync($"A więc `{missionToBeEdited.Title}`. Co chcesz zmienić?");
             }
