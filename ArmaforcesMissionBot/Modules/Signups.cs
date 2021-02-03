@@ -385,8 +385,9 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("dodaj-rezerwe")]
-        [Summary(
-	        "Dodaje rezerwę o nieograniczonej liczbie miejsc, przy podaniu w parametrze liczby udostępnia taką liczbę miejsc na kanale dla rekrutów z możliwością zapisu dla nich.")]
+        [Summary("Dodaje rezerwę o nieograniczonej liczbie miejsc, " +
+                 "przy podaniu w parametrze liczby udostępnia taką liczbę " +
+                 "miejsc na kanale dla rekrutów z możliwością zapisu dla nich.")]
         [ContextDMOrChannel]
         public async Task AddReserve(int slots = 0)
         {
@@ -591,31 +592,36 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("anuluj-misje")]
-        [Summary("Po podaniu indeksu misji jako parametru anuluje całe zapisy usuwając kanał zapisów.")]
+        [Command("odwolaj-misje")]
+        [Summary("Po użyciu #wzmianki kanału misji jako parametru anuluje całe zapisy usuwając kanał zapisów.")]
         [ContextDMOrChannel]
-        public async Task CancelMission(int missionNo)
+        public async Task CancelMission(IGuildChannel channel)
         {
-            int index = 0;
+            var missionToBeCancelled = SignupsData.Missions.FirstOrDefault(x => x.SignupChannel == channel.Id);
 
-            foreach (var mission in SignupsData.Missions.Where(x => x.Owner == Context.User.Id && x.Editing == Mission.EditEnum.NotEditing))
+            if (missionToBeCancelled == null)
             {
-                if (index++ == missionNo)
-                {
-                    await mission.Access.WaitAsync(-1);
-                    try
-                    {
-                        var guild = _client.GetGuild(_config.AFGuild);
-                        await guild.GetTextChannel(mission.SignupChannel).DeleteAsync();
-                    }
-                    finally
-                    {
-                        mission.Access.Release();
-                    }
-                }
+                await ReplyAsync("Nie ma misji o takiej nazwie.");
+                return;
             }
 
-            await ReplyAsync("I tak by sie zjebała.");
+            if (missionToBeCancelled.Owner != Context.User.Id)
+            {
+                await ReplyAsync("Nie nauczyli żeby nie ruszać nie swojego?");
+                return;
+            }
+
+            await missionToBeCancelled.Access.WaitAsync(-1);
+            try
+            {
+                var chanelToBeDeleted = await channel.Guild.GetTextChannelAsync(channel.Id);
+                await chanelToBeDeleted.DeleteAsync();
+                await ReplyAsync("I tak by sie zjebała.");
+            }
+            finally
+            {
+                missionToBeCancelled.Access.Release();
+            }
         }
 
         [Command("edytuj-misje")]
@@ -630,13 +636,13 @@ namespace ArmaforcesMissionBot.Modules
                 var missionToBeEdited = SignupsData.Missions.FirstOrDefault(x => x.SignupChannel == channel.Id);
                 if (missionToBeEdited == null)
                 {
-                    await ReplyAsync($"Nie ma misji o takiej nazwie.");
+                    await ReplyAsync("Nie ma misji o takiej nazwie.");
                     return;
                 }    
                 
                 if (missionToBeEdited.Owner != Context.User.Id)
                 {
-                    await ReplyAsync($"Nie nauczyli żeby nie ruszać nie swojego?");
+                    await ReplyAsync("Nie nauczyli żeby nie ruszać nie swojego?");
                     return;
                 }
 
