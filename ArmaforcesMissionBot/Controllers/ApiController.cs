@@ -50,7 +50,9 @@ namespace ArmaforcesMissionBot.Controllers
                 .OrderBy(mission => mission.Date)
                 .FirstOrDefault();
 
-            return Ok(mission);
+            return mission is null
+                ? (IActionResult) NotFound("No ongoing mission.")
+                : Ok(mission);
         }
 
         [HttpGet("missions")]
