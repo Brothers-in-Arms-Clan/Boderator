@@ -381,16 +381,19 @@ namespace ArmaforcesMissionBot.Handlers
                 var newArchiveMission = new MissionsArchiveData.Mission();
 
                 newArchiveMission.Title = embed.Title;
+                DateTime date;
                 if (!DateTime.TryParseExact(
                     embed.Footer.Value.Text,
                     "dd.MM.yyyy HH:mm:ss",
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.RoundtripKind,
-                    out newArchiveMission.Date))
+                    out date))
                 {
                     Console.WriteLine($"Loading failed on mission date: {embed.Footer.Value.Text}");
                     continue;
                 }
+
+                newArchiveMission.Date = date;
                 newArchiveMission.CloseTime = message.Timestamp.DateTime;
                 newArchiveMission.Description = embed.Description;
                 newArchiveMission.Attachment = embed.Image.HasValue ? embed.Image.Value.Url : null;
