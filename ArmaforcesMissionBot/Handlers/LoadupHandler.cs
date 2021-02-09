@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArmaforcesMissionBot.DataClasses;
+using ArmaforcesMissionBot.Features.Modsets;
+using ArmaforcesMissionBot.Features.Modsets.Legacy;
 using ArmaforcesMissionBot.Features.Signups.Missions;
 using ArmaforcesMissionBot.Features.Signups.Missions.Slots;
 using ArmaforcesMissionBot.Helpers;
-using Discord;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
 using static ArmaforcesMissionBot.DataClasses.SignupsData;
 
 namespace ArmaforcesMissionBot.Handlers
@@ -20,12 +19,16 @@ namespace ArmaforcesMissionBot.Handlers
         private DiscordSocketClient _client;
         private IServiceProvider _services;
         private Config _config;
+        private ModsetProvider _newModsetProvider;
+        private LegacyModsetProvider _legacyModsetProvider;
         private ISlotFactory _slotFactory;
 
         public async Task Install(IServiceProvider map)
         {
             _client = map.GetService<DiscordSocketClient>();
             _config = map.GetService<Config>();
+            _newModsetProvider = new ModsetProvider(map.GetService<IModsetsApiClient>());
+            _legacyModsetProvider = new LegacyModsetProvider();
             _slotFactory = map.GetService<ISlotFactory>();
             _services = map;
             // Hook the MessageReceived event into our command handler
@@ -101,7 +104,7 @@ namespace ArmaforcesMissionBot.Handlers
                                 var icon = match.Groups[1].Value;
                                 if (icon[0] == ':')
                                 {
-                                    var emotes = Program.GetEmotes();
+                                    var emotes = _client.GetGuild(_config.AFGuild).Emotes;
                                     var foundEmote = emotes.Single(x => x.Name == icon.Substring(1, icon.Length - 2));
                                     var animated = foundEmote.Animated ? "a" : "";
                                     icon = $"<{animated}:{foundEmote.Name}:{foundEmote.Id}>";
@@ -155,8 +158,7 @@ namespace ArmaforcesMissionBot.Handlers
                     {
                         mission.Title = embed.Title;
                         mission.Description = embed.Description;
-                        var user = embed.Author.Value.Name.Split("#");
-                        mission.Owner = _client.GetUser(user[0], user[1]).Id;
+                        mission.Owner = ulong.Parse(embed.Author.Value.Url.Substring(BotConstants.DISCORD_USER_URL_PREFIX.Length));
                         // Do I need author id again?
                         mission.Attachment = embed.Image.HasValue ? embed.Image.Value.Url : null;
                         foreach (var field in embed.Fields)
@@ -169,7 +171,8 @@ namespace ArmaforcesMissionBot.Handlers
                                         CultureInfo.InvariantCulture);
                                     break;
                                 case "Modlista:":
-                                    mission.Modlist = field.Value;
+                                    mission.Modlist = mission.ModlistUrl = field.Value;
+                                    mission.ModlistName = GetModsetNameFromUnknownUrl(mission.ModlistUrl);
                                     break;
                                 case "Zamknięcie zapisów:":
                                     uint timeDifference;
@@ -386,7 +389,12 @@ namespace ArmaforcesMissionBot.Handlers
                 var newArchiveMission = new MissionsArchiveData.Mission();
 
                 newArchiveMission.Title = embed.Title;
-                if(!DateTime.TryParse(embed.Footer.Value.Text, out newArchiveMission.Date))
+                if (!DateTime.TryParseExact(
+                    embed.Footer.Value.Text,
+                    "dd.MM.yyyy HH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind,
+                    out newArchiveMission.Date))
                 {
                     Console.WriteLine($"Loading failed on mission date: {embed.Footer.Value.Text}");
                     continue;
@@ -405,8 +413,8 @@ namespace ArmaforcesMissionBot.Handlers
                         case "Data:":
                             break;
                         case "Modlista:":
-                        case "Modlista":
-                            newArchiveMission.Modlist = field.Value;
+                            newArchiveMission.Modlist = newArchiveMission.ModlistUrl = field.Value;
+                            newArchiveMission.ModlistName = GetModsetNameFromUnknownUrl(newArchiveMission.ModlistUrl);
                             break;
                         default:
                             var signedPattern = @"(.+)(?:\(.*\))?-(\<\@\!([0-9]+)\>)?";
@@ -434,6 +442,13 @@ namespace ArmaforcesMissionBot.Handlers
             archive.ArchiveMissions.Sort((x, y) => { return x.Date.CompareTo(y.Date); });
 
             Console.WriteLine($"[{DateTime.Now.ToString()}] Loaded {archive.ArchiveMissions.Count} archive missions");
+        }
+
+        private string GetModsetNameFromUnknownUrl(string unknownUrl)
+        {
+            return unknownUrl.Contains("modlist.armaforces.com")
+                ? _legacyModsetProvider.GetModsetNameFromUrl(unknownUrl)
+                : _newModsetProvider.GetModsetNameFromUrl(unknownUrl);
         }
     }
 }

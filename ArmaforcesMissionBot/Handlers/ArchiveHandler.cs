@@ -16,6 +16,7 @@ namespace ArmaforcesMissionBot.Handlers
     {
         private DiscordSocketClient _client;
         private IServiceProvider _services;
+        private MiscHelper _miscHelper;
         private Config _config;
         private Timer _timer;
 
@@ -23,6 +24,7 @@ namespace ArmaforcesMissionBot.Handlers
         {
             _client = map.GetService<DiscordSocketClient>();
             _config = map.GetService<Config>();
+            _miscHelper = map.GetService<MiscHelper>();
             _services = map;
             // Hook the MessageReceived event into our command handler
             _timer = new Timer();
@@ -55,7 +57,7 @@ namespace ArmaforcesMissionBot.Handlers
                             .WithFooter(mission.Date.ToString())
                             .AddField("Data:", mission.Date)
                             .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
-                            .WithAuthor(_client.GetUser(mission.Owner).Username)
+                            .WithAuthor(_client.GetUser(mission.Owner).Username, url: BotConstants.DISCORD_USER_URL_PREFIX + (mission.Owner).ToString())
                             .AddField("Modlista:", mission.Modlist);
 
                         if (mission.Attachment != null)
@@ -63,7 +65,7 @@ namespace ArmaforcesMissionBot.Handlers
 
                         var channel = _client.GetChannel(mission.SignupChannel) as ITextChannel;
 
-                        Helpers.MiscHelper.BuildTeamsEmbed(mission.Teams, archiveEmbed, true);
+                        _miscHelper.BuildTeamsEmbed(mission.Teams, archiveEmbed, true);
 
                         await archive.SendMessageAsync(embed: archiveEmbed.Build());
 

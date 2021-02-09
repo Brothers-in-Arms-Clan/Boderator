@@ -23,6 +23,8 @@ namespace ArmaforcesMissionBot.Features.Signups.Missions
         public byte[] AttachmentBytes;
         public string FileName;
         public string Modlist;
+        public string ModlistUrl;
+        public string ModlistName;
         public List<Team> Teams = new List<Team>();
         public ulong Owner;
         public ulong SignupChannel;

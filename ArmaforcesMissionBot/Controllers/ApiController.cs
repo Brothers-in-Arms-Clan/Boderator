@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using ArmaforcesMissionBot.Features.Signups.Missions;
 using Discord;
+using Discord.WebSocket;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -17,6 +16,30 @@ namespace ArmaforcesMissionBot.Controllers
     [ApiController]
     public class ApiController : ControllerBase
     {
+        private readonly DiscordSocketClient _client;
+        private readonly Config _config;
+        private readonly MissionsArchiveData _missionsArchiveData;
+        private readonly SignupsData _signupsData;
+        private readonly BanHelper _banHelper;
+        private readonly SignupHelper _signupHelper;
+        private readonly MiscHelper _miscHelper;
+
+        public ApiController(
+            MissionsArchiveData missionsArchiveData,
+            SignupsData signupsData,
+            DiscordSocketClient client,
+            BanHelper banHelper,
+            SignupHelper signupHelper,
+            MiscHelper miscHelper)
+        {
+            _missionsArchiveData = missionsArchiveData;
+            _signupsData = signupsData;
+            _client = client;
+            _banHelper = banHelper;
+            _signupHelper = signupHelper;
+            _miscHelper = miscHelper;
+        }
+
         [HttpGet("missions")]
         public void Missions(DateTime? fromDateTime = null, DateTime? toDateTime = null, bool includeArchive = false, uint ttl = 0)
         {
@@ -33,7 +56,6 @@ namespace ArmaforcesMissionBot.Controllers
                     59)
                 : toDateTime;
 
-            var missions = Program.GetMissions();
             JArray missionArray = new JArray();
             var openMissionsEnumerable = missions.Missions
                 .Where(x => x.Editing == Features.Signups.Missions.Mission.EditEnum.NotEditing)
@@ -49,6 +71,8 @@ namespace ArmaforcesMissionBot.Controllers
                 objMission.Add("image", mission.Attachment);
                 objMission.Add("description", mission.Description);
                 objMission.Add("modlist", mission.Modlist);
+                objMission.Add("modlistName", mission.ModlistName);
+                objMission.Add("modlistUrl", mission.ModlistUrl);
                 objMission.Add("id", mission.SignupChannel);
                 objMission.Add("freeSlots", Helpers.MiscHelper.CountFreeSlots(mission));
                 objMission.Add("allSlots", Helpers.MiscHelper.CountAllSlots(mission));
@@ -59,8 +83,7 @@ namespace ArmaforcesMissionBot.Controllers
 
             if(includeArchive)
             {
-                var archiveMissions = Program.GetArchiveMissions();
-                var archiveMissionsEnumerable = archiveMissions.ArchiveMissions.AsEnumerable()
+                var archiveMissionsEnumerable = _missionsArchiveData.ArchiveMissions.AsEnumerable()
                     .Where(x => x.Date >= fromDateTime)
                     .Where(x => x.Date <= toDateTime)
                     .Reverse();
@@ -73,6 +96,8 @@ namespace ArmaforcesMissionBot.Controllers
                     objMission.Add("image", mission.Attachment);
                     objMission.Add("description", mission.Description);
                     objMission.Add("modlist", mission.Modlist);
+                    objMission.Add("modlistName", mission.ModlistName);
+                    objMission.Add("modlistUrl", mission.ModlistUrl);
                     objMission.Add("archive", true);
                     objMission.Add("freeSlots", mission.FreeSlots);
                     objMission.Add("allSlots", mission.AllSlots);
@@ -94,11 +119,9 @@ namespace ArmaforcesMissionBot.Controllers
         [HttpGet("mission")]
         public void Mission(ulong id, ulong userID)
         {
-            if (!Program.IsUserSpamBanned(userID) && Program.ShowMissionToUser(userID, id))
+            if (!_banHelper.IsUserSpamBanned(userID) && _signupHelper.ShowMissionToUser(userID, id))
             {
-                var missions = Program.GetMissions();
-
-                var mission = missions.Missions.Single(x => x.SignupChannel == id);
+                var mission = _signupsData.Missions.Single(x => x.SignupChannel == id);
 
                 var serialized = JsonConvert.SerializeObject(mission);
                 Response.WriteAsync($"{serialized}");
@@ -113,13 +136,11 @@ namespace ArmaforcesMissionBot.Controllers
         [HttpGet("signup")]
         public async Task Signup(ulong missionID, ulong teamID, ulong userID, string slotID)
         {
-            var missions = Program.GetMissions();
-
-            missions.BanAccess.Wait(-1);
+            _signupsData.BanAccess.Wait(-1);
             try
             {
-                if (missions.SignupBans.ContainsKey(userID) ||
-                    missions.SpamBans.ContainsKey(userID))
+                if (_signupsData.SignupBans.ContainsKey(userID) ||
+                    _signupsData.SpamBans.ContainsKey(userID))
                 {
                     Response.StatusCode = 503;
                     await Response.WriteAsync("Banned");
@@ -128,12 +149,12 @@ namespace ArmaforcesMissionBot.Controllers
             }
             finally
             {
-                missions.BanAccess.Release();
+                _signupsData.BanAccess.Release();
             }
 
-            if (missions.Missions.Any(x => x.SignupChannel == missionID))
+            if (_signupsData.Missions.Any(x => x.SignupChannel == missionID))
             {
-                var mission = missions.Missions.Single(x => x.SignupChannel == missionID);
+                var mission = _signupsData.Missions.Single(x => x.SignupChannel == missionID);
 
                 mission.Access.Wait(-1);
                 try
@@ -146,7 +167,7 @@ namespace ArmaforcesMissionBot.Controllers
 
                             if (team.Slots.Any(x => x.Emoji.Name == slotID && x.Count > x.Signed.Count()))
                             {
-                                var channel = Program.GetChannel(missionID);
+                                var channel = _client.GetGuild(_config.AFGuild).GetTextChannel(missionID);
                                 var teamMsg = await channel.GetMessageAsync(teamID) as IUserMessage;
 
                                 var embed = teamMsg.Embeds.Single();
@@ -157,7 +178,7 @@ namespace ArmaforcesMissionBot.Controllers
                                     slot.Signed.Add(userID);
                                     mission.SignedUsers.Add(userID);
 
-                                    var newDescription = Helpers.MiscHelper.BuildTeamSlots(team);
+                                    var newDescription = _miscHelper.BuildTeamSlots(team);
 
                                     var newEmbed = new EmbedBuilder
                                     {
@@ -194,13 +215,11 @@ namespace ArmaforcesMissionBot.Controllers
         [HttpGet("signoff")]
         public async Task Signoff(ulong missionID, ulong teamID, ulong userID, string slotID)
         {
-            var missions = Program.GetMissions();
-
-            missions.BanAccess.Wait(-1);
+            _signupsData.BanAccess.Wait(-1);
             try
             {
-                if (missions.SignupBans.ContainsKey(userID) ||
-                    missions.SpamBans.ContainsKey(userID))
+                if (_signupsData.SignupBans.ContainsKey(userID) ||
+                    _signupsData.SpamBans.ContainsKey(userID))
                 {
                     Response.StatusCode = 503;
                     await Response.WriteAsync("Banned");
@@ -209,12 +228,12 @@ namespace ArmaforcesMissionBot.Controllers
             }
             finally
             {
-                missions.BanAccess.Release();
+                _signupsData.BanAccess.Release();
             }
 
-            if (missions.Missions.Any(x => x.SignupChannel == missionID))
+            if (_signupsData.Missions.Any(x => x.SignupChannel == missionID))
             {
-                var mission = missions.Missions.Single(x => x.SignupChannel == missionID);
+                var mission = _signupsData.Missions.Single(x => x.SignupChannel == missionID);
 
                 mission.Access.Wait(-1);
                 try
@@ -227,7 +246,7 @@ namespace ArmaforcesMissionBot.Controllers
 
                             if (team.Slots.Any(x => x.Emoji.Name == slotID))
                             {
-                                var channel = Program.GetChannel(missionID);
+                                var channel = _client.GetGuild(_config.AFGuild).GetTextChannel(missionID);
                                 var teamMsg = await channel.GetMessageAsync(teamID) as IUserMessage;
 
                                 var embed = teamMsg.Embeds.Single();
@@ -238,7 +257,7 @@ namespace ArmaforcesMissionBot.Controllers
                                     slot.Signed.Remove(userID);
                                     mission.SignedUsers.Remove(userID);
 
-                                    var newDescription = Helpers.MiscHelper.BuildTeamSlots(team);
+                                    var newDescription = _miscHelper.BuildTeamSlots(team);
 
                                     var newEmbed = new EmbedBuilder
                                     {
@@ -275,7 +294,7 @@ namespace ArmaforcesMissionBot.Controllers
         [HttpGet("emotes")]
         public void Emotes()
         {
-            var emotes = Program.GetEmotes();
+            var emotes = _client.GetGuild(_config.AFGuild).Emotes;
             JArray emotesArray = new JArray();
             foreach (var emote in emotes)
             {
@@ -292,9 +311,9 @@ namespace ArmaforcesMissionBot.Controllers
         [HttpGet("users")]
         public void Users()
         {
-            var users = Program.GetUsers();
-            var guild = Program.GetClient().GetGuild(ulong.Parse(Environment.GetEnvironmentVariable("AF_AFGuild")));
-            var makerRole = guild.GetRole(ulong.Parse(Environment.GetEnvironmentVariable("AF_MissionMakerRole")));
+            var guild = _client.GetGuild(_config.AFGuild);
+            var users = guild.Users;
+            var makerRole = guild.GetRole(_config.MissionMakerRole);
             JArray usersArray = new JArray();
             foreach (var user in users)
             {
@@ -312,19 +331,18 @@ namespace ArmaforcesMissionBot.Controllers
         public async Task CreateMissionAsync(Mission mission)
         {
             Console.WriteLine(JsonConvert.SerializeObject(mission));
-            var signups = Program.GetMissions();
 
             mission.Editing = Features.Signups.Missions.Mission.EditEnum.New;
             signups.Missions.Add(mission);
 
             if (Helpers.SignupHelper.CheckMissionComplete(mission))
             {
-                var guild = Program.GetClient().GetGuild(Program.GetConfig().AFGuild);
+                var guild = _client.GetGuild(_config.AFGuild);
 
-                var signupChannel = await Helpers.SignupHelper.CreateChannelForMission(guild, mission, signups);
+                var signupChannel = await _signupHelper.CreateChannelForMission(guild, mission, _signupsData);
                 mission.SignupChannel = signupChannel.Id;
 
-                await Helpers.SignupHelper.CreateMissionMessagesOnChannel(guild, mission, signupChannel);
+                await _signupHelper.CreateMissionMessagesOnChannel(guild, mission, signupChannel);
             }
             else
             {

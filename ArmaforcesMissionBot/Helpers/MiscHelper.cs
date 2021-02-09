@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using ArmaforcesMissionBot.Features.Signups.Missions;
@@ -15,7 +14,16 @@ namespace ArmaforcesMissionBot.Helpers
 {
     public class MiscHelper
     {
-        public static List<string> BuildTeamSlots(Team team)
+        private readonly DiscordSocketClient _client;
+        private readonly Config _config;
+
+        public MiscHelper(DiscordSocketClient client, Config config)
+        {
+            _client = client;
+            _config = config;
+        }
+
+        public List<string> BuildTeamSlots(ArmaforcesMissionBotSharedClasses.Mission.Team team)
         {
             List<string> results = new List<string>();
             results.Add("");
@@ -29,7 +37,7 @@ namespace ArmaforcesMissionBot.Helpers
                     description += "-";
                     if (i < slot.Signed.Count)
                     {
-                        var user = Program.GetGuildUser(slot.Signed.ElementAt(i));
+                        var user = _client.GetGuild(_config.AFGuild).GetUser(slot.Signed.ElementAt(i));
                         if(user != null)
                             description += user.Mention;
                     }
@@ -57,7 +65,7 @@ namespace ArmaforcesMissionBot.Helpers
         {
             foreach (var team in teams)
             {
-                var slots = Helpers.MiscHelper.BuildTeamSlots(team);
+                var slots = BuildTeamSlots(team);
 
                 var teamName = team.Name;
                 if (removeSlotNamesFromName)
@@ -119,9 +127,14 @@ namespace ArmaforcesMissionBot.Helpers
             return slots;
         }
 
-        public static async void CreateConfirmationDialog(SocketCommandContext context, Embed description, Action<Dialog> confirmAction, Action<Dialog> cancelAction)
+        public async void CreateConfirmationDialog(
+            OpenedDialogs openedDialogs,
+            SocketCommandContext context,
+            Embed description,
+            Action<Dialog> confirmAction,
+            Action<Dialog> cancelAction)
         {
-            var dialog = new OpenedDialogs.Dialog();
+            var dialog = new Dialog();
 
             var message = await context.Channel.SendMessageAsync("Zgadza sie?", embed: description);
 
@@ -137,7 +150,7 @@ namespace ArmaforcesMissionBot.Helpers
             }
             await message.AddReactionsAsync(reactions.ToArray());
 
-            ArmaforcesMissionBot.Program.GetDialogs().Dialogs.Add(dialog);
+            openedDialogs.Dialogs.Add(dialog);
         }
 
         public static MatchCollection GetSlotMatchesFromText(string text)
