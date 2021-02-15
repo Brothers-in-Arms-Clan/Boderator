@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace ArmaforcesMissionBotSharedClasses
 {
     [Serializable]
-    public class Mission
+    public class Mission : IMission
     {
         [Serializable]
         public enum EditEnum
@@ -53,16 +53,18 @@ namespace ArmaforcesMissionBotSharedClasses
             public ulong TeamMsg;
             public ulong Reserve = 0;
         }
-        public string Title;
-        public DateTime Date;
-        public DateTime? CloseTime = null;
-        public string Description;
+        public string Title { get; set; }
+        public DateTime Date { get; set; }
+        public DateTime? CloseTime { get; set; } = null;
+        public string Description { get; set; }
         public string Attachment;
         public byte[] AttachmentBytes;
         public string FileName;
-        public string Modlist;
+        public string Modlist { get; set; }
         public string ModlistUrl;
         public string ModlistName;
+        public ulong FreeSlots { get; set; }
+        public ulong AllSlots { get; set; }
         public List<Team> Teams = new List<Team>();
         public ulong Owner;
         public ulong SignupChannel;

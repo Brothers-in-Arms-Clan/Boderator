@@ -41,6 +41,20 @@ namespace ArmaforcesMissionBot.Controllers
             _miscHelper = miscHelper;
         }
 
+        [HttpGet("currentMission")]
+        public IActionResult CurrentMission()
+        {
+            var mission = _signupsData.Missions
+                .Concat(_missionsArchiveData.ArchiveMissions.Cast<IMission>())
+                .Where(mission => mission.Date < DateTime.Now && mission.Date.AddHours(3) > DateTime.Now)
+                .OrderBy(mission => mission.Date)
+                .FirstOrDefault();
+
+            return mission is null
+                ? (IActionResult) NotFound("No ongoing mission.")
+                : Ok(mission);
+        }
+
         [HttpGet("missions")]
         public void Missions(DateTime? fromDateTime = null, DateTime? toDateTime = null, bool includeArchive = false, uint ttl = 0)
         {
