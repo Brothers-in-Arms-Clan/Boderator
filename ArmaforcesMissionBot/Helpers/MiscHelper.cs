@@ -23,7 +23,7 @@ namespace ArmaforcesMissionBot.Helpers
             _config = config;
         }
 
-        public List<string> BuildTeamSlots(ArmaforcesMissionBotSharedClasses.Mission.Team team)
+        public List<string> BuildTeamSlots(Team team)
         {
             List<string> results = new List<string>();
             results.Add("");
@@ -61,7 +61,7 @@ namespace ArmaforcesMissionBot.Helpers
             return results;
         }
 
-        public static void BuildTeamsEmbed(List<Team> teams, EmbedBuilder builder, bool removeSlotNamesFromName = false)
+        public void BuildTeamsEmbed(List<Team> teams, EmbedBuilder builder, bool removeSlotNamesFromName = false)
         {
             foreach (var team in teams)
             {

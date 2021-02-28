@@ -241,12 +241,12 @@ namespace ArmaforcesMissionBot.Helpers
                 {
                     try
                     {
-                        var emote = Emote.Parse(HttpUtility.HtmlDecode(slot.Emoji));
+                        var emote = Emote.Parse(HttpUtility.HtmlDecode(slot.Emoji.ToString()));
                         reactions[num++] = emote;
                     }
                     catch (Exception e)
                     {
-                        var emoji = new Emoji(HttpUtility.HtmlDecode(slot.Emoji));
+                        var emoji = new Emoji(HttpUtility.HtmlDecode(slot.Emoji.ToString()));
                         reactions[num++] = emoji;
                     }
                 }

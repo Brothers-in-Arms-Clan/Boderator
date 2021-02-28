@@ -79,7 +79,7 @@ namespace ArmaforcesMissionBot.Handlers
                     if (mission.Teams.Any(x => x.TeamMsg == message.Id))
                     {
                         var team = mission.Teams.Single(x => x.TeamMsg == message.Id);
-                        if (team.Slots.Any(x => (x.Emoji == reaction.Emote.ToString() || x.Emoji == reactionStringAnimatedVersion) && (x.Count > x.Signed.Count() || team.Reserve != 0)))
+                        if (team.Slots.Any(x => (x.Emoji == reaction.Emote || x.Emoji.ToString() == reactionStringAnimatedVersion) && (x.Count > x.Signed.Count() || team.Reserve != 0)))
                         {
                             var teamMsg = await channel.GetMessageAsync(message.Id) as IUserMessage;
 
@@ -87,7 +87,7 @@ namespace ArmaforcesMissionBot.Handlers
 
                             if (!mission.SignedUsers.Any(x => x == reaction.User.Value.Id))
                             {
-                                var slot = team.Slots.Single(x => x.Emoji == reaction.Emote.ToString() || x.Emoji == reactionStringAnimatedVersion);
+                                var slot = team.Slots.Single(x => x.Emoji == reaction.Emote || x.Emoji.ToString() == reactionStringAnimatedVersion);
                                 if(!slot.Signed.Contains(reaction.User.Value.Id))
                                     slot.Signed.Add(reaction.User.Value.Id);
                                 if (!mission.SignedUsers.Contains(reaction.User.Value.Id))
@@ -118,7 +118,7 @@ namespace ArmaforcesMissionBot.Handlers
                                 await teamMsg.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
                             }
                         }
-                        else if (team.Slots.Any(x => x.Emoji == reaction.Emote.ToString()))
+                        else if (team.Slots.Any(x => x.Emoji == reaction.Emote))
                         {
                             var teamMsg = await channel.GetMessageAsync(message.Id) as IUserMessage;
                             await teamMsg.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
@@ -158,12 +158,12 @@ namespace ArmaforcesMissionBot.Handlers
                     if (mission.Teams.Any(x => x.TeamMsg == message.Id))
                     {
                         var team = mission.Teams.Single(x => x.TeamMsg == message.Id);
-                        if (team.Slots.Any(x => (x.Emoji == reaction.Emote.ToString() || x.Emoji == reactionStringAnimatedVersion) && x.Signed.Contains(user.Id)))
+                        if (team.Slots.Any(x => (x.Emoji == reaction.Emote || x.Emoji.ToString() == reactionStringAnimatedVersion) && x.Signed.Contains(user.Id)))
                         {
                             var teamMsg = await channel.GetMessageAsync(message.Id) as IUserMessage;
                             var embed = teamMsg.Embeds.Single();
 
-                            var slot = team.Slots.Single(x => x.Emoji == reaction.Emote.ToString() || x.Emoji == reactionStringAnimatedVersion);
+                            var slot = team.Slots.Single(x => x.Emoji == reaction.Emote || x.Emoji.ToString() == reactionStringAnimatedVersion);
                             slot.Signed.Remove(user.Id);
                             mission.SignedUsers.Remove(user.Id);
 

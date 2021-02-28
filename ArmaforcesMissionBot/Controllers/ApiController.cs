@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Features.Signups.Missions;
+using ArmaforcesMissionBot.Helpers;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Http;
@@ -71,11 +72,12 @@ namespace ArmaforcesMissionBot.Controllers
                 : toDateTime;
 
             JArray missionArray = new JArray();
-            var openMissionsEnumerable = missions.Missions
+            var openMissionsEnumerable = _signupsData.Missions
                 .Where(x => x.Editing == Features.Signups.Missions.Mission.EditEnum.NotEditing)
                 .Where(x => x.Date >= fromDateTime)
                 .Where(x => x.Date <= toDateTime)
                 .Reverse();
+
             foreach (var mission in openMissionsEnumerable)
             {
                 var objMission = new JObject();
@@ -88,8 +90,8 @@ namespace ArmaforcesMissionBot.Controllers
                 objMission.Add("modlistName", mission.ModlistName);
                 objMission.Add("modlistUrl", mission.ModlistUrl);
                 objMission.Add("id", mission.SignupChannel);
-                objMission.Add("freeSlots", Helpers.MiscHelper.CountFreeSlots(mission));
-                objMission.Add("allSlots", Helpers.MiscHelper.CountAllSlots(mission));
+                objMission.Add("freeSlots", MiscHelper.CountFreeSlots(mission));
+                objMission.Add("allSlots", MiscHelper.CountAllSlots(mission));
                 objMission.Add("state", "Open");
 
                 missionArray.Add(objMission);
@@ -347,7 +349,7 @@ namespace ArmaforcesMissionBot.Controllers
             Console.WriteLine(JsonConvert.SerializeObject(mission));
 
             mission.Editing = Features.Signups.Missions.Mission.EditEnum.New;
-            signups.Missions.Add(mission);
+            _signupsData.Missions.Add(mission);
 
             if (Helpers.SignupHelper.CheckMissionComplete(mission))
             {

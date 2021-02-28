@@ -1,6 +1,6 @@
 ﻿namespace ArmaforcesMissionBot.Features.Signups.Missions.Slots
 {
-    internal interface ISlotFactory
+    public interface ISlotFactory
     {
         Slot CreateSlot(
             string name,

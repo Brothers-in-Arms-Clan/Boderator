@@ -1,9 +1,6 @@
 ﻿using ArmaforcesMissionBot.DataClasses;
-using ArmaforcesMissionBotSharedClasses;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using ArmaforcesMissionBot.Features.Signups.Missions;
 
 namespace ArmaforcesMissionBot.Extensions
 {
@@ -13,8 +10,8 @@ namespace ArmaforcesMissionBot.Extensions
         {
             return signupsData.Missions.SingleOrDefault(x =>
                 x.Owner == userId &&
-                ((x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.New) ||
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started)));
+                ((x.Editing == Mission.EditEnum.New) ||
+                (x.Editing == Mission.EditEnum.Started)));
         }
     }
 }

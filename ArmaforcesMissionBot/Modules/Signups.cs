@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -255,7 +256,7 @@ namespace ArmaforcesMissionBot.Modules
                         }
                     }
                     
-                   if (team.Slots
+                    if (team.Slots
                         .GroupBy(x => x.Emoji)
                         .Any(x => x.Count() > 1))
                     {
@@ -266,10 +267,11 @@ namespace ArmaforcesMissionBot.Modules
                     var embed = new EmbedBuilder()
                         .WithColor(Color.Green)
                         .WithTitle(team.Name)
-                        .WithDescription(MiscHelper.BuildTeamSlots(team)[0])
+                        .WithDescription(_miscHelper.BuildTeamSlots(team)[0])
                         .WithFooter(team.Pattern);
 
-                    MiscHelper.CreateConfirmationDialog(
+                    _miscHelper.CreateConfirmationDialog(
+                        null,
                         Context,
                         embed.Build(),
                         dialog =>
@@ -496,15 +498,16 @@ namespace ArmaforcesMissionBot.Modules
 
                     embed.AddField("Modlista:", mission.Modlist);
 
-                    MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                    _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
-                    MiscHelper.CreateConfirmationDialog(
+                    _miscHelper.CreateConfirmationDialog(
+                        null,
                        Context,
                        embed.Build(),
                        dialog =>
                        {
                            _dialogs.Dialogs.Remove(dialog);
-                           _ = SignupHelper.CreateSignupChannel(signups, Context.User.Id, Context.Channel);
+                           _ = SignupHelper.CreateSignupChannel(SignupsData, Context.User.Id, Context.Channel);
                            ReplyAsync("No to lecim!");
                        },
                        dialog =>
@@ -548,7 +551,7 @@ namespace ArmaforcesMissionBot.Modules
                 else
                     embed.AddField("Modlista:", "Default");
 
-                MiscHelper.BuildTeamsEmbed(mission.Teams, embed);
+                _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
                 var builtEmbed = embed.Build();
 
@@ -651,8 +654,8 @@ namespace ArmaforcesMissionBot.Modules
                 }
 
                 var serialized = JsonConvert.SerializeObject(missionToBeEdited);
-                SignupsData.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
-                missionToBeEdited.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
+                SignupsData.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<Mission>(serialized);
+                missionToBeEdited.Editing = Mission.EditEnum.Started;
                 await ReplyAsync($"A więc `{missionToBeEdited.Title}`. Co chcesz zmienić?");
             }
             else
@@ -667,11 +670,11 @@ namespace ArmaforcesMissionBot.Modules
         public async Task MissionName([Remainder] string newTitle)
         {
             if (SignupsData.Missions.Any(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                (x.Editing == Mission.EditEnum.Started) &&
                 x.Owner == Context.User.Id))
             {
                 var mission = SignupsData.Missions.Single(x =>
-                (x.Editing == ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started) &&
+                (x.Editing == Mission.EditEnum.Started) &&
                 x.Owner == Context.User.Id);
 
                 mission.Title = newTitle;

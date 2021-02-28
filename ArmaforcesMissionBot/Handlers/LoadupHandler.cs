@@ -10,6 +10,9 @@ using ArmaforcesMissionBot.Features.Modsets.Legacy;
 using ArmaforcesMissionBot.Features.Signups.Missions;
 using ArmaforcesMissionBot.Features.Signups.Missions.Slots;
 using ArmaforcesMissionBot.Helpers;
+using Discord;
+using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using static ArmaforcesMissionBot.DataClasses.SignupsData;
 
 namespace ArmaforcesMissionBot.Handlers
