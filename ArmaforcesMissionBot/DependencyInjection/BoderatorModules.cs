@@ -2,10 +2,12 @@
 using ArmaForces.ArmaServerManager.Discord.Extensions;
 using ArmaforcesMissionBot.DataClasses;
 using ArmaforcesMissionBot.Extensions;
+using ArmaforcesMissionBot.Features.Emojis;
 using ArmaforcesMissionBot.Features.Modsets;
 using ArmaforcesMissionBot.Features.Modsets.Legacy;
 using ArmaforcesMissionBot.Features.RichPresence;
 using ArmaforcesMissionBot.Features.ServerManager;
+using ArmaforcesMissionBot.Features.Signups.Missions.Slots;
 using ArmaforcesMissionBot.Helpers;
 using ArmaforcesMissionBot.Services;
 using Discord.WebSocket;
@@ -27,6 +29,8 @@ namespace ArmaforcesMissionBot.DependencyInjection
                 .AddSingleton<MiscHelper>()
                 .AddSingleton<SignupHelper>()
                 .AddSingleton<BanHelper>()
+                .AddTransient<ISlotFactory, SlotFactory>()
+                .AddTransient<IEmoteProvider, EmoteProvider>()
                 .AddLogging()
                 .AddHostedService<StartupService>()
                 .AddSingleton<IModsetsApiClient, ModsetsApiClient>()
