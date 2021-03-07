@@ -170,7 +170,7 @@ namespace ArmaforcesMissionBot.Handlers
                                 case "Data:":
                                     mission.Date = DateTime.ParseExact(
                                         field.Value,
-                                        "dd.MM.yyyy HH:mm:ss",
+                                        new []{ "dd.MM.yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss"},
                                         CultureInfo.InvariantCulture);
                                     break;
                                 case "Modlista:":
@@ -182,7 +182,7 @@ namespace ArmaforcesMissionBot.Handlers
                                     if (!uint.TryParse(field.Value, out timeDifference))
                                         mission.CloseTime = DateTime.ParseExact(
                                             field.Value,
-                                            "dd.MM.yyyy HH:mm:ss",
+                                            new[] { "dd.MM.yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss" },
                                             CultureInfo.InvariantCulture);
                                     else
                                         mission.CloseTime = mission.Date.AddMinutes(-timeDifference);
@@ -395,7 +395,7 @@ namespace ArmaforcesMissionBot.Handlers
                 DateTime date;
                 if (!DateTime.TryParseExact(
                     embed.Footer.Value.Text,
-                    "dd.MM.yyyy HH:mm:ss",
+                    new[] { "dd.MM.yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss" },
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.RoundtripKind,
                     out date))
