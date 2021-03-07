@@ -127,12 +127,14 @@ namespace ArmaforcesMissionBot.Helpers
             return slots;
         }
 
+#nullable enable
         public async void CreateConfirmationDialog(
-            OpenedDialogs openedDialogs,
             SocketCommandContext context,
             Embed description,
             Action<Dialog> confirmAction,
-            Action<Dialog> cancelAction)
+            Action<Dialog> cancelAction,
+            OpenedDialogs? openedDialogs = null)
+#nullable restore
         {
             var dialog = new Dialog();
 
@@ -144,13 +146,13 @@ namespace ArmaforcesMissionBot.Helpers
             dialog.Buttons["❌"] = cancelAction;
 
             var reactions = new List<IEmote>();
-            foreach(var key in dialog.Buttons.Keys)
+            foreach (var key in dialog.Buttons.Keys)
             {
                 reactions.Add(new Emoji(key));
             }
             await message.AddReactionsAsync(reactions.ToArray());
 
-            openedDialogs.Dialogs.Add(dialog);
+            openedDialogs?.Dialogs.Add(dialog);
         }
 
         public static MatchCollection GetSlotMatchesFromText(string text)

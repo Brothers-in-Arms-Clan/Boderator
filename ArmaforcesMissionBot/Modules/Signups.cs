@@ -271,7 +271,6 @@ namespace ArmaforcesMissionBot.Modules
                         .WithFooter(team.Pattern);
 
                     _miscHelper.CreateConfirmationDialog(
-                        null,
                         Context,
                         embed.Build(),
                         dialog =>
@@ -501,7 +500,6 @@ namespace ArmaforcesMissionBot.Modules
                     _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
                     _miscHelper.CreateConfirmationDialog(
-                        null,
                        Context,
                        embed.Build(),
                        dialog =>
