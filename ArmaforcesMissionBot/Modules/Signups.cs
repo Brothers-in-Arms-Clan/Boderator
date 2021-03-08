@@ -476,54 +476,56 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task EndSignups()
         {
-            if (SignupsData.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
-            {
-                var mission = SignupsData.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
-                if (SignupHelper.CheckMissionComplete(mission))
-                {
-                    var embed = new EmbedBuilder()
-                        .WithColor(Color.Green)
-                        .WithTitle(mission.Title)
-                        .WithDescription(mission.Description)
-                        .WithFooter(mission.Date.ToString())
-                        .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
-                        .AddField("Wołanie wszystkich:", mission.MentionEveryone)
-                        .WithAuthor(Context.User);
+            var mission = SignupsData.GetCurrentlyCreatedMission(Context.User.Id);
 
-                    if (mission.Attachment != null)
-                        embed.WithImageUrl(mission.Attachment);
-
-                    mission.Modlist ??= "https://modlist.armaforces.com/#/download/default";
-
-                    embed.AddField("Modlista:", mission.Modlist);
-
-                    _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
-
-                    _miscHelper.CreateConfirmationDialog(
-                       Context,
-                       embed.Build(),
-                       dialog =>
-                       {
-                           _dialogs.Dialogs.Remove(dialog);
-                           _ = SignupHelper.CreateSignupChannel(SignupsData, Context.User.Id, Context.Channel);
-                           ReplyAsync("No to lecim!");
-                       },
-                       dialog =>
-                       {
-                           Context.Channel.DeleteMessageAsync(dialog.DialogID);
-                           _dialogs.Dialogs.Remove(dialog);
-                           ReplyAsync("Poprawiaj to szybko!");
-                       });
-                }
-                else
-                {
-                    await ReplyAsync("Nie uzupełniłeś wszystkich informacji ciołku!");
-                }
-            }
-            else
+            if (mission is null)
             {
                 await ReplyAsync("Co ty chcesz kończyć jak nic nie zacząłeś?");
+                return;
             }
+
+            if (!SignupHelper.CheckMissionComplete(mission))
+            {
+                await ReplyAsync("Nie uzupełniłeś wszystkich informacji ciołku!");
+                return;
+            }
+
+            var embed = new EmbedBuilder()
+                .WithColor(Color.Green)
+                .WithTitle(mission.Title)
+                .WithDescription(mission.Description)
+                .WithFooter(mission.Date.ToString())
+                .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
+                .AddField("Wołanie wszystkich:", mission.MentionEveryone)
+                .WithAuthor(Context.User);
+
+            if (mission.Attachment != null)
+                embed.WithImageUrl(mission.Attachment);
+
+            mission.Modlist ??= "https://modlist.armaforces.com/#/download/default";
+
+            embed.AddField("Modlista:", mission.Modlist);
+
+            _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
+
+            _miscHelper.CreateConfirmationDialog(
+                Context,
+                embed.Build(),
+                dialog =>
+                {
+                    _dialogs.Dialogs.Remove(dialog);
+                    _ = SignupHelper.CreateSignupChannel(
+                        SignupsData,
+                        Context.User.Id,
+                        Context.Channel);
+                    ReplyAsync("No to lecim!");
+                },
+                dialog =>
+                {
+                    Context.Channel.DeleteMessageAsync(dialog.DialogID);
+                    _dialogs.Dialogs.Remove(dialog);
+                    ReplyAsync("Poprawiaj to szybko!");
+                });
         }
 
         [Command("zaladowane")]
@@ -562,14 +564,17 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task CancelSignups()
         {
-            if (SignupsData.Missions.Any(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id))
-            {
-                SignupsData.Missions.Remove(SignupsData.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id));
+            var mission = SignupsData.GetCurrentlyCreatedMission(Context.User.Id);
 
-                await ReplyAsync("I tak nikt nie chce grać na twoich misjach.");
-            }
-            else
+            if (mission is null)
+            {
                 await ReplyAsync("Siebie anuluj, nie tworzysz żadnej misji aktualnie.");
+            }
+
+            SignupsData.Missions.Remove(mission);
+
+            await ReplyAsync("I tak nikt nie chce grać na twoich misjach.");
+
         }
 
         [Command("aktualne-misje")]
