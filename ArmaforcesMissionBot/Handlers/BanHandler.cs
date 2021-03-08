@@ -3,7 +3,6 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -15,33 +14,35 @@ namespace ArmaforcesMissionBot.Handlers
         private IServiceProvider _services;
         private Config _config;
         private Timer _timer;
+        private SignupsData _signupsData;
 
         public async Task Install(IServiceProvider map)
         {
             _client = map.GetService<DiscordSocketClient>();
             _config = map.GetService<Config>();
+            _signupsData = map.GetService<SignupsData>();
             _services = map;
             // Hook the MessageReceived event into our command handler
-            _timer = new Timer();
-            _timer.Interval = 60000;
+            _timer = new Timer
+            {
+                AutoReset = true,
+                Enabled = true,
+                Interval = 60000
+            };
 
             _timer.Elapsed += CheckBans;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
         }
 
         private async void CheckBans(object source, ElapsedEventArgs e)
         {
-            var signups = _services.GetService<SignupsData>();
-
-            await signups.BanAccess.WaitAsync(-1);
+            await _signupsData.BanAccess.WaitAsync(-1);
 
             try
             {
-                if (signups.SignupBans.Count > 0)
+                if (_signupsData.SignupBans.Count > 0)
                 {
                     List<ulong> toRemove = new List<ulong>();
-                    foreach (var ban in signups.SignupBans)
+                    foreach (var ban in _signupsData.SignupBans)
                     {
                         if (ban.Value < e.SignalTime)
                         {
@@ -50,29 +51,29 @@ namespace ArmaforcesMissionBot.Handlers
                     }
                     foreach(var removeID in toRemove)
                     {
-                        signups.SignupBans.Remove(removeID);
+                        _signupsData.SignupBans.Remove(removeID);
                     }
-                    signups.SignupBansMessage = await Helpers.BanHelper.MakeBanMessage(
+                    _signupsData.SignupBansMessage = await Helpers.BanHelper.MakeBanMessage(
                                 _services,
                                 _client.GetGuild(_config.AFGuild),
-                                signups.SignupBans,
-                                signups.SignupBansMessage,
+                                _signupsData.SignupBans,
+                                _signupsData.SignupBansMessage,
                                 _config.HallOfShameChannel,
                                 "Bany na zapisy:");
                 }
-                if(signups.SpamBans.Count > 0)
+                if(_signupsData.SpamBans.Count > 0)
                 {
                     List<ulong> toRemove = new List<ulong>();
                     var guild = _client.GetGuild(_config.AFGuild);
-                    foreach (var ban in signups.SpamBans)
+                    foreach (var ban in _signupsData.SpamBans)
                     {
                         if (ban.Value < e.SignalTime)
                         {
                             toRemove.Add(ban.Key);
                             var user = _client.GetUser(ban.Key);
-                            if (signups.Missions.Count > 0)
+                            if (_signupsData.Missions.Count > 0)
                             {
-                                foreach (var mission in signups.Missions)
+                                foreach (var mission in _signupsData.Missions)
                                 {
                                     var channel = guild.GetTextChannel(mission.SignupChannel);
                                     await channel.RemovePermissionOverwriteAsync(user);
@@ -82,20 +83,20 @@ namespace ArmaforcesMissionBot.Handlers
                     }
                     foreach (var removeID in toRemove)
                     {
-                        signups.SpamBans.Remove(removeID);
+                        _signupsData.SpamBans.Remove(removeID);
                     }
-                    signups.SpamBansMessage = await Helpers.BanHelper.MakeBanMessage(
+                    _signupsData.SpamBansMessage = await Helpers.BanHelper.MakeBanMessage(
                         _services, 
                         guild,
-                        signups.SpamBans,
-                        signups.SpamBansMessage,
+                        _signupsData.SpamBans,
+                        _signupsData.SpamBansMessage,
                         _config.HallOfShameChannel,
                         "Bany za spam reakcjami:");
                 }
             }
             finally
             {
-                signups.BanAccess.Release();
+                _signupsData.BanAccess.Release();
             }
         }
     }
