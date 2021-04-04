@@ -6,14 +6,12 @@ namespace ArmaforcesMissionBot.Features.Signups.Missions.Extensions
 {
     public static class MissionExtensions
     {
-        public static bool IsUserSigned(this Mission mission, IUser user)
-            => IsUserSigned(mission, user.Id);
+        public static bool IsUserSigned(this Mission mission, IUser user) => IsUserSigned(mission, user.Id);
 
         public static bool IsUserSigned(this Mission mission, ulong userId)
             => mission.SignedUsers.Any(signedUserId => signedUserId == userId);
 
-        public static Result SignUser(this Mission mission, IUser user)
-            => SignUser(mission, user.Id);
+        public static Result SignUser(this Mission mission, IUser user) => SignUser(mission, user.Id);
 
         public static Result SignUser(this Mission mission, ulong userId)
         {
@@ -26,8 +24,7 @@ namespace ArmaforcesMissionBot.Features.Signups.Missions.Extensions
             return Result.Success();
         }
 
-        public static Result UnsignUser(this Mission mission, IUser user)
-            => UnsignUser(mission, user.Id);
+        public static Result UnsignUser(this Mission mission, IUser user) => UnsignUser(mission, user.Id);
 
         public static Result UnsignUser(this Mission mission, ulong userId)
         {

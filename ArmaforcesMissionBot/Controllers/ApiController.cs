@@ -351,7 +351,7 @@ namespace ArmaforcesMissionBot.Controllers
             mission.Editing = Features.Signups.Missions.Mission.EditEnum.New;
             _signupsData.Missions.Add(mission);
 
-            if (Helpers.SignupHelper.CheckMissionComplete(mission))
+            if (SignupHelper.CheckMissionComplete(mission))
             {
                 var guild = _client.GetGuild(_config.AFGuild);
 
