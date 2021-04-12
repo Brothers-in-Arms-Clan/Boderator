@@ -27,6 +27,7 @@ namespace ArmaforcesMissionBot.Features.Signups
 
         public ISignupsBuilder CreateNewSignups(IUser user, string title) =>
             _signupsBuilders[user.Id] = _signupsBuilderFactory.CreateSignupsBuilder()
+                .CreateNewMission()
                 .SetMissionTitle(title)
                 .SetMissionOwner(user.Id);
 

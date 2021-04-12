@@ -69,7 +69,7 @@ namespace ArmaforcesMissionBot.Features.Signups
                 .Bind(_ => Result.Success(messages));
         }
 
-        public Result<string> SetDescription(IUser user, string description, Attachment attachment)
+        public Result<string> SetDescription(IUser user, string description, Attachment? attachment)
         {
             return _signupsBuilderDictionary.GetSignupsBuilder(user)
                 .Tap(signupsBuilder => signupsBuilder.SetMissionDescription(description, attachment))
@@ -131,7 +131,7 @@ namespace ArmaforcesMissionBot.Features.Signups
         private static Result<string> ToggleMentionEveryone(ISignupsBuilder signupsBuilder)
         {
             var mission = signupsBuilder.Build() as Mission;
-            if (mission.Editing == Mission.EditEnum.Started)
+            if (mission!.Editing == Mission.EditEnum.Started)
             {
                 return Result.Failure<string>("You can only toggle mention for new signups.");
             }

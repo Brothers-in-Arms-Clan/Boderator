@@ -53,10 +53,10 @@ namespace ArmaforcesMissionBot.Features.Signups
             return this;
         }
 
-        public ISignupsBuilder SetMissionDescription(string description, Attachment attachment)
+        public ISignupsBuilder SetMissionDescription(string description, Attachment? attachment)
         {
             _mission.Description = description;
-            _mission.Attachment = attachment.Url;
+            _mission.Attachment = attachment?.Url;
             return this;
         }
 
