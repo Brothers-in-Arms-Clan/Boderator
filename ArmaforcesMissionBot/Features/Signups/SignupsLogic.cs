@@ -21,7 +21,12 @@ namespace ArmaforcesMissionBot.Features.Signups
         private readonly IModsetProvider _modsetProvider;
         private readonly ISignupsBuilderDictionary _signupsBuilderDictionary;
 
-        public SignupsLogic(SignupsData signupsData, SignupHelper signupHelper, IGuildProvider guildProvider, IModsetProvider modsetProvider, ISignupsBuilderDictionary signupsBuilderDictionary)
+        public SignupsLogic(
+            SignupsData signupsData,
+            SignupHelper signupHelper,
+            IGuildProvider guildProvider,
+            IModsetProvider modsetProvider,
+            ISignupsBuilderDictionary signupsBuilderDictionary)
         {
             _signupsData = signupsData;
             _signupHelper = signupHelper;
