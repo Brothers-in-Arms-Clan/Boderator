@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArmaForces.Boderator.Service", "ArmaForces.Boderator.Service\ArmaForces.Boderator.Service.csproj", "{7F9A6D74-291B-4F66-A537-6A69DD0A904A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArmaForces.Boderator.DAO", "ArmaForces.Boderator.DAO\ArmaForces.Boderator.DAO.csproj", "{A2849677-3590-45E2-BD3C-2C21B2C59BC6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F9A6D74-291B-4F66-A537-6A69DD0A904A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F9A6D74-291B-4F66-A537-6A69DD0A904A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F9A6D74-291B-4F66-A537-6A69DD0A904A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F9A6D74-291B-4F66-A537-6A69DD0A904A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2849677-3590-45E2-BD3C-2C21B2C59BC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2849677-3590-45E2-BD3C-2C21B2C59BC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2849677-3590-45E2-BD3C-2C21B2C59BC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2849677-3590-45E2-BD3C-2C21B2C59BC6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AB0E82AA-6B41-410A-BEC8-56458A25309E}
+	EndGlobalSection
+EndGlobal

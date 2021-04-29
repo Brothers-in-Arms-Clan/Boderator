@@ -1,0 +1,15 @@
+.vs/*
+.idea/*
+*/obj/*
+*/bin/*
+*.user
+*.dat
+*.mp3
+*.ttf
+*.json
+*.env
+*.dll
+Boderator/*
+BoderatorTest/*
+BoderatorWeb/*
+BoderatorWebTest/*
