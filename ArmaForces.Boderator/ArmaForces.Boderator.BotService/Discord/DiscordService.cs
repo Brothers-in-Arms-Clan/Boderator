@@ -19,6 +19,7 @@ namespace ArmaForces.Boderator.BotService.Discord
             _log = logger;
             _discordClient = new DiscordSocketClient();
             _discordClient.Log += message => Task.Run(() => _log.Log(MapSeverity(message.Severity), "[Discord.NET Log] " + message.Message));
+            _discordClient.Connected += () => Task.Run(() => _log.LogInformation("Discord connected"));
             _token = token;
         }
 
@@ -27,7 +28,6 @@ namespace ArmaForces.Boderator.BotService.Discord
             _log.LogInformation("Discord Service started");
             await _discordClient.LoginAsync(TokenType.Bot, _token, true);
             await _discordClient.StartAsync();
-            _discordClient.Connected += () => Task.Run(() => _log.LogInformation("Discord connected"));
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.Run(() =>
