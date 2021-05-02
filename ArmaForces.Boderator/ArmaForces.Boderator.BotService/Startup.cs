@@ -1,3 +1,4 @@
+using ArmaForces.Boderator.BotService.Discord;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-namespace ArmaForces.Boderator.WebService
+namespace ArmaForces.Boderator.BotService
 {
     public class Startup
     {
@@ -26,6 +27,7 @@ namespace ArmaForces.Boderator.WebService
             {
                 c.SwaggerDoc("v3", new OpenApiInfo { Title = "ArmaForces.Boderator.WebService", Version = "v3" });
             });
+            services.AddDiscordService(Helpers.Configuration.DiscordToken);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +48,7 @@ namespace ArmaForces.Boderator.WebService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "api/{controller}/{action}");
             });
         }
     }

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace ArmaForces.Boderator.WebService
+namespace ArmaForces.Boderator.BotService
 {
     public class Program
     {

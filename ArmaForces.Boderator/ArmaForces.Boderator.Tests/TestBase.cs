@@ -1,5 +1,5 @@
 ﻿using System;
-using ArmaForces.Boderator.WebService;
+using ArmaForces.Boderator.BotService;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
