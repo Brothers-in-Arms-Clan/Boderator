@@ -51,11 +51,11 @@ namespace ArmaForces.Boderator.BotService.Discord
         private static LogLevel MapSeverity(LogSeverity severity) =>
             severity switch
             {
-                LogSeverity.Verbose => LogLevel.Trace,
-                LogSeverity.Debug => LogLevel.Debug,
-                LogSeverity.Info => LogLevel.Information,
-                LogSeverity.Warning => LogLevel.Warning,
-                LogSeverity.Error => LogLevel.Error,
+                LogSeverity.Verbose  => LogLevel.Trace,
+                LogSeverity.Debug    => LogLevel.Debug,
+                LogSeverity.Info     => LogLevel.Information,
+                LogSeverity.Warning  => LogLevel.Warning,
+                LogSeverity.Error    => LogLevel.Error,
                 LogSeverity.Critical => LogLevel.Critical
             };
     }
