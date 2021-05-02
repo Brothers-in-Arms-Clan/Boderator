@@ -6,6 +6,6 @@ namespace ArmaForces.Boderator.BotService.Discord
     public interface IDiscordService
     {
         string GetDiscordClientStatus();
-        Task SetBotStatus(string newStatus, ActivityType statusType = ActivityType.CustomStatus);
+        Task SetBotStatus(string newStatus, ActivityType statusType);
     }
 }

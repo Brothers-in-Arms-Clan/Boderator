@@ -45,7 +45,7 @@ namespace ArmaForces.Boderator.BotService.Discord
             return message;
         }
 
-        public async Task SetBotStatus(string newStatus, ActivityType statusType = ActivityType.CustomStatus) =>
+        public async Task SetBotStatus(string newStatus, ActivityType statusType) =>
             await _discordClient.SetGameAsync(newStatus, type: statusType);
 
         private static LogLevel MapSeverity(LogSeverity severity) =>
