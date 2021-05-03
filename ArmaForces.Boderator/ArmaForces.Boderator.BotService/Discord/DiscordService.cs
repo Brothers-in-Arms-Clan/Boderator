@@ -39,9 +39,6 @@ namespace ArmaForces.Boderator.BotService.Discord
 
         public DiscordServiceStatus GetDiscordClientStatus()
         {
-            string message = $"Current Discord Bot status: Login: {_discordClient.LoginState} | " +
-                             $"Connection: {_discordClient.ConnectionState} | " +
-                             $"Status: {_discordClient.Status}";
             _log.LogInformation($"Current Discord Bot status: Login: {_discordClient.LoginState} | " +
                                 $"Connection: {_discordClient.ConnectionState} | " +
                                 $"Status: {_discordClient.Status}");
