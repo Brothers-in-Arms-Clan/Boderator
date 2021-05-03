@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ArmaForces.Boderator.BotService.DTOs;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
@@ -36,13 +37,20 @@ namespace ArmaForces.Boderator.BotService.Discord
             _log.LogInformation("Discord Service stopped");
         }, cancellationToken);
 
-        public string GetDiscordClientStatus()
+        public DiscordServiceStatus GetDiscordClientStatus()
         {
             string message = $"Current Discord Bot status: Login: {_discordClient.LoginState} | " +
                              $"Connection: {_discordClient.ConnectionState} | " +
                              $"Status: {_discordClient.Status}";
-            _log.LogInformation(message);
-            return message;
+            _log.LogInformation($"Current Discord Bot status: Login: {_discordClient.LoginState} | " +
+                                $"Connection: {_discordClient.ConnectionState} | " +
+                                $"Status: {_discordClient.Status}");
+            return new DiscordServiceStatus
+            {
+                ConnectionState = _discordClient.ConnectionState.ToString(),
+                LoginState = _discordClient.LoginState.ToString(),
+                ClientState = _discordClient.Status.ToString()
+            };
         }
 
         public async Task SetBotStatus(string newStatus, ActivityType statusType) =>
@@ -51,11 +59,11 @@ namespace ArmaForces.Boderator.BotService.Discord
         private static LogLevel MapSeverity(LogSeverity severity) =>
             severity switch
             {
-                LogSeverity.Verbose  => LogLevel.Trace,
-                LogSeverity.Debug    => LogLevel.Debug,
-                LogSeverity.Info     => LogLevel.Information,
-                LogSeverity.Warning  => LogLevel.Warning,
-                LogSeverity.Error    => LogLevel.Error,
+                LogSeverity.Verbose => LogLevel.Trace,
+                LogSeverity.Debug => LogLevel.Debug,
+                LogSeverity.Info => LogLevel.Information,
+                LogSeverity.Warning => LogLevel.Warning,
+                LogSeverity.Error => LogLevel.Error,
                 LogSeverity.Critical => LogLevel.Critical
             };
     }

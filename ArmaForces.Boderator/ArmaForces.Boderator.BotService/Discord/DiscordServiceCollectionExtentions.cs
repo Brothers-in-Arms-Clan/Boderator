@@ -6,7 +6,7 @@ namespace ArmaForces.Boderator.BotService.Discord
 {
     internal static class DiscordServiceCollectionExtentions
     {
-        internal static IDiscordServiceBuilder AddDiscordService(this IServiceCollection serviceDescriptors, string token)
+        public static IDiscordServiceBuilder AddDiscordService(this IServiceCollection serviceDescriptors, string token)
         {
             serviceDescriptors.AddSingleton<IDiscordService, DiscordService>(sP => new DiscordService(sP.GetService<ILogger<DiscordService>>(), token));
             serviceDescriptors.AddHostedService(sP => sP.GetRequiredService<IDiscordService>() as DiscordService);

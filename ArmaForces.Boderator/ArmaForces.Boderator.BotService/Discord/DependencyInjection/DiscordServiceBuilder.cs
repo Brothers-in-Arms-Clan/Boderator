@@ -6,6 +6,6 @@ namespace ArmaForces.Boderator.BotService.Discord.DependencyInjection
     {
         private IServiceCollection Services { get; }
 
-        internal DiscordServiceBuilder(IServiceCollection services) => Services = services;
+        public DiscordServiceBuilder(IServiceCollection services) => Services = services;
     }
 }

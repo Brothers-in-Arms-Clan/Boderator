@@ -31,7 +31,10 @@ namespace ArmaForces.Boderator.BotService.Controllers
         public ActionResult GetDiscordStatus() => Ok(_discordService.GetDiscordClientStatus());
 
         [HttpPut("SetBotStatus/{status}")]
-        public async Task<ActionResult> SetBotStatus(string status, ActivityType type = ActivityType.Playing) =>
-            await Task.Run(() => Ok(_discordService.SetBotStatus(status, type)) as ActionResult);
+        public async Task<ActionResult> SetBotStatus(string status, ActivityType type = ActivityType.Playing)
+        {
+            await _discordService.SetBotStatus(status, type);
+            return Ok();
+        }
     }
 }
