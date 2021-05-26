@@ -61,8 +61,14 @@ namespace ArmaforcesMissionBot.Modules
                     "Bany na zapisy:");
 
                 await Helpers.BanHelper.MakeBanHistoryMessage(_map, Context.Guild);
+                
+                var embedBuilder = new EmbedBuilder()
+                {
+                    ImageUrl = _config.BanImageUrl
+                };
+                await ReplyAsync("Niech ginie.",
+                embed: embedBuilder.Build());
 
-                await ReplyAsync("Niech ginie.");
                 await Helpers.BanHelper.UnsignUser(_map, Context.Guild, user);
             }
             finally

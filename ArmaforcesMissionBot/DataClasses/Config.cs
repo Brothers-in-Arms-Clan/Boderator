@@ -20,6 +20,7 @@ namespace ArmaforcesMissionBot.DataClasses
         public ulong RecruiterRole { get; set; }
         public ulong RecruitRole { get; set; }
         public string KickImageUrl { get; set; }
+        public string BanImageUrl { get; set; }
         public string ServerManagerUrl { get; set; }
         public string ServerManagerApiKey { get; set; }
         public string ModsetsApiUrl { get; set; }
