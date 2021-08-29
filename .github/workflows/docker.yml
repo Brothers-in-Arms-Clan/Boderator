@@ -1,0 +1,28 @@
+name: Docker
+
+on: [push]
+
+jobs:
+  docker_release:
+    name: Docker release
+    runs-on: ubuntu-latest
+    if: (github.ref == 'refs/heads/master') && github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Login to registry
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USR }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PAT }}
+
+      - name: Build ArmaforcesMissionBot
+        if: success()
+        run:
+          docker build -t armaforces/boderator:latest -f ./ArmaforcesMissionBot/Dockerfile .
+
+      - name: Push ArmaforcesMissionBot
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push armaforces/boderator:latest
