@@ -30,7 +30,7 @@ namespace ArmaForces.Boderator.BotService.Documentation
                 .UseReDoc(
                     options =>
                     {
-                        options.DocumentTitle = "Boderator API Documentation";
+                        options.DocumentTitle = openApiConfig.Title;
                         options.SpecUrl = url;
                     });
         }
