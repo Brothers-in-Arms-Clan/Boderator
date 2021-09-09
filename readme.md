@@ -10,7 +10,9 @@ Start with `docker-compose up`
 
 ## Authors
 
-* **Illdor** - *Initial work*
+* 3Mydlo3
+* Ingvarr
+* Smieszkokoleszko
 
 
 ## License

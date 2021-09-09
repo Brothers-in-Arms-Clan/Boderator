@@ -3,20 +3,10 @@ services:
   discord-bot:
     build: 
         context: .
-        dockerfile: ArmaforcesMissionBot/Dockerfile
+        dockerfile: ArmaForces.Boderator.BotService/Dockerfile
     ports:
       - "80:80"
       - "443:443"
-    env_file: .env
-    environment:
-        TZ: "Europe/Warsaw"
-  web:
-    build:
-        context: .
-        dockerfile: ArmaforcesMissionBotWeb/Dockerfile
-    ports:
-        - "8080:80"
-        - "10443:443"
     env_file: .env
     environment:
         TZ: "Europe/Warsaw"

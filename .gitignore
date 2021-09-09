@@ -2,14 +2,10 @@
 .idea/*
 */obj/*
 */bin/*
+*/Logs/*
 *.user
 *.dat
 *.mp3
 *.ttf
-*.json
 *.env
 *.dll
-Boderator/*
-BoderatorTest/*
-BoderatorWeb/*
-BoderatorWebTest/*
