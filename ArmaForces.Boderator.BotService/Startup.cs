@@ -24,7 +24,7 @@ namespace ArmaForces.Boderator.BotService
         {
             Title = "ArmaForces Boderator API",
             Description = "Does nothing.",
-            Version = "v0.1",
+            Version = "v3",
             Contact = new OpenApiContact
             {
                 Name = "ArmaForces",
