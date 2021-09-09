@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace ArmaForces.Boderator.Tests
+namespace ArmaForces.Boderator.BotService.Tests
 {
     public class BasicTest : TestBase
     {
