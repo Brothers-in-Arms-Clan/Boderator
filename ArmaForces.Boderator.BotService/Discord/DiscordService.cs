@@ -61,7 +61,11 @@ namespace ArmaForces.Boderator.BotService.Discord
                 LogSeverity.Info => LogLevel.Information,
                 LogSeverity.Warning => LogLevel.Warning,
                 LogSeverity.Error => LogLevel.Error,
-                LogSeverity.Critical => LogLevel.Critical
+                LogSeverity.Critical => LogLevel.Critical,
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(severity),
+                    severity,
+                    null)
             };
     }
 }
