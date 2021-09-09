@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArmaForces.Boderator.DAO", "ArmaForces.Boderator.DAO\ArmaForces.Boderator.DAO.csproj", "{A2849677-3590-45E2-BD3C-2C21B2C59BC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArmaForces.Boderator.Core", "ArmaForces.Boderator.Core\ArmaForces.Boderator.Core.csproj", "{A2849677-3590-45E2-BD3C-2C21B2C59BC6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArmaForces.Boderator.BotService.Tests", "ArmaForces.Boderator.BotService.Tests\ArmaForces.Boderator.BotService.Tests.csproj", "{85762E30-4C0D-4735-B40F-C8C40F73F4C3}"
 EndProject
