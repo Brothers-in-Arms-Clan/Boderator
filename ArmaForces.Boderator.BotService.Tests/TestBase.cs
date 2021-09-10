@@ -1,6 +1,4 @@
 ﻿using System;
-using ArmaForces.Boderator.BotService;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ArmaForces.Boderator.BotService.Tests
@@ -11,9 +9,8 @@ namespace ArmaForces.Boderator.BotService.Tests
 
         public TestBase()
         {
-            ServiceCollection sc = new();
-            sc.AddMediatR(typeof(TestBase).Assembly, typeof(Startup).Assembly);
-            Provider = sc.BuildServiceProvider();
+            Provider = new ServiceCollection()
+                .BuildServiceProvider();
         }
     }
 }

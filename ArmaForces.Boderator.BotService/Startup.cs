@@ -1,5 +1,6 @@
+using System;
 using ArmaForces.Boderator.BotService.Discord;
-using MediatR;
+using ArmaForces.Boderator.BotService.Documentation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,15 +19,24 @@ namespace ArmaForces.Boderator.BotService
 
         private IConfiguration Configuration { get; }
 
+        private OpenApiInfo OpenApiConfiguration { get; } = new()
+        {
+            Title = "ArmaForces Boderator API",
+            Description = "API that does nothing. For now.",
+            Version = "v3",
+            Contact = new OpenApiContact
+            {
+                Name = "ArmaForces",
+                Url = new Uri("https://armaforces.com")
+            }
+        };
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMediatR(typeof(Startup));
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v3", new OpenApiInfo { Title = "ArmaForces.Boderator.WebService", Version = "v3" });
-            });
+            services.AddDocumentation(OpenApiConfiguration);
+
             services.AddDiscordService(Helpers.Configuration.DiscordToken);
         }
 
@@ -36,8 +46,7 @@ namespace ArmaForces.Boderator.BotService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v3/swagger.json", "ArmaForces.Boderator.WebService v3"));
+                app.AddDocumentation(OpenApiConfiguration);
             }
 
             app.UseHttpsRedirection();
