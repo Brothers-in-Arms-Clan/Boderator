@@ -1,5 +1,4 @@
 using System;
-using ArmaForces.Boderator.BotService.Discord;
 using ArmaForces.Boderator.BotService.Documentation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
