@@ -36,8 +36,6 @@ namespace ArmaForces.Boderator.BotService
         {
             services.AddControllers();
             services.AddDocumentation(OpenApiConfiguration);
-
-            services.AddDiscordService(Helpers.Configuration.DiscordToken);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
