@@ -1,4 +1,5 @@
 using System;
+using ArmaForces.Boderator.BotService.Configuration;
 using ArmaForces.Boderator.BotService.Documentation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +36,7 @@ namespace ArmaForces.Boderator.BotService
         {
             services.AddControllers();
             services.AddDocumentation(OpenApiConfiguration);
+            services.AddSingleton(new BoderatorConfigurationFactory().CreateConfiguration());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
