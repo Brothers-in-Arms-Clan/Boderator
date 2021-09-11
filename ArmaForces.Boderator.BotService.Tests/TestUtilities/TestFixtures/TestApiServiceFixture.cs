@@ -3,7 +3,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace ArmaForces.Boderator.BotService.Tests
+namespace ArmaForces.Boderator.BotService.Tests.TestUtilities.TestFixtures
 {
     public class TestApiServiceFixture : IDisposable
     {

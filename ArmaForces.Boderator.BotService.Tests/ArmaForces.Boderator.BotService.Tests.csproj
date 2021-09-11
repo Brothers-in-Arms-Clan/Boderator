@@ -8,6 +8,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\ArmaForces.Boderator.BotService\ArmaForces.Boderator.BotService.csproj" />
+    <ProjectReference Include="..\ArmaForces.Boderator.Core.Tests\ArmaForces.Boderator.Core.Tests.csproj" />
   </ItemGroup>
   
   <ItemGroup>
