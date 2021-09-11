@@ -55,7 +55,7 @@ namespace ArmaForces.Boderator.BotService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute("default", "api/{controller}/{action}");
+                endpoints.MapControllers();
             });
         }
     }
