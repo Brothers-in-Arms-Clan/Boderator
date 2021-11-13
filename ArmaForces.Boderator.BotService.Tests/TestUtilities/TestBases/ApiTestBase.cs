@@ -71,6 +71,23 @@ namespace ArmaForces.Boderator.BotService.Tests.TestUtilities.TestBases
             return Result.Failure<T>(error);
         }
 
+        protected async Task<Result<TResponse>> HttpPostAsync<TRequest, TResponse>(string path, TRequest body)
+        {
+            var stringContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.Default, "application/json");
+            var httpResponseMessage = await _httpClient.PostAsync(path, stringContent);
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return DeserializeContent<TResponse>(await httpResponseMessage.Content.ReadAsStringAsync());
+            }
+
+            var responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+            var error = string.IsNullOrWhiteSpace(responseBody)
+                ? httpResponseMessage.ReasonPhrase
+                : responseBody;
+
+            return Result.Failure<TResponse>(error);
+        }
+
         private static Result<T> DeserializeContent<T>(string content)
             => JsonConvert.DeserializeObject<T>(content);
     }

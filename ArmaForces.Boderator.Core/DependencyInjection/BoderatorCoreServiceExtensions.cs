@@ -6,9 +6,9 @@ namespace ArmaForces.Boderator.Core.DependencyInjection
 {
     public static class BoderatorCoreServiceExtensions
     {
-        public static IServiceCollection AddBoderatorCore(this IServiceCollection services)
+        public static IServiceCollection AddBoderatorCore(this IServiceCollection services, string connectionString)
             => services
-                .AddDbContext<MissionContext>(options => options.UseSqlite())
+                .AddDbContext<MissionContext>(options => options.UseSqlServer(connectionString))
                 .AutoAddInterfacesAsScoped(typeof(BoderatorCoreServiceExtensions).Assembly);
     }
 }

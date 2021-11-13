@@ -29,5 +29,29 @@ namespace ArmaForces.Boderator.BotService.Tests.Features.Missions
 
             result.ShouldBeSuccess();
         }
+        
+        [Fact]
+        public async Task GetMission_MissionExists_ReturnsExistingMission()
+        {
+            var missionCreateRequest = new MissionCreateRequestDto
+            {
+                Title = Fixture.Create<string>(),
+                Owner = Fixture.Create<string>(),
+                Description = Fixture.Create<string>()
+            };
+            
+            var missionCreateResult = await HttpPostAsync<MissionCreateRequestDto, MissionDto>("api/missions", missionCreateRequest);
+
+            var expectedMission = new MissionDto
+            {
+                Title = missionCreateResult.Value.Title,
+                MissionDate = missionCreateResult.Value.MissionDate,
+                MissionId = missionCreateResult.Value.MissionId
+            };
+            
+            var result = await HttpGetAsync<MissionDto>($"api/missions/{expectedMission.MissionId}");
+
+            result.ShouldBeSuccess(expectedMission);
+        }
     }
 }

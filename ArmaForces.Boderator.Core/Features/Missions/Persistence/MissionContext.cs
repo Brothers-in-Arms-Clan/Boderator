@@ -3,10 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ArmaForces.Boderator.Core.Missions.Persistence
 {
-    internal class MissionContext : DbContext
+    internal sealed class MissionContext : DbContext
     {
         public MissionContext(DbContextOptions<MissionContext> options)
-            : base(options) { }
+            : base(options)
+        {
+            Database.EnsureCreated();
+        }
         
         public DbSet<Mission> Missions { get; set; } 
     }

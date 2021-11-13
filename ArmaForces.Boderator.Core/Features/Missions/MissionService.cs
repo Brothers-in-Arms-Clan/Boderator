@@ -27,7 +27,7 @@ namespace ArmaForces.Boderator.Core.Missions
 
         public async Task<Result<Mission>> GetMission(int missionId)
             => await _missionRepository.GetMission(missionId)
-               ?? Result.Failure<Mission>("Mission does not exist.");
+               ?? Result.Failure<Mission>("Mission with given ID does not exist.");
 
         public async Task<Result<List<Mission>>> GetMissions()
             => await _missionRepository.GetMissions();

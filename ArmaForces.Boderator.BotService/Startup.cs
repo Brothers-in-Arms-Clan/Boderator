@@ -39,7 +39,7 @@ namespace ArmaForces.Boderator.BotService
             services.AddControllers();
             services.AddDocumentation(OpenApiConfiguration);
             services.AddDiscordClient(string.Empty);
-            services.AddBoderatorCore();
+            services.AddBoderatorCore(Configuration.GetConnectionString("DefaultConnection"));
             services.AutoAddInterfacesAsScoped(typeof(Startup).Assembly);
             services.AddSingleton(x => x.GetRequiredService<IBoderatorConfigurationFactory>().CreateConfiguration());
         }

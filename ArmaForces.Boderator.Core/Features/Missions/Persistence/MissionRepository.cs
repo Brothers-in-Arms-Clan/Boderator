@@ -25,10 +25,11 @@ namespace ArmaForces.Boderator.Core.Missions.Persistence
         public async Task<Result<Mission>> CreateMission(Mission missionToCreate)
         {
             var ddd = await _context.Missions.AddAsync(missionToCreate);
+
+            if (ddd is null) return Result.Failure<Mission>("Failure creating mission.");
             
-            return ddd is not null
-                ? ddd.Entity
-                : Result.Failure<Mission>("Failure creating mission.");
+            await _context.SaveChangesAsync();
+            return ddd.Entity;
         }
     }
 }
