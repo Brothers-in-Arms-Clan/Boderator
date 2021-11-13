@@ -1,6 +1,7 @@
 using System;
 using ArmaForces.Boderator.BotService.Configuration;
 using ArmaForces.Boderator.BotService.Documentation;
+using ArmaForces.Boderator.Core.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +37,7 @@ namespace ArmaForces.Boderator.BotService
         {
             services.AddControllers();
             services.AddDocumentation(OpenApiConfiguration);
+            services.AutoAddInterfacesAsScoped(typeof(Startup).Assembly);
             services.AddSingleton(new BoderatorConfigurationFactory().CreateConfiguration());
         }
 
