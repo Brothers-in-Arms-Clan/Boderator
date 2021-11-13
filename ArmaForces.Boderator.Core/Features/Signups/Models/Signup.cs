@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using ArmaForces.Boderator.BotService.Features.Missions.Models;
+using ArmaForces.Boderator.Core.Missions.Models;
 
-namespace ArmaForces.Boderator.BotService.Features.Signups.Models
+namespace ArmaForces.Boderator.Core.Signups.Models
 {
     public record Signup
     {

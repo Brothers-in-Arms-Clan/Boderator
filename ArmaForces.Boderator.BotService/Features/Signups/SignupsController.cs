@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using ArmaForces.Boderator.BotService.Features.Signups.Models;
+using ArmaForces.Boderator.BotService.Features.Signups.DTOs;
+using ArmaForces.Boderator.Core.Signups.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArmaForces.Boderator.BotService.Features.Signups

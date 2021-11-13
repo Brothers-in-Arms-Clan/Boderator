@@ -1,4 +1,4 @@
-namespace ArmaForces.Boderator.BotService.Features.Signups.Models
+namespace ArmaForces.Boderator.Core.Signups.Models
 {
     public record Slot
     {

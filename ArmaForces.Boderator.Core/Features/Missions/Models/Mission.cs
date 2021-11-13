@@ -1,6 +1,6 @@
 using System;
 
-namespace ArmaForces.Boderator.BotService.Features.Missions.Models
+namespace ArmaForces.Boderator.Core.Missions.Models
 {
     public record Mission
     {
