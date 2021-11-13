@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ArmaForces.Boderator.BotService.Features.DiscordClient
 {
-    internal sealed class DiscordService : IDiscordService, IHostedService
+    internal sealed class DiscordService : IDiscordService//, IHostedService
     {
         private readonly DiscordSocketClient _discordClient;
         private readonly ILogger<DiscordService> _logger;

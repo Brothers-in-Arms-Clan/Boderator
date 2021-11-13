@@ -1,5 +1,7 @@
 using System;
 using System.Net.Http;
+using ArmaForces.Boderator.BotService.Configuration;
+using ArmaForces.Boderator.Core.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -39,6 +41,8 @@ namespace ArmaForces.Boderator.BotService.Tests.TestUtilities.TestFixtures
         private static Action<IWebHostBuilder> ConfigureWebBuilder() => webBuilder =>
         {
             webBuilder.UseStartup<Startup>();
+            webBuilder.ConfigureServices(
+                x => x.AddOrReplaceSingleton<IBoderatorConfigurationFactory, TestConfigurationFactory>());
             webBuilder.UseKestrel(x => x.ListenLocalhost(Port));
         };
     }

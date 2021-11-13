@@ -2,12 +2,12 @@ using System;
 
 namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs
 {
-    public class MissionDto
+    public record MissionDto
     {
-        public int MissionId { get; set; }
+        public int MissionId { get; init; }
 
-        public string Title { get; set; } = string.Empty;
+        public string Title { get; init; } = string.Empty;
         
-        public DateTime MissionDate { get; set; }
+        public DateTime? MissionDate { get; init; }
     }
 }

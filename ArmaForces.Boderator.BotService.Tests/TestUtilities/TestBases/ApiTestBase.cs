@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.BotService.Tests.TestUtilities.Collections;
 using ArmaForces.Boderator.BotService.Tests.TestUtilities.TestFixtures;
+using AutoFixture;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -19,6 +21,7 @@ namespace ArmaForces.Boderator.BotService.Tests.TestUtilities.TestBases
     {
         private readonly HttpClient _httpClient;
 
+        protected Fixture Fixture { get; } = new Fixture();
         protected IServiceProvider Provider { get; }
 
         protected ApiTestBase(TestApiServiceFixture testApi)
@@ -53,7 +56,8 @@ namespace ArmaForces.Boderator.BotService.Tests.TestUtilities.TestBases
 
         protected async Task<Result> HttpPostAsync<T>(string path, T body)
         {
-            var httpResponseMessage = await _httpClient.PostAsync(path, new StringContent(JsonConvert.SerializeObject(body)));
+            var stringContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.Default, "application/json");
+            var httpResponseMessage = await _httpClient.PostAsync(path, stringContent);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return Result.Success();

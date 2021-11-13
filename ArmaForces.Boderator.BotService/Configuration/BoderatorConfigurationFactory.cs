@@ -4,7 +4,7 @@ using System.Configuration;
 
 namespace ArmaForces.Boderator.BotService.Configuration
 {
-    internal class BoderatorConfigurationFactory
+    internal class BoderatorConfigurationFactory : IBoderatorConfigurationFactory
     {
         private readonly IDictionary _environmentVariables;
 
@@ -28,5 +28,10 @@ namespace ArmaForces.Boderator.BotService.Configuration
                 ? (string) value
                 : throw new ConfigurationErrorsException($"Variable {fullVariableName} does not exist.");
         }
+    }
+
+    internal interface IBoderatorConfigurationFactory
+    {
+        BoderatorConfiguration CreateConfiguration();
     }
 }

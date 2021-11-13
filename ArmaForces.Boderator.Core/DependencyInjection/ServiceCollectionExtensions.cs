@@ -2,11 +2,19 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ArmaForces.Boderator.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddOrReplaceSingleton<TService, TImplementation>(this IServiceCollection services)
+            where TImplementation : class
+        {
+            return services.RemoveAll(typeof(TService))
+                .AddSingleton<TImplementation>();
+        }
+    
         /// <summary>
         /// Adds all interfaces from <paramref name="assembly"/> with single implementation type as scoped service.
         /// Does not replace existing registrations.

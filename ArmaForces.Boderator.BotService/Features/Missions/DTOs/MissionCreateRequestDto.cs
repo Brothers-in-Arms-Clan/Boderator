@@ -20,13 +20,13 @@ namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs
         /// <summary>
         /// Mission start time.
         /// </summary>
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.DisallowNull, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public DateTime? MissionTime { get; set; }
 
         /// <summary>
         /// Name of the modset.
         /// </summary>
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.DisallowNull, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? ModsetName { get; set; }
 
         /// <summary>
