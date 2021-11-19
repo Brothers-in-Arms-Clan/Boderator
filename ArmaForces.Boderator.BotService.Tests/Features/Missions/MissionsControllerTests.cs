@@ -16,6 +16,20 @@ namespace ArmaForces.Boderator.BotService.Tests.Features.Missions
             : base(testApi) { }
 
         [Fact]
+        public async Task CreateMission_InvalidRequest_ReturnsBadRequest()
+        {
+            var missionCreateRequestWithoutOwner = new MissionCreateRequestDto
+            {
+                Title = Fixture.Create<string>(),
+                Description = Fixture.Create<string>()
+            };
+            
+            var result = await HttpPostAsync("api/missions", missionCreateRequestWithoutOwner);
+
+            result.ShouldBeFailure("Bad Request");
+        } 
+
+        [Fact]
         public async Task CreateMission_ValidRequest_MissionCreated()
         {
             var missionCreateRequest = new MissionCreateRequestDto

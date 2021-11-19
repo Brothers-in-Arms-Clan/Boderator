@@ -4,7 +4,14 @@ namespace ArmaForces.Boderator.Core.Missions.Models
 {
     public record MissionCreateRequest
     {
-        public string Title { get; init; } = string.Empty;
+        private readonly string _title = null!;
+        private readonly string _owner = null!;
+        
+        public string Title
+        {
+            get => _title;
+            init => _title = ValidateStringNotEmpty(value, nameof(Title));
+        }
 
         public string? Description { get; init; }
         
@@ -12,6 +19,15 @@ namespace ArmaForces.Boderator.Core.Missions.Models
         
         public string? ModsetName { get; init; }
 
-        public string Owner { get; init; } = string.Empty;
+        public string Owner
+        {
+            get => _owner;
+            init => _owner = ValidateStringNotEmpty(value, nameof(Owner));
+        }
+
+        private static string ValidateStringNotEmpty(string? value, string propertyName)
+            => !string.IsNullOrWhiteSpace(value)
+                ? value
+                : throw new ArgumentNullException(propertyName);
     }
 }
