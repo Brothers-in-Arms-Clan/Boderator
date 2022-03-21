@@ -9,5 +9,7 @@ namespace ArmaForces.Boderator.Core.Signups.Query
         public Task<List<Signup>> GetAllSignups();
 
         public Task<List<Signup>> GetOpenSignups();
+        
+        public Task<Signup?> GetSignup(int signupId);
     }
 }

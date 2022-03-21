@@ -13,6 +13,9 @@ namespace ArmaForces.Boderator.Core.Signups.Query
             _signupsQueryRepository = signupsQueryRepository;
         }
 
+        public Task<Signup> GetSignup(int signupId)
+            => _signupsQueryRepository.GetSignup(signupId);
+
         public async Task<List<Signup>> GetOpenSignups()
             => await _signupsQueryRepository.GetOpenSignups();
     }

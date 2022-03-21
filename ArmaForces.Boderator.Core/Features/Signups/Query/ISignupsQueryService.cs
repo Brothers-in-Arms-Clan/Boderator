@@ -4,8 +4,10 @@ using ArmaForces.Boderator.Core.Signups.Models;
 
 namespace ArmaForces.Boderator.Core.Signups.Query
 {
-    internal interface ISignupsQueryService
+    public interface ISignupsQueryService
     {
+        Task<Signup> GetSignup(int signupId);
+        
         Task<List<Signup>> GetOpenSignups();
     }
 }
