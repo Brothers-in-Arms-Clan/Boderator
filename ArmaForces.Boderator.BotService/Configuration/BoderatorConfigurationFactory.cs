@@ -16,6 +16,7 @@ namespace ArmaForces.Boderator.BotService.Configuration
         // TODO: Consider making this a bit more automatic so configuration is easily extensible
         public BoderatorConfiguration CreateConfiguration() => new BoderatorConfiguration
         {
+            ConnectionString = GetStringValue(nameof(BoderatorConfiguration.ConnectionString)),
             DiscordToken = GetStringValue(nameof(BoderatorConfiguration.DiscordToken))
         };
 
