@@ -11,6 +11,6 @@ namespace ArmaForces.Boderator.Core.Missions.Persistence
             Database.EnsureCreated();
         }
         
-        public DbSet<Mission> Missions { get; set; } 
+        public DbSet<Mission> Missions { get; set; }
     }
 }
