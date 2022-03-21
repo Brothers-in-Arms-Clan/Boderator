@@ -19,6 +19,20 @@ namespace ArmaForces.Boderator.Core.Tests.TestUtilities
                 result.Error.Should().Be(expectedError);
             }
         }
+
+        public static void ShouldBeFailure<T>(this Result<T> result, string expectedError)
+        {
+            using var scope = new AssertionScope();
+
+            if (result.IsSuccess)
+            {
+                result.IsSuccess.Should().BeFalse();
+            }
+            else
+            {
+                result.Error.Should().Be(expectedError);
+            }
+        }
         
         public static void ShouldBeSuccess(this Result result)
         {

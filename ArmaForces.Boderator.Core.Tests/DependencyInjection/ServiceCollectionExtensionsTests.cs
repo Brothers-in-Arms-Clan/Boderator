@@ -1,4 +1,3 @@
-using System.Linq;
 using ArmaForces.Boderator.Core.DependencyInjection;
 using FluentAssertions;
 using FluentAssertions.Execution;
