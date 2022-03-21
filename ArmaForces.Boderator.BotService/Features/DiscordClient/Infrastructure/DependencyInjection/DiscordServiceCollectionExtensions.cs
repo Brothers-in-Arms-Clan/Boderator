@@ -4,12 +4,12 @@ namespace ArmaForces.Boderator.BotService.Features.DiscordClient.Infrastructure.
 {
     internal static class DiscordServiceCollectionExtensions
     {
-        public static IServiceCollection AddDiscordClient(this IServiceCollection services, string token)
+        public static IServiceCollection AddDiscordClient(this IServiceCollection services)
         {
             return services
                 .AddSingleton(DiscordSocketClientFactory.CreateDiscordClient)
                 .AddSingleton<IDiscordService, DiscordService>();
-                //.AddHostedService<DiscordService>();
+                // .AddHostedService<DiscordService>();
         }
     }
 }

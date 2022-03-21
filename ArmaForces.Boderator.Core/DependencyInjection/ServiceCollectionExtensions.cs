@@ -14,6 +14,13 @@ namespace ArmaForces.Boderator.Core.DependencyInjection
             return services.RemoveAll(typeof(TService))
                 .AddSingleton<TImplementation>();
         }
+
+        public static IServiceCollection AddOrReplaceSingleton<TService>(this IServiceCollection services, TService implementation)
+            where TService : class
+        {
+            return services.RemoveAll(typeof(TService))
+                .AddSingleton(implementation);
+        }
     
         /// <summary>
         /// Adds all interfaces from <paramref name="assembly"/> with single implementation type as scoped service.

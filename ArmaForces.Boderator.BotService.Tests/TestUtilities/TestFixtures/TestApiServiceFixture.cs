@@ -42,7 +42,7 @@ namespace ArmaForces.Boderator.BotService.Tests.TestUtilities.TestFixtures
         {
             webBuilder.UseStartup<Startup>();
             webBuilder.ConfigureServices(
-                x => x.AddOrReplaceSingleton<IBoderatorConfigurationFactory, TestConfigurationFactory>());
+                x => x.AddOrReplaceSingleton(new TestConfigurationFactory().CreateConfiguration()));
             webBuilder.UseKestrel(x => x.ListenLocalhost(Port));
         };
     }
