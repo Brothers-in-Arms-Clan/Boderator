@@ -29,8 +29,8 @@ namespace ArmaForces.Boderator.BotService.Features.DiscordClient
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Discord Service started");
-            await _discordClient.LoginAsync(TokenType.Bot, _token);
-            await _discordClient.StartAsync();
+            // await _discordClient.LoginAsync(TokenType.Bot, _token);
+            // await _discordClient.StartAsync();
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.Run(() =>

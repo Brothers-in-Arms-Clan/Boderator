@@ -8,8 +8,8 @@ namespace ArmaForces.Boderator.BotService.Features.DiscordClient.Infrastructure.
         {
             return services
                 .AddSingleton(DiscordSocketClientFactory.CreateDiscordClient)
-                .AddSingleton<IDiscordService, DiscordService>();
-                // .AddHostedService<DiscordService>();
+                .AddSingleton<IDiscordService, DiscordService>()
+                .AddHostedService<DiscordService>();
         }
     }
 }

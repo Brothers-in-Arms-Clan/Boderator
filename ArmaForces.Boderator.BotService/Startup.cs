@@ -15,13 +15,6 @@ namespace ArmaForces.Boderator.BotService
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        private IConfiguration Configuration { get; }
-
         private OpenApiInfo OpenApiConfiguration { get; } = new()
         {
             Title = "ArmaForces Boderator API",

@@ -2,8 +2,11 @@ using System;
 using System.Net.Http;
 using ArmaForces.Boderator.BotService.Configuration;
 using ArmaForces.Boderator.Core.DependencyInjection;
+using ArmaForces.Boderator.Core.Tests.TestUtilities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Moq;
 
 namespace ArmaForces.Boderator.BotService.Tests.TestUtilities.TestFixtures
 {
