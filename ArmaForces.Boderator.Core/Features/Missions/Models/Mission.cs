@@ -10,8 +10,8 @@ namespace ArmaForces.Boderator.Core.Missions.Models
 
         public DateTime? MissionTime { get; init; }
 
-        public string? ModsetName { get; set; } = string.Empty;
+        public string? ModsetName { get; init; } = string.Empty;
 
-        public string Owner { get; set; } = string.Empty;
+        public string Owner { get; init; } = string.Empty;
     }
 }
