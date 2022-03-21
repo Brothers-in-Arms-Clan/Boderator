@@ -15,7 +15,7 @@ namespace ArmaForces.Boderator.BotService.Tests.Features.Missions
         public MissionsControllerTests(TestApiServiceFixture testApi)
             : base(testApi) { }
 
-        [Fact]
+        [Fact, Trait("Category", "Integration")]
         public async Task CreateMission_InvalidRequest_ReturnsBadRequest()
         {
             var missionCreateRequestWithoutOwner = new MissionCreateRequestDto
@@ -27,9 +27,9 @@ namespace ArmaForces.Boderator.BotService.Tests.Features.Missions
             var result = await HttpPostAsync("api/missions", missionCreateRequestWithoutOwner);
 
             result.ShouldBeFailure("Bad Request");
-        } 
+        }
 
-        [Fact]
+        [Fact, Trait("Category", "Integration")]
         public async Task CreateMission_ValidRequest_MissionCreated()
         {
             var missionCreateRequest = new MissionCreateRequestDto
@@ -44,7 +44,7 @@ namespace ArmaForces.Boderator.BotService.Tests.Features.Missions
             result.ShouldBeSuccess();
         }
         
-        [Fact]
+        [Fact, Trait("Category", "Integration")]
         public async Task GetMission_MissionExists_ReturnsExistingMission()
         {
             var missionCreateRequest = new MissionCreateRequestDto

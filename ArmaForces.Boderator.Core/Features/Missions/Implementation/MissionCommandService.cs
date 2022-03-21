@@ -7,15 +7,15 @@ namespace ArmaForces.Boderator.Core.Missions.Implementation;
 
 internal class MissionCommandService : IMissionCommandService
 {
-    private readonly IMissionRepository _missionRepository;
+    private readonly IMissionCommandRepository _missionCommandRepository;
 
-    public MissionCommandService(IMissionRepository missionRepository)
+    public MissionCommandService(IMissionCommandRepository missionCommandRepository)
     {
-        _missionRepository = missionRepository;
+        _missionCommandRepository = missionCommandRepository;
     }
 
     public async Task<Result<Mission>> CreateMission(MissionCreateRequest missionCreateRequest)
-        => await _missionRepository.CreateMission(
+        => await _missionCommandRepository.CreateMission(
             new Mission
             {
                 Title = missionCreateRequest.Title,

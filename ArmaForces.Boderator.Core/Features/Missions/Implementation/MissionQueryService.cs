@@ -8,17 +8,17 @@ namespace ArmaForces.Boderator.Core.Missions.Implementation;
 
 internal class MissionQueryService : IMissionQueryService
 {
-    private readonly IMissionRepository _missionRepository;
+    private readonly IMissionQueryRepository _missionQueryRepository;
     
-    public MissionQueryService(IMissionRepository missionRepository)
+    public MissionQueryService(IMissionQueryRepository missionQueryRepository)
     {
-        _missionRepository = missionRepository;
+        _missionQueryRepository = missionQueryRepository;
     }
     
     public async Task<Result<Mission>> GetMission(int missionId)
-        => await _missionRepository.GetMission(missionId)
+        => await _missionQueryRepository.GetMission(missionId)
            ?? Result.Failure<Mission>($"Mission with ID {missionId} does not exist.");
 
     public async Task<Result<List<Mission>>> GetMissions()
-        => await _missionRepository.GetMissions();
+        => await _missionQueryRepository.GetMissions();
 }
