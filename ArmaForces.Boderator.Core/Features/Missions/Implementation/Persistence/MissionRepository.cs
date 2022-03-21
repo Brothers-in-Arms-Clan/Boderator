@@ -5,7 +5,7 @@ using ArmaForces.Boderator.Core.Missions.Models;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArmaForces.Boderator.Core.Missions.Persistence
+namespace ArmaForces.Boderator.Core.Missions.Implementation.Persistence
 {
     internal class MissionRepository : IMissionRepository
     {

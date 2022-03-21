@@ -1,7 +1,7 @@
 using ArmaForces.Boderator.Core.Missions.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArmaForces.Boderator.Core.Missions.Persistence
+namespace ArmaForces.Boderator.Core.Missions.Implementation.Persistence
 {
     internal sealed class MissionContext : DbContext
     {

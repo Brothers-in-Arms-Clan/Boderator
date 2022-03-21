@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Signups.Models;
 
-namespace ArmaForces.Boderator.Core.Signups.Query
+namespace ArmaForces.Boderator.Core.Signups.Implementation.Query
 {
     internal interface ISignupsQueryRepository
     {

@@ -1,7 +1,7 @@
 ﻿using ArmaForces.Boderator.Core.Signups.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArmaForces.Boderator.Core.Signups
+namespace ArmaForces.Boderator.Core.Signups.Implementation
 {
     internal sealed class SignupsContext : DbContext
     {

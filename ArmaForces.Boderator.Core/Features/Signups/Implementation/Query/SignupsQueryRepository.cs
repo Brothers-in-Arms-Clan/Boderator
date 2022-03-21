@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Signups.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArmaForces.Boderator.Core.Signups.Query
+namespace ArmaForces.Boderator.Core.Signups.Implementation.Query
 {
     internal class SignupsQueryRepository : ISignupsQueryRepository
     {

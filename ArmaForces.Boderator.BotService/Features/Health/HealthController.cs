@@ -12,7 +12,7 @@ namespace ArmaForces.Boderator.BotService.Features.Health
         /// <summary>
         /// Responds to a ping.
         /// </summary>
-        [HttpGet("ping")]
+        [HttpGet("ping", Name = "Ping")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult Ping() => Ok("pong");
     }

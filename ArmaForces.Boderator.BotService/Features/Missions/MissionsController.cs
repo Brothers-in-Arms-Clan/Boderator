@@ -5,6 +5,7 @@ using ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 using ArmaForces.Boderator.BotService.Features.Missions.Mappers;
 using ArmaForces.Boderator.Core.Missions;
 using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArmaForces.Boderator.BotService.Features.Missions
@@ -15,11 +16,13 @@ namespace ArmaForces.Boderator.BotService.Features.Missions
     [Route("api/[controller]")]
     public class MissionsController : Controller
     {
-        private readonly IMissionService _missionService;
-        
-        public MissionsController(IMissionService missionService)
+        private readonly IMissionCommandService _missionCommandService;
+        private readonly IMissionQueryService _missionQueryService;
+
+        public MissionsController(IMissionCommandService missionCommandService, IMissionQueryService missionQueryService)
         {
-            _missionService = missionService;
+            _missionCommandService = missionCommandService;
+            _missionQueryService = missionQueryService;
         }
 
         /// <summary>
@@ -27,9 +30,9 @@ namespace ArmaForces.Boderator.BotService.Features.Missions
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost(Name = "Create Mission")]
         public async Task<ActionResult<MissionDto>> CreateMission([FromBody] MissionCreateRequestDto request)
-            => await _missionService.CreateMission(MissionMapper.Map(request))
+            => await _missionCommandService.CreateMission(MissionMapper.Map(request))
                 .Map(MissionMapper.Map)
                 .Match<ActionResult<MissionDto>, MissionDto>(
                     onSuccess: mission => Created(mission.MissionId.ToString(), mission),
@@ -39,7 +42,7 @@ namespace ArmaForces.Boderator.BotService.Features.Missions
         /// 
         /// </summary>
         /// <returns>Updated mission data.</returns>
-        [HttpPatch("{missionId:int}")]
+        [HttpPatch("{missionId:int}", Name = "Update Mission")]
         public ActionResult<MissionDto> UpdateMission(int missionId)
         {
             throw new NotImplementedException();
@@ -49,7 +52,7 @@ namespace ArmaForces.Boderator.BotService.Features.Missions
         /// 
         /// </summary>
         /// <returns>Deleted mission data.</returns>
-        [HttpDelete("{missionId:int}")]
+        [HttpDelete("{missionId:int}", Name = "Delete Mission")]
         public ActionResult<MissionDto> DeleteMission(int missionId)
         {
             throw new NotImplementedException();
@@ -59,22 +62,24 @@ namespace ArmaForces.Boderator.BotService.Features.Missions
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet(Name = "Get Missions")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<MissionDto>>> GetMissions()
-            => await _missionService.GetMissions()
+            => await _missionQueryService.GetMissions()
                 .Map(MissionMapper.Map)
                 .Match<ActionResult<List<MissionDto>>, List<MissionDto>>(
                     onSuccess: missions => Ok(missions),
                     onFailure: error => BadRequest(error));
 
         /// <summary>
-        /// 
+        /// Retrieves mission with given <paramref name="missionId"/>.
         /// </summary>
-        /// <param name="missionId"></param>
+        /// <param name="missionId">Unique identifier of a mission</param>
         /// <returns></returns>
-        [HttpGet("{missionId:int}")]
+        [HttpGet("{missionId:int}", Name = "Get Mission")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<MissionDto>> GetMission(int missionId)
-            => await _missionService.GetMission(missionId)
+            => await _missionQueryService.GetMission(missionId)
                 .Map(MissionMapper.Map)
                 .Match<ActionResult<MissionDto>, MissionDto>(
                     onSuccess: mission => Ok(mission),

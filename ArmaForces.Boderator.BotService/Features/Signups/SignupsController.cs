@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.BotService.Features.Signups.DTOs;
+using ArmaForces.Boderator.Core.Signups;
 using ArmaForces.Boderator.Core.Signups.Models;
-using ArmaForces.Boderator.Core.Signups.Query;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArmaForces.Boderator.BotService.Features.Signups
 {
+    /// <summary>
+    /// Allows signups data retrieval and creation.
+    /// </summary>
+    [Route("api/[controller]")]
     public class SignupsController : ControllerBase
     {
         private readonly ISignupsQueryService _signupsQueryService;
@@ -21,7 +25,7 @@ namespace ArmaForces.Boderator.BotService.Features.Signups
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost(Name = "Create Signup")]
         public ActionResult CreateSignup([FromBody] SignupCreateRequestDto request)
         {
             throw new NotImplementedException();
@@ -32,7 +36,7 @@ namespace ArmaForces.Boderator.BotService.Features.Signups
         /// </summary>
         /// <param name="signupId"></param>
         /// <returns></returns>
-        [HttpPatch("{signupId:int}")]
+        [HttpPatch("{signupId:int}", Name = "Update Signup")]
         public ActionResult ModifySignup(int signupId)
         {
             throw new NotImplementedException();
@@ -43,7 +47,7 @@ namespace ArmaForces.Boderator.BotService.Features.Signups
         /// </summary>
         /// <param name="signupId"></param>
         /// <returns></returns>
-        [HttpDelete("{signupId:int}")]
+        [HttpDelete("{signupId:int}", Name = "Delete Signup")]
         public ActionResult DeleteSignup(int signupId)
         {
             throw new NotImplementedException();
@@ -54,7 +58,7 @@ namespace ArmaForces.Boderator.BotService.Features.Signups
         /// </summary>
         /// <param name="signupId"></param>
         /// <returns></returns>
-        [HttpGet("{signupId:int}")]
+        [HttpGet("{signupId:int}", Name = "Get Signup")]
         public async Task<ActionResult<Signup>> GetSignup(int signupId)
             => await _signupsQueryService.GetSignup(signupId);
 
@@ -62,7 +66,7 @@ namespace ArmaForces.Boderator.BotService.Features.Signups
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet(Name = "Get Signups")]
         public ActionResult<List<Signup>> GetSignups()
         {
             throw new NotImplementedException();
