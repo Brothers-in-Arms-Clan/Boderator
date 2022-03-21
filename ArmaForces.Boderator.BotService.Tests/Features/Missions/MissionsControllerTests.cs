@@ -4,7 +4,7 @@ using ArmaForces.Boderator.BotService.Tests.TestUtilities.TestBases;
 using ArmaForces.Boderator.BotService.Tests.TestUtilities.TestFixtures;
 using ArmaForces.Boderator.Core.Tests.TestUtilities;
 using AutoFixture;
-using FluentAssertions;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace ArmaForces.Boderator.BotService.Tests.Features.Missions
@@ -26,7 +26,7 @@ namespace ArmaForces.Boderator.BotService.Tests.Features.Missions
             
             var result = await HttpPostAsync("api/missions", missionCreateRequestWithoutOwner);
 
-            result.ShouldBeFailure("Bad Request");
+            result.ShouldBeFailure();
         }
 
         [Fact, Trait("Category", "Integration")]

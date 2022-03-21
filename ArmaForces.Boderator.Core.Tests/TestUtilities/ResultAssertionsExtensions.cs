@@ -6,6 +6,16 @@ namespace ArmaForces.Boderator.Core.Tests.TestUtilities
 {
     public static class ResultAssertionsExtensions
     {
+        public static void ShouldBeFailure(this Result result)
+        {
+            using var scope = new AssertionScope();
+
+            if (result.IsSuccess)
+            {
+                result.IsSuccess.Should().BeFalse();
+            }
+        }
+        
         public static void ShouldBeFailure(this Result result, string expectedError)
         {
             using var scope = new AssertionScope();
