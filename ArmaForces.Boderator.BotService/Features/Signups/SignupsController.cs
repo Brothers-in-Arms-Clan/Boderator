@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.BotService.Features.Signups.DTOs;
+using ArmaForces.Boderator.BotService.Features.Signups.Mappers;
 using ArmaForces.Boderator.Core.Signups;
 using ArmaForces.Boderator.Core.Signups.Models;
+using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArmaForces.Boderator.BotService.Features.Signups
@@ -59,8 +61,12 @@ namespace ArmaForces.Boderator.BotService.Features.Signups
         /// <param name="signupId"></param>
         /// <returns></returns>
         [HttpGet("{signupId:int}", Name = "Get Signup")]
-        public async Task<ActionResult<Signup>> GetSignup(int signupId)
-            => await _signupsQueryService.GetSignup(signupId);
+        public async Task<ActionResult<SignupDto>> GetSignup(int signupId)
+            => await _signupsQueryService.GetSignup(signupId)
+                .Map(SignupsMapper.Map)
+                .Match<ActionResult<SignupDto>, SignupDto>(
+                    onSuccess: signup => Ok(signup),
+                    onFailure: error => BadRequest(error));
 
         /// <summary>
         /// 

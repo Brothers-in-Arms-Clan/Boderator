@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Signups.Models;
+using CSharpFunctionalExtensions;
 
 namespace ArmaForces.Boderator.Core.Signups.Implementation.Query
 {
@@ -13,10 +14,11 @@ namespace ArmaForces.Boderator.Core.Signups.Implementation.Query
             _signupsQueryRepository = signupsQueryRepository;
         }
 
-        public Task<Signup> GetSignup(int signupId)
-            => _signupsQueryRepository.GetSignup(signupId);
+        public async Task<Result<Signup>> GetSignup(int signupId)
+            => await _signupsQueryRepository.GetSignup(signupId)
+               ?? Result.Failure<Signup>($"Signup with ID {signupId} not found");
 
-        public async Task<List<Signup>> GetOpenSignups()
+        public async Task<Result<List<Signup>>> GetOpenSignups()
             => await _signupsQueryRepository.GetOpenSignups();
     }
 }
