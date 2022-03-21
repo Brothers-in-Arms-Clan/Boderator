@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace ArmaForces.Boderator.DAO
+namespace ArmaForces.Boderator.Core
 {
     public class BoderatorContext : DbContext
     {
