@@ -26,7 +26,7 @@ namespace ArmaForces.Boderator.Core.Signups.Implementation.Query
                 .Where(x => x.CloseDate > DateTime.Now)
                 .ToListAsync();
 
-        public async Task<Signup?> GetSignup(int signupId)
+        public async Task<Signup?> GetSignup(long signupId)
             => await _context.Signups
                 .FindAsync(signupId)
                 .AsTask();

@@ -14,7 +14,7 @@ namespace ArmaForces.Boderator.Core.Signups.Implementation.Query
             _signupsQueryRepository = signupsQueryRepository;
         }
 
-        public async Task<Result<Signup>> GetSignup(int signupId)
+        public async Task<Result<Signup>> GetSignup(long signupId)
             => await _signupsQueryRepository.GetSignup(signupId)
                ?? Result.Failure<Signup>($"Signup with ID {signupId} not found");
 

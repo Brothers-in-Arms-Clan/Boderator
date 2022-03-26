@@ -20,6 +20,12 @@ namespace ArmaForces.Boderator.BotService.Features.Signups.DTOs
         /// </summary>
         [JsonProperty(Required = Required.DisallowNull)]
         public MissionCreateRequestDto? Mission { get; set; }
+        
+        /// <summary>
+        /// Desired status of signups.
+        /// </summary>
+        [JsonProperty(Required = Required.DisallowNull)]
+        public SignupStatus? SignupStatus { get; set; }
 
         /// <summary>
         /// Starting date of signup.

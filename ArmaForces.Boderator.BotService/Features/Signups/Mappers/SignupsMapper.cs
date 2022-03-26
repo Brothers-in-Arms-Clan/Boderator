@@ -22,7 +22,9 @@ public static class SignupsMapper
         => new()
         {
             Name = team.Name,
-            Slots = Map(team.Slots)
+            Slots = Map(team.Slots),
+            Vehicle = team.Vehicle,
+            RequiredDlcs = team.RequiredDlcs
         };
 
     public static List<TeamDto> Map(IEnumerable<Team> teams)
@@ -31,8 +33,11 @@ public static class SignupsMapper
     public static SlotDto Map(Slot slot)
         => new()
         {
+            SlotId = slot.SlotId,
             Name = slot.Name,
-            Occupant = slot.Occupant
+            Occupant = slot.Occupant,
+            Vehicle = slot.Vehicle,
+            RequiredDlcs = slot.RequiredDlcs
         };
 
     public static List<SlotDto> Map(IEnumerable<Slot> slots)

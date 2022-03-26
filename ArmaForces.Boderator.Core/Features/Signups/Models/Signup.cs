@@ -7,6 +7,8 @@ namespace ArmaForces.Boderator.Core.Signups.Models
     public record Signup
     {
         public int SignupsId { get; init; }
+    
+        public SignupStatus SignupStatus { get; init; }
         
         public DateTime StartDate { get; init; }
         

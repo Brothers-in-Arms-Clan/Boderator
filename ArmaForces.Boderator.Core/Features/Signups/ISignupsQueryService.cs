@@ -7,7 +7,7 @@ namespace ArmaForces.Boderator.Core.Signups
 {
     public interface ISignupsQueryService
     {
-        Task<Result<Signup>> GetSignup(int signupId);
+        Task<Result<Signup>> GetSignup(long signupId);
         
         Task<Result<List<Signup>>> GetOpenSignups();
     }
