@@ -1,6 +1,8 @@
-﻿namespace ArmaForces.Boderator.Core.Missions.Models;
+﻿using System;
 
-public enum SignupsStatus
+namespace ArmaForces.Boderator.Core.Missions.Models;
+
+public enum SignupsStatus : ushort
 {
     Prebeton,
     

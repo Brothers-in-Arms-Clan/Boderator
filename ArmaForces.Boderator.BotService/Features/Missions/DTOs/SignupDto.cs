@@ -8,7 +8,7 @@ public record SignupDto
 {
     public long SignupId { get; init; }
     
-    public SignupsStatus SignupsStatus { get; init; }
+    public SignupsStatus Status { get; init; }
     
     public DateTime? StartDate { get; init; }
     

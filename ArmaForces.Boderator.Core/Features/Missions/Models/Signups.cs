@@ -6,8 +6,8 @@ namespace ArmaForces.Boderator.Core.Missions.Models;
 public record Signups
 {
     public long SignupsId { get; init; }
-    
-    public SignupsStatus SignupsStatus { get; init; }
+
+    public ushort Status { get; init; } = (ushort) SignupsStatus.Closed;
         
     public DateTime StartDate { get; init; }
         

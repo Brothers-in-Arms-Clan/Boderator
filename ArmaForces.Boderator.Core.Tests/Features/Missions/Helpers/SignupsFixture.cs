@@ -11,7 +11,7 @@ internal static class SignupsFixture
         return new Signups
         {
             MissionId = missionId,
-            SignupsStatus = SignupsStatus.Open,
+            Status = (int) SignupsStatus.Open,
             StartDate = DateTime.Now,
             CloseDate = DateTime.Now.AddHours(1),
             Teams = new List<Team>()

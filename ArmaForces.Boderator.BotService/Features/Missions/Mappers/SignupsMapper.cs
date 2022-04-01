@@ -13,6 +13,7 @@ public static class SignupsMapper
             : new SignupDto
             {
                 SignupId = signups.SignupsId,
+                Status = (SignupsStatus) signups.Status,
                 StartDate = signups.StartDate,
                 CloseDate = signups.CloseDate,
                 MissionId = signups.MissionId,
