@@ -4,7 +4,7 @@ namespace ArmaForces.Boderator.Core.Missions.Models;
 
 public record Mission
 {
-    public int MissionId { get; init; }
+    public long MissionId { get; init; }
 
     public string Title { get; init; } = string.Empty;
 

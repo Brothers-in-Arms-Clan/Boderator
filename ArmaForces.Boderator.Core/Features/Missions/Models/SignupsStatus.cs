@@ -1,6 +1,6 @@
 ﻿namespace ArmaForces.Boderator.Core.Missions.Models;
 
-public enum SignupStatus
+public enum SignupsStatus
 {
     Prebeton,
     

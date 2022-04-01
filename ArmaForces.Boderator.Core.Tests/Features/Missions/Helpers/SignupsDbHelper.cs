@@ -6,14 +6,18 @@ namespace ArmaForces.Boderator.Core.Tests.Features.Missions.Helpers;
 
 internal class SignupsDbHelper
 {
+    private readonly MissionsDbHelper _missionsDbHelper;
     private readonly MissionContext _missionContext;
 
-    public SignupsDbHelper(MissionContext missionContext)
+    public SignupsDbHelper(
+        MissionsDbHelper missionsDbHelper,
+        MissionContext missionContext)
     {
+        _missionsDbHelper = missionsDbHelper;
         _missionContext = missionContext;
     }
 
-    public async Task<Signups> CreateTestSignup(int missionId)
+    public async Task<Signups> CreateTestSignup(long missionId)
     {
         var signup = SignupsFixture.CreateTestSignup(missionId);
 
@@ -21,5 +25,11 @@ internal class SignupsDbHelper
         await _missionContext.SaveChangesAsync();
 
         return addedEntry.Entity;
+    }
+
+    public async Task<Signups> CreateTestSignup()
+    {
+        var mission = await _missionsDbHelper.CreateTestMission();
+        return await CreateTestSignup(mission.MissionId);
     }
 }

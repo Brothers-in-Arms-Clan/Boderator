@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Missions;
+using ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
+using ArmaForces.Boderator.Core.Missions.Models;
 using ArmaForces.Boderator.Core.Tests.Features.Missions.Helpers;
 using ArmaForces.Boderator.Core.Tests.TestUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace ArmaForces.Boderator.Core.Tests.Features.Missions;
+namespace ArmaForces.Boderator.Core.Tests.Features.Missions.Implementation;
 
 public class SignupsQueryServiceIntegrationTests : DatabaseTestBase
 {
@@ -20,14 +22,15 @@ public class SignupsQueryServiceIntegrationTests : DatabaseTestBase
         _signupsDbHelper = ServiceProvider.GetRequiredService<SignupsDbHelper>();
         _signupsQueryService = ServiceProvider.GetRequiredService<ISignupsQueryService>();
 
-        // DbContextTransaction = _missionContext.Database.BeginTransaction();
+        var missionContext = ServiceProvider.GetRequiredService<MissionContext>();
+        DbContextTransaction = missionContext.Database.BeginTransaction();
     }
     
     [Fact, Trait("Category", "Integration")]
     public async Task GetOpenSignups_NoSignupsInDatabase_ReturnsEmptyList()
     {
         var result = await _signupsQueryService.GetOpenSignups();
-        result.ShouldBeSuccess(new List<Core.Missions.Models.Signups>());
+        result.ShouldBeSuccess(new List<Signups>());
     }
     
     [Fact, Trait("Category", "Integration")]
@@ -37,6 +40,24 @@ public class SignupsQueryServiceIntegrationTests : DatabaseTestBase
         var signup = await _signupsDbHelper.CreateTestSignup(testMission.MissionId);
 
         var result = await _signupsQueryService.GetOpenSignups();
-        result.ShouldBeSuccess(new List<Core.Missions.Models.Signups>{signup});
+        result.ShouldBeSuccess(new List<Signups>{signup});
+    }
+
+    [Fact, Trait("Category", "Integration")]
+    public async Task GetSignup_SignupWithGivenIdDoesntExist_ReturnsFailure()
+    {
+        const int nonExistingSignupsId = 0;
+        var result = await _signupsQueryService.GetSignups(nonExistingSignupsId);
+        
+        result.ShouldBeFailure($"Signup with ID {nonExistingSignupsId} not found");
+    }
+
+    [Fact, Trait("Category", "Integration")]
+    public async Task GetSignup_SignupWithGivenIdExists_ReturnsSignups()
+    {
+        var signups = await _signupsDbHelper.CreateTestSignup();
+        var result = await _signupsQueryService.GetSignups(signups.SignupsId);
+        
+        result.ShouldBeSuccess(signups);
     }
 }

@@ -7,7 +7,7 @@ namespace ArmaForces.Boderator.BotService.Features.Missions.Mappers;
 
 public static class SignupsMapper
 {
-    public static SignupDto Map(Core.Missions.Models.Signups signups)
+    public static SignupDto Map(Signups signups)
         => new()
         {
             SignupId = signups.SignupsId,

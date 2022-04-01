@@ -4,7 +4,7 @@ namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
 public record MissionDto
 {
-    public int MissionId { get; init; }
+    public long MissionId { get; init; }
 
     public string Title { get; init; } = string.Empty;
         

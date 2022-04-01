@@ -16,7 +16,7 @@ internal class MissionQueryService : IMissionQueryService
         _missionQueryRepository = missionQueryRepository;
     }
     
-    public async Task<Result<Mission>> GetMission(int missionId)
+    public async Task<Result<Mission>> GetMission(long missionId)
         => await _missionQueryRepository.GetMission(missionId)
            ?? Result.Failure<Mission>($"Mission with ID {missionId} does not exist.");
 

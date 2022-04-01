@@ -55,7 +55,7 @@ public class SignupsController : ControllerBase
     /// <returns></returns>
     [HttpGet("{signupId:long}", Name = "Get Signup")]
     public async Task<ActionResult<SignupDto>> GetSignup(long signupId)
-        => await _signupsQueryService.GetSignup(signupId)
+        => await _signupsQueryService.GetSignups(signupId)
             .Map(SignupsMapper.Map)
             .Match<ActionResult<SignupDto>, SignupDto>(
                 onSuccess: signup => Ok(signup),

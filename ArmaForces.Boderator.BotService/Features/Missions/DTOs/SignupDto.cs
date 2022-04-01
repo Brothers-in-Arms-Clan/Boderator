@@ -6,9 +6,9 @@ namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
 public record SignupDto
 {
-    public int SignupId { get; init; }
+    public long SignupId { get; init; }
     
-    public SignupStatus SignupStatus { get; init; }
+    public SignupsStatus SignupsStatus { get; init; }
     
     public DateTime? StartDate { get; init; }
     
@@ -16,5 +16,5 @@ public record SignupDto
 
     public List<TeamDto> Teams { get; init; } = new();
     
-    public int MissionId { get; init; }
+    public long MissionId { get; init; }
 }

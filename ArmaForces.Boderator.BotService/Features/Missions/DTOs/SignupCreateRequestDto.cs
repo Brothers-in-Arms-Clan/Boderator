@@ -24,7 +24,7 @@ public class SignupCreateRequestDto
     /// Desired status of signups.
     /// </summary>
     [JsonProperty(Required = Required.DisallowNull)]
-    public SignupStatus? SignupStatus { get; set; }
+    public SignupsStatus? SignupsStatus { get; set; }
 
     /// <summary>
     /// Starting date of signup.

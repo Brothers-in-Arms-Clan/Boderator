@@ -15,7 +15,7 @@ internal class MissionQueryRepository : IMissionQueryRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Mission?> GetMission(int missionId)
+    public async Task<Mission?> GetMission(long missionId)
         => await _context.Missions.FindAsync(missionId);
 
     public async Task<List<Mission>> GetMissions()

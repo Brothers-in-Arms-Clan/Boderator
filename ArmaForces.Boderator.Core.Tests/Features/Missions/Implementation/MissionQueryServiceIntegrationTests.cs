@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Missions;
+using ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
 using ArmaForces.Boderator.Core.Missions.Models;
 using ArmaForces.Boderator.Core.Tests.Features.Missions.Helpers;
 using ArmaForces.Boderator.Core.Tests.TestUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace ArmaForces.Boderator.Core.Tests.Features.Missions;
+namespace ArmaForces.Boderator.Core.Tests.Features.Missions.Implementation;
 
 public class MissionQueryServiceIntegrationTests : DatabaseTestBase
 {
@@ -19,7 +20,8 @@ public class MissionQueryServiceIntegrationTests : DatabaseTestBase
         _missionsDbHelper = ServiceProvider.GetRequiredService<MissionsDbHelper>();
         _missionQueryService = ServiceProvider.GetRequiredService<IMissionQueryService>();
 
-        // DbContextTransaction = _missionContext.Database.BeginTransaction();
+        var missionContext = ServiceProvider.GetRequiredService<MissionContext>();
+        DbContextTransaction = missionContext.Database.BeginTransaction();
     }
     
     [Fact, Trait("Category", "Integration")]

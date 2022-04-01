@@ -6,12 +6,12 @@ namespace ArmaForces.Boderator.Core.Tests.Features.Missions.Helpers;
 
 internal static class SignupsFixture
 {
-    public static Signups CreateTestSignup(int missionId)
+    public static Signups CreateTestSignup(long missionId)
     {
         return new Signups
         {
             MissionId = missionId,
-            SignupStatus = SignupStatus.Open,
+            SignupsStatus = SignupsStatus.Open,
             StartDate = DateTime.Now,
             CloseDate = DateTime.Now.AddHours(1),
             Teams = new List<Team>()

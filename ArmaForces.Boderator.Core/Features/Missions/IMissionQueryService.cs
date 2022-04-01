@@ -7,7 +7,7 @@ namespace ArmaForces.Boderator.Core.Missions;
 
 public interface IMissionQueryService
 {
-    Task<Result<Mission>> GetMission(int missionId);
+    Task<Result<Mission>> GetMission(long missionId);
 
     Task<Result<List<Mission>>> GetMissions();
 }

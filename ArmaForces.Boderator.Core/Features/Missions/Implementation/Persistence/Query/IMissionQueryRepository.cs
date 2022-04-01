@@ -6,7 +6,7 @@ namespace ArmaForces.Boderator.Core.Missions.Implementation.Persistence.Query;
 
 internal interface IMissionQueryRepository
 {
-    Task<Mission?> GetMission(int missionId);
+    Task<Mission?> GetMission(long missionId);
         
     Task<List<Mission>> GetMissions();
 }
