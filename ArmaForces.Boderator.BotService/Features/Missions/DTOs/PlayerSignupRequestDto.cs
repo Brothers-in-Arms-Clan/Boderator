@@ -1,4 +1,4 @@
-﻿namespace ArmaForces.Boderator.BotService.Features.Signups.DTOs;
+﻿namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
 public record PlayerSignupRequestDto
 {

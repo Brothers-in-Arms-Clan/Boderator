@@ -9,5 +9,7 @@ namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs
         public string Title { get; init; } = string.Empty;
         
         public DateTime? MissionDate { get; init; }
+        
+        public SignupDto? Signups { get; init; }
     }
 }

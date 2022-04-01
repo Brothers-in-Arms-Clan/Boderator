@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ArmaForces.Boderator.BotService.Features.Missions.DTOs;
-using ArmaForces.Boderator.Core.Signups.Models;
+using ArmaForces.Boderator.Core.Missions.Models;
 
-namespace ArmaForces.Boderator.BotService.Features.Signups.DTOs;
+namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
 public record SignupDto
 {
@@ -15,7 +14,7 @@ public record SignupDto
     
     public DateTime? CloseDate { get; init; }
 
-    public MissionDto Mission { get; init; } = new();
-
     public List<TeamDto> Teams { get; init; } = new();
+    
+    public int MissionId { get; init; }
 }

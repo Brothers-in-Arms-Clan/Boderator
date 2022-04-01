@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ArmaForces.Boderator.Core.Missions.Models;
 
-namespace ArmaForces.Boderator.Core.Signups.Models
+namespace ArmaForces.Boderator.Core.Missions.Models
 {
-    public record Signup
+    public record Signups
     {
         public int SignupsId { get; init; }
     
@@ -13,8 +12,8 @@ namespace ArmaForces.Boderator.Core.Signups.Models
         public DateTime StartDate { get; init; }
         
         public DateTime CloseDate { get; init; }
-
-        public Mission Mission { get; init; } = new Mission();
+        
+        public int MissionId { get; init; }
 
         public IReadOnlyList<Team> Teams { get; init; } = new List<Team>();
     }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Missions;
 using ArmaForces.Boderator.Core.Missions.Implementation;
 using ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
+using ArmaForces.Boderator.Core.Missions.Implementation.Persistence.Query;
 using ArmaForces.Boderator.Core.Missions.Models;
 using ArmaForces.Boderator.Core.Tests.TestUtilities;
 using AutoFixture;

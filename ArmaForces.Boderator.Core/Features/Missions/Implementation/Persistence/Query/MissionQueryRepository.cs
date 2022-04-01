@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Missions.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
+namespace ArmaForces.Boderator.Core.Missions.Implementation.Persistence.Query;
 
 internal class MissionQueryRepository : IMissionQueryRepository
 {

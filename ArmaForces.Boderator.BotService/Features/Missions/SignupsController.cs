@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ArmaForces.Boderator.BotService.Features.Signups.DTOs;
-using ArmaForces.Boderator.BotService.Features.Signups.Mappers;
-using ArmaForces.Boderator.Core.Signups;
-using ArmaForces.Boderator.Core.Signups.Models;
+using ArmaForces.Boderator.BotService.Features.Missions.DTOs;
+using ArmaForces.Boderator.BotService.Features.Missions.Mappers;
+using ArmaForces.Boderator.Core.Missions;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ArmaForces.Boderator.BotService.Features.Signups
+namespace ArmaForces.Boderator.BotService.Features.Missions
 {
     /// <summary>
     /// Allows signups data retrieval and creation.
@@ -67,7 +66,7 @@ namespace ArmaForces.Boderator.BotService.Features.Signups
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "Get Signups")]
-        public ActionResult<List<Signup>> GetSignups()
+        public ActionResult<List<Core.Missions.Models.Signups>> GetSignups()
             => throw new NotImplementedException();
 
         /// <summary>

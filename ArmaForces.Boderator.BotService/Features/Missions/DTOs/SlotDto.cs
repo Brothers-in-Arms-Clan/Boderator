@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ArmaForces.Boderator.Core.Dlcs.Models;
 
-namespace ArmaForces.Boderator.BotService.Features.Signups.DTOs;
+namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
 public record SlotDto
 {
@@ -8,7 +9,7 @@ public record SlotDto
         
     public string Name { get; init; } = string.Empty;
 
-    public List<object> RequiredDlcs { get; init; } = new();
+    public List<Dlc> RequiredDlcs { get; init; } = new();
 
     public string Vehicle { get; init; } = string.Empty;
     

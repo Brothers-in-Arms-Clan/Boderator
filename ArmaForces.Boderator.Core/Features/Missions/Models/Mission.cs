@@ -13,5 +13,7 @@ namespace ArmaForces.Boderator.Core.Missions.Models
         public string? ModsetName { get; init; } = string.Empty;
 
         public string Owner { get; init; } = string.Empty;
+        
+        public Signups? Signups { get; init; }
     }
 }

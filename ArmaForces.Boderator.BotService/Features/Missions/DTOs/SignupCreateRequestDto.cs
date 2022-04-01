@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ArmaForces.Boderator.BotService.Features.Missions.DTOs;
-using ArmaForces.Boderator.Core.Signups.Models;
+using ArmaForces.Boderator.Core.Missions.Models;
 using Newtonsoft.Json;
 
-namespace ArmaForces.Boderator.BotService.Features.Signups.DTOs
+namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs
 {
     public class SignupCreateRequestDto
     {

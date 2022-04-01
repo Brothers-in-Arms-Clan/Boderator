@@ -1,5 +1,6 @@
 ﻿using System;
 using ArmaForces.Boderator.Core.DependencyInjection;
+using ArmaForces.Boderator.Core.Tests.Features.Missions.Helpers;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +10,8 @@ public class DatabaseTestBase : IDisposable
 {
     protected readonly IServiceProvider ServiceProvider = new ServiceCollection()
         .AddBoderatorCore(_ => TestDatabaseConstants.TestConnectionString)
+        .AddScoped<MissionsDbHelper>()
+        .AddScoped<SignupsDbHelper>()
         .BuildServiceProvider();
 
     protected IDbContextTransaction? DbContextTransaction { get; init; }

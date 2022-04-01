@@ -1,6 +1,5 @@
 using System;
 using ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
-using ArmaForces.Boderator.Core.Signups.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,7 +11,6 @@ namespace ArmaForces.Boderator.Core.DependencyInjection
             Func<IServiceProvider, string> connectionStringFactory)
             => services
                 .AddDbContext<MissionContext>(connectionStringFactory)
-                .AddDbContext<SignupsContext>(connectionStringFactory)
                 .AutoAddInterfacesAsScoped(typeof(BoderatorCoreServiceExtensions).Assembly);
 
         private static IServiceCollection AddDbContext<T>(this IServiceCollection services,

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
+using ArmaForces.Boderator.Core.Missions.Implementation.Persistence.Query;
 using ArmaForces.Boderator.Core.Missions.Models;
 using CSharpFunctionalExtensions;
 

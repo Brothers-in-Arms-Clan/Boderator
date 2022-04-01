@@ -12,5 +12,12 @@ namespace ArmaForces.Boderator.Core.Missions.Implementation.Persistence
         }
         
         public DbSet<Mission> Missions { get; set; }
+        public DbSet<Signups> Signups { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Team>()
+                .HasKey(x => new {x.SignupsId, x.Name});
+        }
     }
 }

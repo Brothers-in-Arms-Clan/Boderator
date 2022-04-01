@@ -1,4 +1,4 @@
-﻿namespace ArmaForces.Boderator.Core.Signups.Models;
+﻿namespace ArmaForces.Boderator.Core.Missions.Models;
 
 public enum SignupStatus
 {

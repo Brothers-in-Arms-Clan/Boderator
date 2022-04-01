@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ArmaForces.Boderator.BotService.Features.Missions.Mappers;
-using ArmaForces.Boderator.BotService.Features.Signups.DTOs;
-using ArmaForces.Boderator.Core.Signups.Models;
+using ArmaForces.Boderator.BotService.Features.Missions.DTOs;
+using ArmaForces.Boderator.Core.Missions.Models;
 
-namespace ArmaForces.Boderator.BotService.Features.Signups.Mappers;
+namespace ArmaForces.Boderator.BotService.Features.Missions.Mappers;
 
 public static class SignupsMapper
 {
-    public static SignupDto Map(Signup signup)
+    public static SignupDto Map(Core.Missions.Models.Signups signups)
         => new()
         {
-            SignupId = signup.SignupsId,
-            StartDate = signup.StartDate,
-            CloseDate = signup.CloseDate,
-            Mission = MissionMapper.Map(signup.Mission),
-            Teams = Map(signup.Teams)
+            SignupId = signups.SignupsId,
+            StartDate = signups.StartDate,
+            CloseDate = signups.CloseDate,
+            MissionId = signups.MissionId,
+            Teams = Map(signups.Teams)
         };
 
     public static TeamDto Map(Team team)
@@ -23,8 +22,7 @@ public static class SignupsMapper
         {
             Name = team.Name,
             Slots = Map(team.Slots),
-            Vehicle = team.Vehicle,
-            RequiredDlcs = team.RequiredDlcs
+            Vehicle = team.Vehicle
         };
 
     public static List<TeamDto> Map(IEnumerable<Team> teams)
@@ -36,8 +34,7 @@ public static class SignupsMapper
             SlotId = slot.SlotId,
             Name = slot.Name,
             Occupant = slot.Occupant,
-            Vehicle = slot.Vehicle,
-            RequiredDlcs = slot.RequiredDlcs
+            Vehicle = slot.Vehicle
         };
 
     public static List<SlotDto> Map(IEnumerable<Slot> slots)
