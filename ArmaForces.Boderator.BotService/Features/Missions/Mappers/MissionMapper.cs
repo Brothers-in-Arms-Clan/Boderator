@@ -16,7 +16,9 @@ public static class MissionMapper
             ModsetName = mission.ModsetName,
             MissionDate = mission.MissionDate,
             MissionId = mission.MissionId,
-            Signups = SignupsMapper.Map(mission.Signups)
+            Signups = mission.Signups is null
+                ? null
+                : SignupsMapper.Map(mission.Signups)
         };
 
     public static List<MissionDto> Map(List<Mission> missions)
