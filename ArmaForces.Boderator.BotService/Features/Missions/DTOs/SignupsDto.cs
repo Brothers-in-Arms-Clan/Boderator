@@ -4,7 +4,7 @@ using ArmaForces.Boderator.Core.Missions.Models;
 
 namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
-public record SignupDto
+public record SignupsDto
 {
     public long SignupId { get; init; }
     

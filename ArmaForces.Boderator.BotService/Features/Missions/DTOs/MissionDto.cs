@@ -18,5 +18,5 @@ public record MissionDto
 
     public string Owner { get; init; } = string.Empty;
         
-    public SignupDto? Signups { get; init; }
+    public SignupsDto? Signups { get; init; }
 }

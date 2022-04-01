@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
-public class SignupCreateRequestDto
+public class SignupsCreateRequestDto
 {
     /// <summary>
     /// Id of the mission for which the signup will be created.

@@ -26,64 +26,64 @@ public class SignupsController : ControllerBase
     /// 
     /// </summary>
     /// <returns></returns>
-    [HttpPost(Name = "Create Signup")]
-    public ActionResult<long> CreateSignup([FromBody] SignupCreateRequestDto request)
+    [HttpPost(Name = "Create Signups")]
+    public ActionResult<long> CreateSignup([FromBody] SignupsCreateRequestDto request)
         => throw new NotImplementedException();
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="signupId"></param>
+    /// <param name="signupsId"></param>
     /// <returns></returns>
-    [HttpPatch("{signupId:long}", Name = "Update Signup")]
-    public ActionResult UpdateSignup(long signupId)
+    [HttpPatch("{signupsId:long}", Name = "Update Signups")]
+    public ActionResult UpdateSignup(long signupsId)
         => throw new NotImplementedException();
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="signupId"></param>
+    /// <param name="signupsId"></param>
     /// <returns></returns>
-    [HttpDelete("{signupId:long}", Name = "Delete Signup")]
-    public ActionResult DeleteSignup(long signupId)
+    [HttpDelete("{signupsId:long}", Name = "Delete Signups")]
+    public ActionResult DeleteSignup(long signupsId)
         => throw new NotImplementedException();
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="signupId"></param>
+    /// <param name="signupsId"></param>
     /// <returns></returns>
-    [HttpGet("{signupId:long}", Name = "Get Signup")]
-    public async Task<ActionResult<SignupDto>> GetSignup(long signupId)
-        => await _signupsQueryService.GetSignups(signupId)
+    [HttpGet("{signupsId:long}", Name = "Get Signups")]
+    public async Task<ActionResult<SignupsDto>> GetSignups(long signupsId)
+        => await _signupsQueryService.GetSignups(signupsId)
             .Map(SignupsMapper.Map)
-            .Match<ActionResult<SignupDto>, SignupDto>(
-                onSuccess: signup => Ok(signup),
+            .Match<ActionResult<SignupsDto>, SignupsDto>(
+                onSuccess: signups => Ok(signups),
                 onFailure: error => BadRequest(error));
 
     /// <summary>
     /// Returns all signups satisfying query parameters.
     /// </summary>
     /// <returns></returns>
-    [HttpGet(Name = "Get Signups")]
-    public ActionResult<List<Core.Missions.Models.Signups>> GetSignups()
+    [HttpGet(Name = "Query Signups")]
+    public ActionResult<List<SignupsDto>> QuerySignups()
         => throw new NotImplementedException();
 
     /// <summary>
     /// Signs up a player for a given slot.
     /// </summary>
-    [HttpPost("{signupId:long}/sign", Name = "Sign Player")]
-    public ActionResult SignPlayer(long signupId, [FromBody] PlayerSignupRequestDto request)
+    [HttpPost("{signupsId:long}/sign", Name = "Sign Player")]
+    public ActionResult SignPlayer(long signupsId, [FromBody] PlayerSignupRequestDto request)
         => throw new NotImplementedException();
 
-    [HttpPost("{signupId:long}/open", Name = "Open Signup")]
-    public ActionResult OpenSignup(long signupId)
+    [HttpPost("{signupsId:long}/open", Name = "Open Signups")]
+    public ActionResult OpenSignups(long signupsId)
         => throw new NotImplementedException();
         
     /// <summary>
     /// Immediately closes given signups.
     /// </summary>
-    [HttpPost("{signupId:long}/close", Name = "Close Signup")]
-    public ActionResult CloseSignup(long signupId)
+    [HttpPost("{signupsId:long}/close", Name = "Close Signups")]
+    public ActionResult CloseSignups(long signupsId)
         => throw new NotImplementedException();
 }
