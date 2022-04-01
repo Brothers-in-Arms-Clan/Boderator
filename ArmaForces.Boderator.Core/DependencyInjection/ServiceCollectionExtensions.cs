@@ -32,7 +32,7 @@ namespace ArmaForces.Boderator.Core.DependencyInjection
         public static IServiceCollection AutoAddInterfacesAsScoped(this IServiceCollection services, Assembly assembly)
         {
             assembly.DefinedTypes
-                .Where(x => x.ImplementedInterfaces.Any())
+                .Where(x => x.ImplementedInterfaces.Any(interfaceType => interfaceType.Assembly == assembly))
                 .SelectMany(
                     implementingClass => implementingClass.ImplementedInterfaces,
                     (implementingClass, implementedInterface) => new {implementedInterface, implementingClass})

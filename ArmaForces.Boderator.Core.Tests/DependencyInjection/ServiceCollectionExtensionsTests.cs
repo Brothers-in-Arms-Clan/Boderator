@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using ArmaForces.Boderator.Core.DependencyInjection;
 using FluentAssertions;
@@ -36,6 +37,19 @@ namespace ArmaForces.Boderator.Core.Tests.DependencyInjection
             AssertServiceRegisteredCorrectly<ITest2, Test2>(serviceCollection, ServiceLifetime.Singleton);
         }
 
+        [Fact, Trait("Category", "Unit")]
+        public void AutoAddInterfacesAsScoped_EmptyCollection_RegistersOnlyInterfacesFromThisAssembly()
+        {
+            var serviceCollection = new ServiceCollection()
+                .AutoAddInterfacesAsScoped(typeof(ServiceCollectionExtensionsTests).Assembly);
+            
+            using (new AssertionScope())
+            {
+                serviceCollection.Should()
+                    .OnlyContain(x => x.ServiceType.Assembly == typeof(ServiceCollectionExtensionsTests).Assembly);
+            }
+        }
+
         private static void AssertServiceRegisteredCorrectly<TService, TExpectedImplementation>(IServiceCollection serviceCollection, ServiceLifetime expectedLifetime)
         {
             var expectedServiceDescriptor = new ServiceDescriptor(typeof(TService), typeof(TExpectedImplementation), expectedLifetime);
@@ -45,6 +59,11 @@ namespace ArmaForces.Boderator.Core.Tests.DependencyInjection
                 .Which.Should()
                 .BeEquivalentTo(expectedServiceDescriptor, $"the service {nameof(TService)} was registered as {expectedLifetime} and should not be replaced");
         }
+        
+        /// <summary>
+        /// Used to check if interfaces from other assemblies aren't registered automatically when there is one implementation.
+        /// </summary>
+        private enum TestEnum { }
 
         private interface ITest1 { }
 
@@ -55,5 +74,13 @@ namespace ArmaForces.Boderator.Core.Tests.DependencyInjection
         private class Test1 : ITest1 { }
 
         private class Test2 : ITest1, ITest2 { }
+        
+        /// <summary>
+        /// Used to check if interfaces from other assemblies aren't registered automatically when there is one implementation.
+        /// </summary>
+        private class Test3 : ICloneable2
+        {
+            public object Clone() => throw new NotImplementedException();
+        }
     }
 }
