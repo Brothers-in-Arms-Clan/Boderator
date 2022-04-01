@@ -1,17 +1,14 @@
 using System;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using ArmaForces.Boderator.BotService.Configuration;
 using ArmaForces.Boderator.BotService.Documentation;
 using ArmaForces.Boderator.BotService.Features.DiscordClient.Infrastructure.DependencyInjection;
+using ArmaForces.Boderator.BotService.Filters;
 using ArmaForces.Boderator.Core.DependencyInjection;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -72,29 +69,6 @@ namespace ArmaForces.Boderator.BotService
             {
                 endpoints.MapControllers();
             });
-        }
-    }
-
-    public class ExceptionFilter : IExceptionFilter, IAsyncExceptionFilter
-    {
-        public Task OnExceptionAsync(ExceptionContext context)
-        {
-            OnException(context);
-            return Task.CompletedTask;
-        }
-
-        public void OnException(ExceptionContext context)
-        {
-            if (context.Exception is not ArgumentNullException) return;
-            
-            var error = new
-            {
-                Message = "Validation error",
-                Details = context.Exception.Message
-            };
-
-            context.Result = new BadRequestObjectResult(error);
-            context.ExceptionHandled = true;
         }
     }
 }
