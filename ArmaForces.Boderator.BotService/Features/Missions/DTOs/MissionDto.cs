@@ -1,15 +1,14 @@
 using System;
 
-namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs
-{
-    public record MissionDto
-    {
-        public int MissionId { get; init; }
+namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
-        public string Title { get; init; } = string.Empty;
+public record MissionDto
+{
+    public int MissionId { get; init; }
+
+    public string Title { get; init; } = string.Empty;
         
-        public DateTime? MissionDate { get; init; }
+    public DateTime? MissionDate { get; init; }
         
-        public SignupDto? Signups { get; init; }
-    }
+    public SignupDto? Signups { get; init; }
 }

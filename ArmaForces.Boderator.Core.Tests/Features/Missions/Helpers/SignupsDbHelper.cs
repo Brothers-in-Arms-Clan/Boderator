@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
 using ArmaForces.Boderator.Core.Missions.Models;
 
@@ -15,7 +13,7 @@ internal class SignupsDbHelper
         _missionContext = missionContext;
     }
 
-    public async Task<Core.Missions.Models.Signups> CreateTestSignup(int missionId)
+    public async Task<Signups> CreateTestSignup(int missionId)
     {
         var signup = SignupsFixture.CreateTestSignup(missionId);
 
@@ -23,20 +21,5 @@ internal class SignupsDbHelper
         await _missionContext.SaveChangesAsync();
 
         return addedEntry.Entity;
-    }
-}
-
-internal static class SignupsFixture
-{
-    public static Core.Missions.Models.Signups CreateTestSignup(int missionId)
-    {
-        return new Core.Missions.Models.Signups
-        {
-            MissionId = missionId,
-            SignupStatus = SignupStatus.Open,
-            StartDate = DateTime.Now,
-            CloseDate = DateTime.Now.AddHours(1),
-            Teams = new List<Team>()
-        };
     }
 }
