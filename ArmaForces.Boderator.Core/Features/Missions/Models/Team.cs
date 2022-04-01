@@ -10,5 +10,5 @@ public record Team
 
     public IReadOnlyList<Slot> Slots { get; init; } = new List<Slot>();
         
-    public int SignupsId { get; init; }
+    public long SignupsId { get; init; }
 }
