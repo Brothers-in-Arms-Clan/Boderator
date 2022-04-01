@@ -1,5 +1,5 @@
+using System.Linq;
 using System.Threading.Tasks;
-using ArmaForces.Boderator.Core.Missions.Implementation.Persistence;
 using ArmaForces.Boderator.Core.Missions.Implementation.Persistence.Command;
 using ArmaForces.Boderator.Core.Missions.Models;
 using CSharpFunctionalExtensions;
@@ -16,12 +16,24 @@ internal class MissionCommandService : IMissionCommandService
     }
 
     public async Task<Result<Mission>> CreateMission(MissionCreateRequest missionCreateRequest)
-        => await _missionCommandRepository.CreateMission(
+    {
+        return await ValidateRequest(missionCreateRequest)
+            .Bind(() => _missionCommandRepository.CreateMission(
             new Mission
             {
                 Title = missionCreateRequest.Title,
+                Description = missionCreateRequest.Description,
                 Owner = missionCreateRequest.Owner,
-                MissionTime = missionCreateRequest.MissionTime,
+                MissionDate = missionCreateRequest.MissionDate,
                 ModsetName = missionCreateRequest.ModsetName
-            });
+            }));
+    }
+
+    private static Result ValidateRequest(MissionCreateRequest missionCreateRequest)
+    {
+        if (missionCreateRequest.ModsetName?.Any(char.IsWhiteSpace) ?? false)
+            return Result.Failure($"{nameof(MissionCreateRequest.ModsetName)} cannot contain whitespace characters.");
+        
+        return Result.Success();
+    }
 }

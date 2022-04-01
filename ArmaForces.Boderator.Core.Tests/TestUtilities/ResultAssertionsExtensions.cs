@@ -15,6 +15,17 @@ namespace ArmaForces.Boderator.Core.Tests.TestUtilities
                 result.IsSuccess.Should().BeFalse();
             }
         }
+
+        public static void ShouldBeFailure<T>(this Result<T> result)
+        {
+            using var scope = new AssertionScope();
+
+            if (result.IsSuccess)
+            {
+                result.IsSuccess.Should().BeFalse();
+                result.Value.Should().BeNull();
+            }
+        }
         
         public static void ShouldBeFailure(this Result result, string expectedError)
         {
@@ -43,7 +54,7 @@ namespace ArmaForces.Boderator.Core.Tests.TestUtilities
                 result.Error.Should().Be(expectedError);
             }
         }
-        
+
         public static void ShouldBeSuccess(this Result result)
         {
             using var scope = new AssertionScope();
@@ -54,8 +65,21 @@ namespace ArmaForces.Boderator.Core.Tests.TestUtilities
                 result.Error.Should().BeNull();
             }
         }
-        
-        public static void ShouldBeSuccess<T>(this Result<T> result, T expectedValue)
+
+        public static void ShouldBeSuccess<T>(this Result<T> result)
+        {
+            using var scope = new AssertionScope();
+
+            if (result.IsFailure)
+            {
+                result.IsSuccess.Should().BeTrue();
+                result.Error.Should().BeNull();
+            }
+
+            result.Value.Should().NotBeNull();
+        }
+
+        public static void ShouldBeSuccess<T1, T2>(this Result<T1> result, T2 expectedValue)
         {
             using var scope = new AssertionScope();
 

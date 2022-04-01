@@ -15,7 +15,7 @@ public record MissionCreateRequest
 
     public string? Description { get; init; }
         
-    public DateTime? MissionTime { get; init; }
+    public DateTime? MissionDate { get; init; }
         
     public string? ModsetName { get; init; }
 

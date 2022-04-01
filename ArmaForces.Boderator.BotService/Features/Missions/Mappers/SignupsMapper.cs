@@ -7,15 +7,17 @@ namespace ArmaForces.Boderator.BotService.Features.Missions.Mappers;
 
 public static class SignupsMapper
 {
-    public static SignupDto Map(Signups signups)
-        => new()
-        {
-            SignupId = signups.SignupsId,
-            StartDate = signups.StartDate,
-            CloseDate = signups.CloseDate,
-            MissionId = signups.MissionId,
-            Teams = Map(signups.Teams)
-        };
+    public static SignupDto? Map(Signups? signups)
+        => signups is null
+            ? null
+            : new SignupDto
+            {
+                SignupId = signups.SignupsId,
+                StartDate = signups.StartDate,
+                CloseDate = signups.CloseDate,
+                MissionId = signups.MissionId,
+                Teams = Map(signups.Teams)
+            };
 
     public static TeamDto Map(Team team)
         => new()

@@ -11,20 +11,24 @@ public static class MissionMapper
         => new()
         {
             Title = mission.Title,
-            MissionDate = mission.MissionTime,
-            MissionId = mission.MissionId
+            Description = mission.Description,
+            Owner = mission.Owner,
+            ModsetName = mission.ModsetName,
+            MissionDate = mission.MissionDate,
+            MissionId = mission.MissionId,
+            Signups = SignupsMapper.Map(mission.Signups)
         };
 
     public static List<MissionDto> Map(List<Mission> missions)
         => missions.Select(Map).ToList();
 
     public static MissionCreateRequest Map(MissionCreateRequestDto request)
-        => new MissionCreateRequest
+        => new()
         {
             Title = request.Title,
             Description = request.Description,
             Owner = request.Owner,
             ModsetName = request.ModsetName,
-            MissionTime = request.MissionTime
+            MissionDate = request.MissionDate
         };
 }

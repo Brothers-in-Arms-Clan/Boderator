@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
-public class MissionCreateRequestDto
+public record MissionCreateRequestDto
 {
     /// <summary>
     /// Mission title.
@@ -14,14 +14,14 @@ public class MissionCreateRequestDto
     /// <summary>
     /// Mission description.
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
-    public string Description { get; set; } = string.Empty;
+    [JsonProperty(Required = Required.DisallowNull, DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string? Description { get; set; }
 
     /// <summary>
     /// Mission start time.
     /// </summary>
     [JsonProperty(Required = Required.DisallowNull, DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public DateTime? MissionTime { get; set; }
+    public DateTime? MissionDate { get; set; }
 
     /// <summary>
     /// Name of the modset.
