@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -14,6 +15,10 @@ namespace ArmaForces.Boderator.BotService.Documentation
                 options =>
                 {
                     options.SwaggerDoc(openApiConfig.Version, openApiConfig);
+                    options.EnableAnnotations();
+                    
+                    var filePath = Path.Combine(System.AppContext.BaseDirectory, "ArmaForces.Boderator.BotService.xml");
+                    options.IncludeXmlComments(filePath);
                 });
         }
 
@@ -31,6 +36,7 @@ namespace ArmaForces.Boderator.BotService.Documentation
                     options =>
                     {
                         options.DocumentTitle = openApiConfig.Title;
+                        options.ExpandResponses("");
                         options.SpecUrl = url;
                     });
         }
