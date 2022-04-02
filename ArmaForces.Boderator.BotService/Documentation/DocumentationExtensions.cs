@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -16,8 +17,9 @@ namespace ArmaForces.Boderator.BotService.Documentation
                 {
                     options.SwaggerDoc(openApiConfig.Version, openApiConfig);
                     options.EnableAnnotations();
-                    
-                    var filePath = Path.Combine(System.AppContext.BaseDirectory, "ArmaForces.Boderator.BotService.xml");
+                    options.UseAllOfToExtendReferenceSchemas();
+
+                    var filePath = Path.Combine(System.AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
                     options.IncludeXmlComments(filePath);
                 });
         }

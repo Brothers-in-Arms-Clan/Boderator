@@ -7,7 +7,7 @@ public record Signups
 {
     public long SignupsId { get; init; }
 
-    public ushort Status { get; init; } = (ushort) SignupsStatus.Closed;
+    public ushort Status { get; init; } = (ushort) SignupsStatus.Created;
         
     public DateTime StartDate { get; init; }
         

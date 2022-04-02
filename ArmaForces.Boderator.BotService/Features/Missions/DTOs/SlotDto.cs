@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using ArmaForces.Boderator.Core.Dlcs.Models;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,6 +23,7 @@ public record SlotDto
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     [SwaggerSchema(Nullable = false)]
+    [Required]
     public string Name { get; init; } = string.Empty;
 
     /// <summary>
@@ -38,7 +40,7 @@ public record SlotDto
     public string? Vehicle { get; init; }
     
     /// <summary>
-    /// Name of a player who occupies the slot.
+    /// Optional name of a player who occupies the slot.
     /// </summary>
     [JsonProperty(Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Include)]
     public string? Occupant { get; init; }

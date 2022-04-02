@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 using ArmaForces.Boderator.BotService.Features.Missions.Mappers;
@@ -15,6 +16,7 @@ namespace ArmaForces.Boderator.BotService.Features.Missions;
 /// Allows missions data retrieval and creation.
 /// </summary>
 [Route("api/[controller]")]
+[Produces(MediaTypeNames.Application.Json)]
 public class MissionsController : Controller
 {
     private readonly IMissionCommandService _missionCommandService;
@@ -27,9 +29,10 @@ public class MissionsController : Controller
         _missionQueryService = missionQueryService;
     }
 
+    /// <summary>Create Mission</summary>
     /// <remarks>Creates requested mission.</remarks>
     /// <param name="request">Mission creation request</param>
-    [HttpPost(Name = "Create Mission")]
+    [HttpPost(Name = "CreateMission")]
     [SwaggerResponse(StatusCodes.Status201Created, "The mission was created")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
     public async Task<ActionResult<MissionDto>> CreateMission([FromBody] MissionCreateRequestDto request)
@@ -39,9 +42,10 @@ public class MissionsController : Controller
                 onSuccess: mission => Created(mission.MissionId.ToString(), mission),
                 onFailure: error => BadRequest(error));
 
+    /// <summary>Update Mission</summary>
     /// <remarks>Updates given mission.</remarks>
     /// <param name="missionId">Id of a mission to update</param>
-    [HttpPatch("{missionId:int}", Name = "Update Mission")]
+    [HttpPatch("{missionId:int}", Name = "UpdateMission")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "The mission was updated")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "Not authorized to update the mission")]
@@ -51,9 +55,10 @@ public class MissionsController : Controller
         throw new NotImplementedException();
     }
 
+    /// <summary>Delete Mission</summary>
     /// <remarks>Deletes given mission.</remarks>
     /// <param name="missionId">Id of a mission to deleted.</param>
-    [HttpDelete("{missionId:int}", Name = "Delete Mission")]
+    [HttpDelete("{missionId:int}", Name = "DeleteMission")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "The mission was deleted")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "Not authorized to delete the mission")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Mission not found")]
@@ -62,8 +67,9 @@ public class MissionsController : Controller
         throw new NotImplementedException();
     }
 
+    /// <summary>Get Missions</summary>
     /// <remarks>Retrieves missions satisfying query parameters.</remarks>
-    [HttpGet(Name = "Get Missions")]
+    [HttpGet(Name = "GetMissions")]
     [SwaggerResponse(StatusCodes.Status200OK, "Missions retrieved")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
     public async Task<ActionResult<List<MissionDto>>> GetMissions()
@@ -73,9 +79,10 @@ public class MissionsController : Controller
                 onSuccess: missions => Ok(missions),
                 onFailure: error => BadRequest(error));
 
+    /// <summary>Get Mission</summary>
     /// <remarks>Retrieves mission with given <paramref name="missionId"/>.</remarks>
     /// <param name="missionId">Id of a mission to retrieve</param>
-    [HttpGet("{missionId:int}", Name = "Get Mission")]
+    [HttpGet("{missionId:int}", Name = "GetMission")]
     [SwaggerResponse(StatusCodes.Status200OK, "Mission retrieved")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Mission not found")]
     public async Task<ActionResult<MissionDto>> GetMission(int missionId)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using ArmaForces.Boderator.Core.Dlcs.Models;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
@@ -15,6 +16,8 @@ public record TeamDto
     /// Must be unique within signups.
     /// </summary>
     [JsonProperty(Required = Required.Always)]
+    [SwaggerSchema(Nullable = false)]
+    [Required]
     public string Name { get; init; } = string.Empty;
 
     /// <summary>
@@ -35,5 +38,6 @@ public record TeamDto
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     [SwaggerSchema(Nullable = false)]
+    [Required]
     public List<SlotDto> Slots { get; init; } = new();
 }
