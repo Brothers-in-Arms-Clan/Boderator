@@ -37,14 +37,14 @@ public class SignupsQueryServiceIntegrationTests : DatabaseTestBase
     public async Task GetOpenSignups_NoOpenSignupsInDatabase_ReturnsEmptyList()
     {
         var testMission = await _missionsDbHelper.CreateTestMission();
-        var signup = await _signupsDbHelper.CreateTestSignup(testMission.MissionId);
+        var signup = await _signupsDbHelper.CreateTestSignups(testMission.MissionId);
 
         var result = await _signupsQueryService.GetOpenSignups();
         result.ShouldBeSuccess(new List<Signups>{signup});
     }
 
     [Fact, Trait("Category", "Integration")]
-    public async Task GetSignup_SignupWithGivenIdDoesntExist_ReturnsFailure()
+    public async Task GetSignups_SignupsWithGivenIdDoesntExist_ReturnsFailure()
     {
         const int nonExistingSignupsId = 0;
         var result = await _signupsQueryService.GetSignups(nonExistingSignupsId);
@@ -53,9 +53,9 @@ public class SignupsQueryServiceIntegrationTests : DatabaseTestBase
     }
 
     [Fact, Trait("Category", "Integration")]
-    public async Task GetSignup_SignupWithGivenIdExists_ReturnsSignups()
+    public async Task GetSignups_SignupsWithGivenIdExists_ReturnsSignups()
     {
-        var signups = await _signupsDbHelper.CreateTestSignup();
+        var signups = await _signupsDbHelper.CreateTestSignups();
         var result = await _signupsQueryService.GetSignups(signups.SignupsId);
         
         result.ShouldBeSuccess(signups);

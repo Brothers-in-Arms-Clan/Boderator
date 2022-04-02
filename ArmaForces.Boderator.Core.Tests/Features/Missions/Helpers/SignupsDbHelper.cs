@@ -17,7 +17,7 @@ internal class SignupsDbHelper
         _missionContext = missionContext;
     }
 
-    public async Task<Signups> CreateTestSignup(long missionId)
+    public async Task<Signups> CreateTestSignups(long missionId)
     {
         var signup = SignupsFixture.CreateTestSignup(missionId);
 
@@ -27,9 +27,9 @@ internal class SignupsDbHelper
         return addedEntry.Entity;
     }
 
-    public async Task<Signups> CreateTestSignup()
+    public async Task<Signups> CreateTestSignups()
     {
         var mission = await _missionsDbHelper.CreateTestMission();
-        return await CreateTestSignup(mission.MissionId);
+        return await CreateTestSignups(mission.MissionId);
     }
 }

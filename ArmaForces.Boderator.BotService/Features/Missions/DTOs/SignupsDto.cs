@@ -6,7 +6,7 @@ namespace ArmaForces.Boderator.BotService.Features.Missions.DTOs;
 
 public record SignupsDto
 {
-    public long SignupId { get; init; }
+    public long SignupsId { get; init; }
     
     public SignupsStatus Status { get; init; }
     

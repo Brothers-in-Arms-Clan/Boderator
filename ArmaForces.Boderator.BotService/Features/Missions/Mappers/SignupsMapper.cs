@@ -10,7 +10,7 @@ public static class SignupsMapper
     public static SignupsDto Map(Signups signups)
         => new()
         {
-            SignupId = signups.SignupsId,
+            SignupsId = signups.SignupsId,
             Status = (SignupsStatus) signups.Status,
             StartDate = signups.StartDate,
             CloseDate = signups.CloseDate,
