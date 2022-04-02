@@ -2,6 +2,8 @@
 
 public enum SignupsStatus : ushort
 {
+    Created,
+    
     Prebeton,
     
     Open,

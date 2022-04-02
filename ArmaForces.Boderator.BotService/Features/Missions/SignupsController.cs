@@ -12,33 +12,31 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace ArmaForces.Boderator.BotService.Features.Missions;
 
 /// <summary>
-/// Allows signups data retrieval and creation.
+/// Allows signups retrieval and creation.
 /// </summary>
 [Route("api/[controller]")]
 public class SignupsController : ControllerBase
 {
     private readonly ISignupsQueryService _signupsQueryService;
 
+    /// <inheritdoc />
     public SignupsController(ISignupsQueryService signupsQueryService)
     {
         _signupsQueryService = signupsQueryService;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
+    /// <remarks>
+    /// Creates requested signups for a mission.
+    /// Either "MissionId" of existing mission without signups or a "Mission" object which satisfies the preconditions for creating signups must be provided. 
+    /// </remarks>
     [HttpPost(Name = "Create Signups")]
     [SwaggerResponse(StatusCodes.Status201Created, "Signups created")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
     public ActionResult<long> CreateSignups([FromBody] SignupsCreateRequestDto request)
         => throw new NotImplementedException();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="signupsId"></param>
-    /// <returns></returns>
+    /// <remarks>Updates signups with given <paramref name="signupsId"/>.</remarks>
+    /// <param name="signupsId">Id of signups to update</param>
     [HttpPatch("{signupsId:long}", Name = "Update Signups")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Signups updated")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
@@ -47,11 +45,8 @@ public class SignupsController : ControllerBase
     public ActionResult UpdateSignups(long signupsId)
         => throw new NotImplementedException();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="signupsId"></param>
-    /// <returns></returns>
+    /// <remarks>Deletes signups with given <paramref name="signupsId"/>.</remarks>
+    /// <param name="signupsId">Id of signups to delete.</param>
     [HttpDelete("{signupsId:long}", Name = "Delete Signups")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Signups deleted")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "Not authorized to delete signups")]
@@ -59,11 +54,8 @@ public class SignupsController : ControllerBase
     public ActionResult DeleteSignups(long signupsId)
         => throw new NotImplementedException();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="signupsId"></param>
-    /// <returns></returns>
+    /// <remarks>Retrieves signups with given <paramref name="signupsId"/>.</remarks>
+    /// <param name="signupsId">Id of signups to retrieve.</param>
     [HttpGet("{signupsId:long}", Name = "Get Signups")]
     [SwaggerResponse(StatusCodes.Status200OK, "Signups retrieved")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Signups not found")]
@@ -74,31 +66,26 @@ public class SignupsController : ControllerBase
                 onSuccess: signups => Ok(signups),
                 onFailure: error => BadRequest(error));
 
-    /// <summary>
-    /// Returns all signups satisfying query parameters.
-    /// </summary>
-    /// <remarks>Lookup Signups</remarks>
-    /// <returns></returns>
+    /// <remarks>Returns all signups satisfying query parameters.</remarks>
     [HttpGet(Name = "Lookup Signups")]
     [SwaggerResponse(StatusCodes.Status200OK, "Signups retrieved")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Signups not found")]
     public ActionResult<List<SignupsDto>> LookupSignups()
         => throw new NotImplementedException();
 
-    /// <summary>
-    /// Signs up a player for a given slot.
-    /// </summary>
-    [HttpPost("{signupsId:long}/sign", Name = "Sign Player")]
+    /// <remarks>Signs up a player for a given slot.</remarks>
+    /// <param name="signupsId">Id of signups to sign-up player</param>
+    /// <param name="request">Sign-up details</param>
+    [HttpPost("{signupsId:long}/sign", Name = "Sign-up Player")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Player signed up")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "Not authorized to sign up player")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Signups not found")]
-    public ActionResult SignPlayer(long signupsId, [FromBody] PlayerSignupRequestDto request)
+    public ActionResult SignUpPlayer(long signupsId, [FromBody] PlayerSignupRequestDto request)
         => throw new NotImplementedException();
 
-    /// <summary>
-    /// Opens given signups allowing all players to sign-up.
-    /// </summary>
+    /// <remarks>Immediately opens given signups allowing all players to sign-up.</remarks>
+    /// <param name="signupsId">Id of signups to open</param>
     [HttpPost("{signupsId:long}/open", Name = "Open Signups")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Signups opened")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
@@ -107,9 +94,8 @@ public class SignupsController : ControllerBase
     public ActionResult OpenSignups(long signupsId)
         => throw new NotImplementedException();
         
-    /// <summary>
-    /// Immediately closes given signups.
-    /// </summary>
+    /// <remarks>Immediately closes given signups.</remarks>
+    /// <param name="signupsId">Id of signups to close</param>
     [HttpPost("{signupsId:long}/close", Name = "Close Signups")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Signups closed")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Request is invalid")]
