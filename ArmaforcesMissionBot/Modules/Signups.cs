@@ -242,9 +242,10 @@ namespace ArmaforcesMissionBot.Modules
                                 slot.Name = match.Groups[3].Value;
                                 foreach(var user in Context.Message.MentionedUsers)
                                 {
+                                    slot.Name = slot.Name.Replace("<@", "<@!");
                                     if(slot.Name.Contains(user.Mention))
                                     {
-                                        slot.Name = slot.Name.Replace(user.Mention, "");
+                                        slot.Name = slot.Name.Replace(user.Mention, "").TrimEnd();
                                         slot.Signed.Add(user.Id);
                                     }
                                 }
