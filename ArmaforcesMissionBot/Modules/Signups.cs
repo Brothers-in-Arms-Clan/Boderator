@@ -240,9 +240,10 @@ namespace ArmaforcesMissionBot.Modules
                             if(match.Groups.Count == 4)
                             {
                                 slot.Name = match.Groups[3].Value;
-                                foreach(var user in Context.Message.MentionedUsers)
+                                slot.Name = slot.Name.Replace("<@", "<@!");
+
+                                foreach (var user in Context.Message.MentionedUsers)
                                 {
-                                    slot.Name = slot.Name.Replace("<@", "<@!");
                                     if(slot.Name.Contains(user.Mention))
                                     {
                                         slot.Name = slot.Name.Replace(user.Mention, "").TrimEnd();
