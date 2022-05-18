@@ -124,11 +124,11 @@ namespace ArmaforcesMissionBot.Modules
                     mission.Attachment = Context.Message.Attachments.ElementAt(0).Url;
                 }
 
-                await ReplyAsync("Teraz podaj nazwe modlisty.");
+                await ReplyAsync("Now attach a message with modlist from the modlist-for-mission channel.");
             }
             else
             {
-                await ReplyAsync("Najpierw zdefiniuj nazwę misji cymbale.");
+                await ReplyAsync("First define name mission you moron.");
             }
         }
 
@@ -153,11 +153,11 @@ namespace ArmaforcesMissionBot.Modules
                         },
                         onFailure: error => ReplyAsync(error));*/
 
-                await ReplyAsync("Teraz podaj datę misji.");
+                await ReplyAsync("Now enter the date of the mission.");
             }
             else
             {
-                await ReplyAsync("Najpierw zdefiniuj nazwę misji cymbale.");
+                await ReplyAsync("First define name mission you moron.");
             }
         }
 
@@ -166,13 +166,13 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task Date([Remainder] DateTime date) {
             if (date.IsInPast())
-                await ReplyAsync(":warning: Podana data jest w przeszłości!");
-            else if (date.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
+                await ReplyAsync(":warning: Given date is in the past!");
+            else if (date.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Given date is within less than 24 hours!");
 
             var mission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
 
             if (mission is null) {
-                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                await ReplyAsync(":warning: You are not creating any mission.");
                 return;
             }
 
@@ -180,7 +180,7 @@ namespace ArmaforcesMissionBot.Modules
             if (!mission.CustomClose)
                 mission.CloseTime = date.AddMinutes(-60);
 
-            await ReplyAsync($"Data misji ustawiona na {date}, za {date.FromNow()}.");
+            await ReplyAsync($"Mission date set to {date}, in {date.FromNow()}.");
         }
 
         [Command("signups-date")]
@@ -188,22 +188,22 @@ namespace ArmaforcesMissionBot.Modules
         [ContextDMOrChannel]
         public async Task Close([Remainder] DateTime closeDate) {
             if (closeDate.IsInPast())
-                await ReplyAsync(":warning: Podana data jest w przeszłości!");
-            else if (closeDate.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Podana data jest za mniej niż 24 godziny!");
+                await ReplyAsync(":warning: Given date is in the past!");
+            else if (closeDate.IsNoLaterThanDays(1)) await ReplyAsync(":warning: Given date is within less than 24 hours!");
 
             var mission = SignupsData.GetCurrentlyEditedMission(Context.User.Id);
 
             if (mission is null) {
-                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                await ReplyAsync(":warning: You are not creating any mission.");
                 return;
             }
 
             if (closeDate < mission.Date) {
                 mission.CloseTime = closeDate;
                 mission.CustomClose = true;
-                await ReplyAsync($"Data zamknięcia zapisów ustawiona na {closeDate}, za {closeDate.FromNow()}!");
+                await ReplyAsync($"Sign-ups close date set to {closeDate}, in {closeDate.FromNow()}!");
             } else {
-                await ReplyAsync(":warning: Zamknięcie zapisów musi być przed datą misji!");
+                await ReplyAsync(":warning: Sign-ups close date must be before mission date!");
             }
         }
 
@@ -308,7 +308,7 @@ namespace ArmaforcesMissionBot.Modules
                 await ReplyAsync("To which mission would you like to add this squad?");
             }
         }
-
+        /*
         [Command("add-standard-squad")]
         [Summary("Defines a team with the given name (one word) consisting of SL and two sections, " +
                  "in each section there is a commander, medic and 4 PFI by default. " +
@@ -321,10 +321,10 @@ namespace ArmaforcesMissionBot.Modules
                 var mission = SignupsData.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id);
                 // SL
                 var team = new Mission.Team();
-                team.Name = teamName + " SL | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1]";
+                team.Name = teamName + " SL | <:cook:> [1] | 🚑 [1]";
                 var slot = new Mission.Team.Slot(
                     "Commander",
-                    "<:wsciekly_zulu:426139721001992193>",
+                    "<:cook:>",
                     1);
                 team.Slots.Add(slot);
 
@@ -333,15 +333,15 @@ namespace ArmaforcesMissionBot.Modules
                     "🚑",
                     1);
                 team.Slots.Add(slot);
-                team.Pattern = "<:wsciekly_zulu:426139721001992193> [1] | 🚑 [1]";
+                team.Pattern = "<:cook:> [1] | 🚑 [1]";
                 mission.Teams.Add(team);
 
                 // team 1
                 team = new Mission.Team();
-                team.Name = teamName + " 1 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize-2) + "]";
+                team.Name = teamName + " 1 | <:cook:> [1] | 🚑 [1] | <:onion:> [" + (teamSize-2) + "]";
                 slot = new Mission.Team.Slot(
                     "Commander",
-                    "<:wsciekly_zulu:426139721001992193>",
+                    "<:cook:>",
                     1);
                 team.Slots.Add(slot);
 
@@ -353,18 +353,18 @@ namespace ArmaforcesMissionBot.Modules
 
                 slot = new Mission.Team.Slot(
                     "PFI",
-                    "<:beton:437603383373987853>",
+                    "<:onion:>",
                     teamSize - 2);
                 team.Slots.Add(slot);
-                team.Pattern = "<:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2) + "]";
+                team.Pattern = "<:cook:> [1] | 🚑 [1] | <:onion:> [" + (teamSize - 2) + "]";
                 mission.Teams.Add(team);
 
                 // team 2
                 team = new Mission.Team();
-                team.Name = teamName + " 2 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2) + "]";
+                team.Name = teamName + " 2 | <:cook:> [1] | 🚑 [1] | <:onion:> [" + (teamSize - 2) + "]";
                 slot = new Mission.Team.Slot(
                     "Commander",
-                    "<:wsciekly_zulu:426139721001992193>",
+                    "<:cook:>",
                     1);
                 team.Slots.Add(slot);
 
@@ -376,10 +376,10 @@ namespace ArmaforcesMissionBot.Modules
 
                 slot = new Mission.Team.Slot(
                     "PFI",
-                    "<:beton:437603383373987853>",
+                    "<:onion:>",
                     teamSize - 2);
                 team.Slots.Add(slot);
-                team.Pattern = "<:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2) + "]";
+                team.Pattern = "<:cook:> [1] | 🚑 [1] | <:onion:> [" + (teamSize - 2) + "]";
                 mission.Teams.Add(team);
 
                 await ReplyAsync("Something else?");
@@ -389,7 +389,8 @@ namespace ArmaforcesMissionBot.Modules
                 await ReplyAsync("Which mission would you like to add this squad to?");
             }
         }
-
+        */
+        /*
         [Command("add-reserve")]
         [Summary("Adds a reserve with an unlimited number of spots, " +
                  "when specifying a number in the parameter, it provides such a number of" +
@@ -415,7 +416,7 @@ namespace ArmaforcesMissionBot.Modules
 	        {
 		        await ReplyAsync("For what is this reserve?");
 	        }
-        }
+        }*/
         
         [Command("edit-section")]
         [Summary("Displays a panel for section ordering and deletion. The arrows move the selection/sections. " +
