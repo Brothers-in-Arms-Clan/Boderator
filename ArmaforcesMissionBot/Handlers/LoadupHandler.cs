@@ -52,7 +52,16 @@ namespace ArmaforcesMissionBot.Handlers
 
             Console.WriteLine($"[{DateTime.Now.ToString()}] Loading missions");
 
-            foreach (var channel in channels.Channels.Where(x => x.Id != _config.SignupsArchive && x.Id != _config.CreateMissionChannel && x.Id != _config.HallOfShameChannel).Reverse())
+            foreach (var channel in channels.Channels.Where(x => x.Id != _config.SignupsArchive && 
+            x.Id != _config.CreateMissionChannel && 
+            x.Id != _config.HallOfShameChannel &&
+            x.Id != _config.IgnoreChannel_1 &&
+            x.Id != _config.IgnoreChannel_2 &&
+            x.Id != _config.IgnoreChannel_3 &&
+            x.Id != _config.IgnoreChannel_4 &&
+            x.Id != _config.IgnoreChannel_5 &&
+            x.Id != _config.IgnoreChannel_6
+            ).Reverse())
             {
                 if (signups.Missions.Any(x => x.SignupChannel == channel.Id))
                     continue;
@@ -159,14 +168,14 @@ namespace ArmaforcesMissionBot.Handlers
                         {
                             switch (field.Name)
                             {
-                                case "Data:":
+                                case "Date:":
                                     mission.Date = DateTime.ParseExact(field.Value, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                                     break;
-                                case "Modlista:":
+                                case "Modlist:":
                                     mission.Modlist = mission.ModlistUrl = field.Value;
                                     mission.ModlistName = GetModsetNameFromUnknownUrl(mission.ModlistUrl);
                                     break;
-                                case "Zamknięcie zapisów:":
+                                case "Closing time:":
                                     uint timeDifference;
                                     if (!uint.TryParse(field.Value, out timeDifference))
                                         mission.CloseTime = DateTime.ParseExact(field.Value, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
@@ -212,7 +221,7 @@ namespace ArmaforcesMissionBot.Handlers
 
             foreach (var message in messagesNormal)
             {
-                if (message.Embeds.Count == 1 && message.Content == "Bany na zapisy:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Sign-ups ban:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SignupBans.Count > 0)
                         continue;
@@ -236,7 +245,7 @@ namespace ArmaforcesMissionBot.Handlers
                         signups.BanAccess.Release();
                     }
                 }
-                if (message.Embeds.Count == 1 && message.Content == "Bany za spam reakcjami:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Spam ban:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SpamBans.Count > 0)
                         continue;
@@ -284,7 +293,7 @@ namespace ArmaforcesMissionBot.Handlers
 
             foreach (var message in messagesNormal)
             {
-                if (message.Embeds.Count == 1 && message.Content == "Historia banów na zapisy:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Sing-up ban hisotry:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SignupBansHistory.Count > 0)
                         continue;
@@ -313,7 +322,7 @@ namespace ArmaforcesMissionBot.Handlers
                         signups.BanAccess.Release();
                     }
                 }
-                if (message.Embeds.Count == 1 && message.Content == "Historia banów za spam reakcjami:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Spam ban hisotry:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SpamBansHistory.Count > 0)
                         continue;
@@ -404,10 +413,10 @@ namespace ArmaforcesMissionBot.Handlers
                 {
                     switch(field.Name)
                     {
-                        case "Zamknięcie zapisów:":
-                        case "Data:":
+                        case "Closing sing-ups:":
+                        case "Date:":
                             break;
-                        case "Modlista:":
+                        case "Modlist:":
                             newArchiveMission.Modlist = newArchiveMission.ModlistUrl = field.Value;
                             newArchiveMission.ModlistName = GetModsetNameFromUnknownUrl(newArchiveMission.ModlistUrl);
                             break;

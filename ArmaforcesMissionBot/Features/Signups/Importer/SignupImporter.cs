@@ -34,7 +34,7 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer
             var commands = ParseCommands(lines, lineBreak);
 
             if (!commands.Any())
-                await Module.ReplyWithException<InvalidCommandParametersException>("Nie udało się odczytać komend.");
+                await Module.ReplyWithException<InvalidCommandParametersException>("Failed to read the command.");
 
             foreach (var command in commands) await ProcessCommand(command);
         }
@@ -52,10 +52,10 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer
             var commandInfo = GetCommandInfoByName(commandName);
 
             if (commandInfo is null)
-                await Module.ReplyWithException<CommandNotFound>($"Nie znaleziono komendy {commandName}");
+                await Module.ReplyWithException<CommandNotFound>($"Command not found {commandName}");
 
             if (!await UserCanUseCommand(commandInfo))
-                await Module.ReplyWithException<NotAuthorizedException>($"Nie jesteś uprawiony do użycia komendy {commandInfo.Name}.");
+                await Module.ReplyWithException<NotAuthorizedException>($"You don't have the permission to use the command {commandInfo.Name}.");
 
             var parameterString = GetParameterString(command, commandName);
 
@@ -137,9 +137,9 @@ namespace ArmaforcesMissionBot.Features.Signups.Importer
             foreach (var line in lines)
             {
                 if (line.StartsWith('#') || line.StartsWith("//")) continue;
-                if (line.StartsWith("AF!"))
+                if (line.StartsWith("BIA!"))
                 {
-                    loadedCommands.AddLast(line.Substring("AF!".Length));
+                    loadedCommands.AddLast(line.Substring("BIA!".Length));
                     continue;
                 }
 

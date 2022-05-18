@@ -16,7 +16,7 @@ namespace ArmaforcesMissionBot.Attributes
             if (context.Channel is IDMChannel || context.Channel.Id == config.CreateMissionChannel)
                 return PreconditionResult.FromSuccess();
             else
-                return PreconditionResult.FromError("Nie ten kanał");
+                return PreconditionResult.FromError("Not here.");
         }
     }
 }

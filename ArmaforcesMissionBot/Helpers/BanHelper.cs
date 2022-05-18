@@ -81,7 +81,7 @@ namespace ArmaforcesMissionBot.Helpers
 
                 var embed = new EmbedBuilder()
                     .WithColor(Color.Green)
-                    .WithTitle("`osoba-liczba banów-sumaryczna liczba dni bana`")
+                    .WithTitle("`nickname-number of bans-number of days banned`")
                     .WithDescription(message);
 
                 if (signups.SignupBansHistoryMessage != 0)
@@ -93,7 +93,7 @@ namespace ArmaforcesMissionBot.Helpers
                 else
                 {
                     var banAnnouncemens = guild.GetTextChannel(config.HallOfShameChannel);
-                    var sentMessage = await banAnnouncemens.SendMessageAsync("Historia banów na zapisy:", embed: embed.Build());
+                    var sentMessage = await banAnnouncemens.SendMessageAsync("Record of Sign-up bans:", embed: embed.Build());
                     signups.SignupBansHistoryMessage = sentMessage.Id;
                 }
             }
@@ -120,7 +120,7 @@ namespace ArmaforcesMissionBot.Helpers
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Green)
-                .WithTitle("`osoba-liczba banów-ostatni ban-typ ostatniego bana`")
+                .WithTitle("`nickname-number of bans-last ban-type of the last ban`")
                 .WithDescription(message);
 
             if (signups.SpamBansHistoryMessage != 0)
@@ -132,7 +132,7 @@ namespace ArmaforcesMissionBot.Helpers
             else
             {
                 var banAnnouncemens = guild.GetTextChannel(config.HallOfShameChannel);
-                var sentMessage = await banAnnouncemens.SendMessageAsync("Historia banów za spam reakcjami:", embed: embed.Build());
+                var sentMessage = await banAnnouncemens.SendMessageAsync("Record of Spam bans:", embed: embed.Build());
                 signups.SpamBansHistoryMessage = sentMessage.Id;
             }
         }
@@ -228,16 +228,16 @@ namespace ArmaforcesMissionBot.Helpers
             switch (signups.SpamBansHistory[user.Id].Item3)
             {
                 case SignupsData.BanType.Godzina:
-                    await user.SendMessageAsync("Za spamowanie reakcji w zapisach został Ci odebrany dostęp na godzinę.");
-                    await contemptChannel.SendMessageAsync($"Ten juj chebany {user.Mention} dostał bana na zapisy na godzine za spam reakcją do zapisów. Wiecie co z nim zrobić.");
+                    await user.SendMessageAsync("Your access has been removed for an hour because of spam protection.");
+                    await contemptChannel.SendMessageAsync($"User {user.Mention} has been temporarily (one hour) banned from sign-ups (spam protection).");
                     break;
                 case SignupsData.BanType.Dzień:
-                    await user.SendMessageAsync("Pojebało Cie? Ban na zapisy do jutra.");
-                    await contemptChannel.SendMessageAsync($"Ten palant {user.Mention} niczego się nie nauczył i dalej spamował, ban na dzień.");
+                    await user.SendMessageAsync("Your access has been removed for one day because of spam protection.");
+                    await contemptChannel.SendMessageAsync($"User {user.Mention} has been temporarily (one day) banned from sign-ups (spam protection)");
                     break;
                 case SignupsData.BanType.Tydzień:
-                    await user.SendMessageAsync("Masz trociny zamiast mózgu. Banik na tydzień.");
-                    await contemptChannel.SendMessageAsync($"Ten debil {user.Mention} dalej spamuje pomimo bana na cały dzień, banik na tydzień.");
+                    await user.SendMessageAsync("Your access has been removed for one week because of spam protection.");
+                    await contemptChannel.SendMessageAsync($"User {user.Mention} has been temporarily (one week) banned from sign-ups (spam protection)");
                     break;
             }
 
@@ -247,7 +247,7 @@ namespace ArmaforcesMissionBot.Helpers
                 signups.SpamBans,
                 signups.SpamBansMessage,
                 config.HallOfShameChannel,
-                "Bany za spam reakcjami:");
+                "Spam bans:");
 
             await Helpers.BanHelper.MakeSpamBanHistoryMessage(map, guild);
 

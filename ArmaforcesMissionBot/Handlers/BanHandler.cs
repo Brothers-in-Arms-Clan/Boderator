@@ -58,7 +58,7 @@ namespace ArmaforcesMissionBot.Handlers
                                 signups.SignupBans,
                                 signups.SignupBansMessage,
                                 _config.HallOfShameChannel,
-                                "Bany na zapisy:");
+                                "Banned from Sing-ups:");
                 }
                 if(signups.SpamBans.Count > 0)
                 {
@@ -90,7 +90,7 @@ namespace ArmaforcesMissionBot.Handlers
                         signups.SpamBans,
                         signups.SpamBansMessage,
                         _config.HallOfShameChannel,
-                        "Bany za spam reakcjami:");
+                        "Spam Ban:");
                 }
             }
             finally

@@ -135,7 +135,7 @@ namespace ArmaforcesMissionBot.Helpers
         {
             var dialog = new Dialog();
 
-            var message = await context.Channel.SendMessageAsync("Zgadza sie?", embed: description);
+            var message = await context.Channel.SendMessageAsync("Correct?", embed: description);
 
             dialog.DialogID = message.Id;
             dialog.DialogOwner = context.User.Id;

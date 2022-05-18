@@ -55,10 +55,10 @@ namespace ArmaforcesMissionBot.Handlers
                             .WithTitle(mission.Title)
                             .WithDescription(mission.Description)
                             .WithFooter(mission.Date.ToString())
-                            .AddField("Data:", mission.Date)
-                            .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
+                            .AddField("Date:", mission.Date)
+                            .AddField("Closing time:", mission.CloseTime.ToString())
                             .WithAuthor(_client.GetUser(mission.Owner).Username, url: BotConstants.DISCORD_USER_URL_PREFIX + (mission.Owner).ToString())
-                            .AddField("Modlista:", mission.Modlist);
+                            .AddField("Modlist:", mission.Modlist);
 
                         if (mission.Attachment != null)
                             archiveEmbed.WithImageUrl(mission.Attachment);

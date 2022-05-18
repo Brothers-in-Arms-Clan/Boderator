@@ -11,7 +11,7 @@ using ArmaforcesMissionBot.Attributes;
 
 namespace ArmaforcesMissionBot.Modules
 {
-    [Name("Różne")]
+    [Name("Misc")]
     public class Misc : ModuleBase<SocketCommandContext>
     {
         public IServiceProvider _map { get; set; }
@@ -23,8 +23,8 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("snipe")]
-        [Summary("Wyświetla ostatnio usunięte wiadomości z tego kanału.")]
-        [RequireRank(RanksEnum.Recruiter)]
+        [Summary("Displays recently deleted messages on the channel.")]
+        //[RequireRank(RanksEnum.Recruiter)]
         public async Task Snipe(int count = 1)
         {
             count = Math.Min(count, 5);
@@ -49,7 +49,7 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("editsnipe")]
-        [Summary("Wyświetla ostatnio edytowane wiadomości z tego kanału.")]
+        //[Summary("Displays recently edited messages on the channel")]
         [RequireRank(RanksEnum.Recruiter)]
         public async Task EditSnipe(int count = 1)
         {
@@ -66,12 +66,12 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("help")]
-        [Summary("Wyświetla tą wiadomość.")]
+        [Summary("Displays this message.")]
         public async Task Help()
         {
             var embed = new EmbedBuilder()
                 .WithColor(Color.Green)
-                .WithTitle("Dostępne komendy:");
+                .WithTitle("Available commands:");
 
             foreach (var module in _commands.Modules)
             {
@@ -80,7 +80,7 @@ namespace ArmaforcesMissionBot.Modules
                 {
                     if ((await command.CheckPreconditionsAsync(Context, _map)).IsSuccess)
                     {
-                        var addition = $"**AF!";
+                        var addition = $"**BIA!";
                         addition += $"{command.Name}** - {command.Summary}\n";
                         if (description.Length + addition.Length > 1024)
                         {

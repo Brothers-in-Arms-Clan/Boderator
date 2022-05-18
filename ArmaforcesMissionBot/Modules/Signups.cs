@@ -29,7 +29,7 @@ using Newtonsoft.Json;
 
 namespace ArmaforcesMissionBot.Modules
 {
-    [Name("Zapisy")]
+    [Name("Sign-ups")]
     public class Signups : ModuleBase<SocketCommandContext>, IModule
     {
         public IServiceProvider _map { get; set; }
@@ -42,17 +42,17 @@ namespace ArmaforcesMissionBot.Modules
         public SignupHelper SignupHelper { get; set; }
         public MiscHelper _miscHelper { get; set; }
 
-        [Command("importuj-zapisy")]
-        [Summary("Importuje zapisy z załączonego pliku *.txt. lub z wiadomości (preferując plik txt jeżeli obie rzeczy są). " +
-                 "Czyta plik/wiadomość linia po linii, dołączając linie bez prefixu 'AF!' do poprzedniej komendy " +
-                 "a następnie wywołuje komendy w kolejności. " +
-                 "Ignoruje linie zaczynające się od '#' oraz '//' umożliwiając komentarze.")]
+        [Command("import-signups")]
+        [Summary("Imports the records from the attached * .txt file or from a message (preferring a txt file if both are avaliable)." +
+                 "Reads a file / message line by line, appending lines without the 'BIA!' prefix  to the previous command " +
+                 "and then execute the commands in sequence. " +
+                 "Ignores lines starting with '#' and '//', allowing comments.")]
         [ContextDMOrChannel]
         public async Task ImportSignups([Remainder]string missionContent = null) {
             if (_client.GetGuild(_config.AFGuild)
                 .GetUser(Context.User.Id)
                 .Roles.All(x => x.Id != _config.MissionMakerRole))
-                await ReplyWithException<NotAuthorizedException>("Nie jesteś uprawniony do tworzenia misji.");
+                await ReplyWithException<NotAuthorizedException>("You don't have the permission to create a mission.");
 
             if (SignupsData.Missions.Any(
                 x =>
@@ -60,7 +60,7 @@ namespace ArmaforcesMissionBot.Modules
                      x.Editing == Mission.EditEnum.Started) &&
                     x.Owner == Context.User.Id))
                 await ReplyWithException<MissionEditionInProgressException>(
-                    "Edytujesz bądź tworzysz już misję!");
+                    "You're creating/editing a mission already!");
 
 
             if (Context.Message.Attachments.Any(x => x.Filename.Contains(".txt"))) {
@@ -70,24 +70,24 @@ namespace ArmaforcesMissionBot.Modules
             }
 
             if (missionContent is null)
-                await ReplyWithException<InvalidCommandParametersException>("Niepoprawne parametry komendy.");
+                await ReplyWithException<InvalidCommandParametersException>("Incorrect command parameters.");
 
             var signupImporter = new SignupImporter(Context, _commands, _map, this);
 
             await signupImporter.ProcessMessage(missionContent);
             
-            await ReplyAsync("Zdefiniuj reszte misji.");
+            await ReplyAsync("Define the rest of the mission.");
         }
 
-        [Command("zrob-zapisy")]
-        [Summary("Tworzy nową misję, jako parametr przyjmuje nazwę misji.")]
+        [Command("new-mission")]
+        [Summary("Creates a new mission, takes a name as a parameter.")]
         [ContextDMOrChannel]
         public async Task StartSignups([Remainder]string title)
         {
             var signups = _map.GetService<SignupsData>();
 
             if (SignupsData.GetCurrentlyEditedMission(Context.User.Id) != null)
-                await ReplyAsync("O ty luju, najpierw dokończ definiowanie poprzednich zapisów!");
+                await ReplyAsync("Finish defining previous sing-ups first.");
             else
             {
                 if (_client.GetGuild(_config.AFGuild).GetUser(Context.User.Id).Roles.Any(x => x.Id == _config.MissionMakerRole))
@@ -101,15 +101,15 @@ namespace ArmaforcesMissionBot.Modules
 
                     SignupsData.Missions.Add(mission);
 
-                    await ReplyAsync("Zdefiniuj reszte misji.");
+                    await ReplyAsync("Define rest of the mission.");
                 }
                 else
-                    await ReplyAsync("Luju ty, nie jestes uprawniony do tworzenia misji!");
+                    await ReplyAsync("You don't have the permission to create a mission.");
             }
         }
 
-        [Command("opis")]
-        [Summary("Definicja opisu misji, dodając obrazek dodajesz obrazek do wołania misji.")]
+        [Command("briefing")]
+        [Summary("Mission description definition, by adding a picture you add a picture to the mission.")]
         [ContextDMOrChannel]
         public async Task Description([Remainder]string description)
         {
@@ -132,8 +132,8 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("modlista")]
-        [Summary("Nazwa modlisty lub link do niej.")]
+        [Command("modlist")]
+        [Summary("Modlist link.")]
         [ContextDMOrChannel]
         public async Task Modlist([Remainder]string modsetNameOrUrl)
         {
@@ -141,7 +141,9 @@ namespace ArmaforcesMissionBot.Modules
 
             if (mission != null)
             {
-                var modsetName = ModsetProvider.GetModsetNameFromUrl(modsetNameOrUrl);
+
+                mission.ModlistUrl = mission.Modlist = modsetNameOrUrl;
+                /*var modsetName = ModsetProvider.GetModsetNameFromUrl(modsetNameOrUrl);
                 await ModsetProvider.GetModsetDownloadUrl(modsetName).Match(
                         onSuccess: url =>
                         {
@@ -149,7 +151,9 @@ namespace ArmaforcesMissionBot.Modules
                             mission.ModlistName = modsetName;
                             return ReplyAsync($"Modset {modsetName} was found under {mission.ModlistUrl}.");
                         },
-                        onFailure: error => ReplyAsync(error));
+                        onFailure: error => ReplyAsync(error));*/
+
+                await ReplyAsync("Teraz podaj datę misji.");
             }
             else
             {
@@ -157,8 +161,8 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("data")]
-        [Summary("Definicja daty rozpoczęcia misji w formacie RRRR-MM-DD GG:MM.")]
+        [Command("date")]
+        [Summary("Define the mission start date in the format YYYY-MM-DD HH:MM.")]
         [ContextDMOrChannel]
         public async Task Date([Remainder] DateTime date) {
             if (date.IsInPast())
@@ -179,8 +183,8 @@ namespace ArmaforcesMissionBot.Modules
             await ReplyAsync($"Data misji ustawiona na {date}, za {date.FromNow()}.");
         }
 
-        [Command("zamkniecie")]
-        [Summary("Definiowanie czasu kiedy powinny zamknąć się zapisy, tak jak data w formacie RRRR-MM-DD GG:MM.")]
+        [Command("signups-date")]
+        [Summary("Define the time when signups should close, such as the date in the format YYYY-MM-DD HH:MM.")]
         [ContextDMOrChannel]
         public async Task Close([Remainder] DateTime closeDate) {
             if (closeDate.IsInPast())
@@ -203,14 +207,14 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("dodaj-sekcje", RunMode = RunMode.Async)]
-        [Summary("Definiowanie sekcji w formacie `Nazwa | emotka [liczba] opcjonalna_nazwa_slota`, gdzie `Nazwa` to nazwa sekcji, " +
-                 "emotka to emotka używana do zapisywania się na rolę, [liczba] to liczba miejsc w danej roli. " +
-                 "Przykład `Zulu | :wsciekly_zulu: [1]` lub `Alpha 1 | :wsciekly_zulu: [1] Dowódca | 🚑 [1] Medyk | :beton: [5] BPP`" +
-                 " może być podanych kilka różnych emotek. Kolejność dodawania " +
-                 "sekcji pozostaje jako kolejność wyświetlania na zapisach. Prebeton odbywa się poprzez dopisanie na " +
-                 "końcu roli osoby, która powinna być prebetonowana dla przykładu " +
-                 "zabetonowany slot TL w standardowej sekcji będzie wyglądać tak `Alpha 1 | :wsciekly_zulu: [1] Dowódca @Ilddor#2556 | 🚑 [1] Medyk | :beton: [4] BPP`.")]
+        [Command("add-section", RunMode = RunMode.Async)]
+        [Summary("Defining sections in the format: `Callsign | emote [number] optional_slot_name`, where `Callsign` is the name of the section, " +
+                 "emote is the emote used to sign up for the role, [number] is the number of slots in a given role. " +
+                 "`Zulu example | :cook: [1] or Alpha 1 | :cook: [1] Commander | 🚑 [1] Medic | :onion: [5] PFI` can be given several different emotes. " +
+                 "T he order in which the sections are added remains as the order in which they are displayed on the records. " +
+                 "Resevring slots is done by adding at the end the role of the person, " +
+                 "for example a reserved TL slot in the standard section will look like this  " +
+                 "`Alpha 1 | :cook: [1] Commander @Frustrated Zwiebel#2041 | 🚑 [1] Medic | :onion: [4] PFI`.")]
         [ContextDMOrChannel]
         public async Task AddTeam([Remainder]string teamText)
         {
@@ -263,7 +267,7 @@ namespace ArmaforcesMissionBot.Modules
                         .GroupBy(x => x.Emoji)
                         .Any(x => x.Count() > 1))
                     {
-                        await ReplyAsync("Zdublowałeś reakcje. Poprawiaj to!");
+                        await ReplyAsync("You have doubled a reaction. Correct it.");
                         return;
                     }
 
@@ -301,14 +305,14 @@ namespace ArmaforcesMissionBot.Modules
             }
             else
             {
-                await ReplyAsync("A może byś mi najpierw powiedział do jakiej misji chcesz dodać ten zespół?");
+                await ReplyAsync("To which mission would you like to add this squad?");
             }
         }
 
-        [Command("dodaj-standardowa-druzyne")]
-        [Summary("Definiuje druzyne o podanej nazwie (jeden wyraz) skladajaca sie z SL i dwóch sekcji, " +
-                 "w kazdej sekcji jest dowódca, medyk i 4 bpp domyślnie. Liczbę bpp można zmienić podając " +
-                 "jako drugi parametr sumaryczną liczbę osób na sekcję.")]
+        [Command("add-standard-squad")]
+        [Summary("Defines a team with the given name (one word) consisting of SL and two sections, " +
+                 "in each section there is a commander, medic and 4 PFI by default. " +
+                 "The number of PFI can be changed by giving the total number of people per section as the second parameter.")]
         [ContextDMOrChannel]
         public async Task AddTeam(string teamName, int teamSize = 6)
         {
@@ -319,13 +323,13 @@ namespace ArmaforcesMissionBot.Modules
                 var team = new Mission.Team();
                 team.Name = teamName + " SL | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1]";
                 var slot = new Mission.Team.Slot(
-                    "Dowódca",
+                    "Commander",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
                 slot = new Mission.Team.Slot(
-                    "Medyk",
+                    "Medic",
                     "🚑",
                     1);
                 team.Slots.Add(slot);
@@ -336,19 +340,19 @@ namespace ArmaforcesMissionBot.Modules
                 team = new Mission.Team();
                 team.Name = teamName + " 1 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize-2) + "]";
                 slot = new Mission.Team.Slot(
-                    "Dowódca",
+                    "Commander",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
                 slot = new Mission.Team.Slot(
-                    "Medyk",
+                    "Medic",
                     "🚑",
                     1);
                 team.Slots.Add(slot);
 
                 slot = new Mission.Team.Slot(
-                    "BPP",
+                    "PFI",
                     "<:beton:437603383373987853>",
                     teamSize - 2);
                 team.Slots.Add(slot);
@@ -359,37 +363,37 @@ namespace ArmaforcesMissionBot.Modules
                 team = new Mission.Team();
                 team.Name = teamName + " 2 | <:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2) + "]";
                 slot = new Mission.Team.Slot(
-                    "Dowódca",
+                    "Commander",
                     "<:wsciekly_zulu:426139721001992193>",
                     1);
                 team.Slots.Add(slot);
 
                 slot = new Mission.Team.Slot(
-                    "Medyk",
+                    "Medic",
                     "🚑",
                     1);
                 team.Slots.Add(slot);
 
                 slot = new Mission.Team.Slot(
-                    "BPP",
+                    "PFI",
                     "<:beton:437603383373987853>",
                     teamSize - 2);
                 team.Slots.Add(slot);
                 team.Pattern = "<:wsciekly_zulu:426139721001992193> [1] | 🚑 [1] | <:beton:437603383373987853> [" + (teamSize - 2) + "]";
                 mission.Teams.Add(team);
 
-                await ReplyAsync("Jeszcze coś?");
+                await ReplyAsync("Something else?");
             }
             else
             {
-                await ReplyAsync("A może byś mi najpierw powiedział do jakiej misji chcesz dodać ten zespół?");
+                await ReplyAsync("Which mission would you like to add this squad to?");
             }
         }
 
-        [Command("dodaj-rezerwe")]
-        [Summary("Dodaje rezerwę o nieograniczonej liczbie miejsc, " +
-                 "przy podaniu w parametrze liczby udostępnia taką liczbę " +
-                 "miejsc na kanale dla rekrutów z możliwością zapisu dla nich.")]
+        [Command("add-reserve")]
+        [Summary("Adds a reserve with an unlimited number of spots, " +
+                 "when specifying a number in the parameter, it provides such a number of" +
+                 "spots on the channel for recruits to sign-up.")]
         [ContextDMOrChannel]
         public async Task AddReserve(int slots = 0)
         {
@@ -399,23 +403,23 @@ namespace ArmaforcesMissionBot.Modules
 		        // SL
 		        var team = new Mission.Team();
                 team.Slots.Add(new Mission.Team.Slot(
-	                "Rezerwa",
+	                "Reserve",
                     "🚑",
 	                slots));
-                team.Pattern = $"Rezerwa 🚑 [{slots}]";
+                team.Pattern = $"Reserve 🚑 [{slots}]";
                 mission.Teams.Add(team);
 
-                await ReplyAsync("Jeszcze coś?");
+                await ReplyAsync("Something else?");
 	        }
 	        else
 	        {
-		        await ReplyAsync("A ta rezerwa to do czego?");
+		        await ReplyAsync("For what is this reserve?");
 	        }
         }
         
-        [Command("edytuj-sekcje")]
-        [Summary("Wyświetla panel do ustawiania kolejnosci sekcji oraz usuwania. Strzałki przesuwają zaznaczenie/sekcje. " +
-                 "Pinezka jest do \"złapania\" sekcji w celu przesunięcia. Nożyczki usuwają zaznaczoną sekcję. Kłódka kończy edycję sekcji.")]
+        [Command("edit-section")]
+        [Summary("Displays a panel for section ordering and deletion. The arrows move the selection/sections. " +
+                 "The pushpin is to \"grab\" a section to move it. Scissors remove the selected section. The padlock completes the section editing.")]
         [ContextDMOrChannel]
         public async Task EditTeams()
         {
@@ -425,7 +429,7 @@ namespace ArmaforcesMissionBot.Modules
 
                 var embed = new EmbedBuilder()
                 .WithColor(Color.Green)
-                .WithTitle("Sekcje:")
+                .WithTitle("Squads:")
                 .WithDescription(MiscHelper.BuildEditTeamsPanel(mission.Teams, mission.HighlightedTeam));
 
                 var message = await Context.Channel.SendMessageAsync(embed: embed.Build());
@@ -443,8 +447,8 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("przelacz-wolanie")]
-        [Summary("Pozwala włączyć/wyłączyć wołanie wszystkich do zapisów.")]
+        [Command("ping")]
+        [Summary("It allows you to enable/disable pinging everyone for sign-ups.")]
         [ContextDMOrChannel]
         public async Task ToggleMentionEveryone()
         {
@@ -452,23 +456,23 @@ namespace ArmaforcesMissionBot.Modules
 
             if (mission is null)
             {
-                await ReplyAsync(":warning: Nie tworzysz ani nie edytujesz teraz żadnej misji.");
+                await ReplyAsync(":warning: You are not creating or editing any missions at the moment.");
                 return;
             }
 
             mission.MentionEveryone = !mission.MentionEveryone;
             if (mission.MentionEveryone)
             {
-                await ReplyAsync("Wołanie wszystkich zostało włączone.");
+                await ReplyAsync("Pinging was enabled.");
             }
             else
             {
-                await ReplyAsync("Wołanie wszystkich zostało wyłączone.");
+                await ReplyAsync("Pinging was disabled.");
             }
         }
 
-        [Command("koniec")]
-        [Summary("Wyświetla dialog z potwierdzeniem zebranych informacji o misji.")]
+        [Command("end")]
+        [Summary("Displays a confirmation dialogue of the collected mission information.")]
         [ContextDMOrChannel]
         public async Task EndSignups()
         {
@@ -482,16 +486,16 @@ namespace ArmaforcesMissionBot.Modules
                         .WithTitle(mission.Title)
                         .WithDescription(mission.Description)
                         .WithFooter(mission.Date.ToString())
-                        .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
-                        .AddField("Wołanie wszystkich:", mission.MentionEveryone)
+                        .AddField("Closing time:", mission.CloseTime.ToString())
+                        .AddField("Pinging everyone:", mission.MentionEveryone)
                         .WithAuthor(Context.User);
 
                     if (mission.Attachment != null)
                         embed.WithImageUrl(mission.Attachment);
 
-                    mission.Modlist ??= "https://modlist.armaforces.com/#/download/default";
+                    mission.Modlist ??= "Not defined";
 
-                    embed.AddField("Modlista:", mission.Modlist);
+                    embed.AddField("Modlist:", mission.Modlist);
 
                     _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
@@ -503,28 +507,28 @@ namespace ArmaforcesMissionBot.Modules
                        {
                            _dialogs.Dialogs.Remove(dialog);
                            _ = SignupHelper.CreateSignupChannel(SignupsData, Context.User.Id, Context.Channel);
-                           ReplyAsync("No to lecim!");
+                           ReplyAsync("Let's go!");
                        },
                        dialog =>
                        {
                            Context.Channel.DeleteMessageAsync(dialog.DialogID);
                            _dialogs.Dialogs.Remove(dialog);
-                           ReplyAsync("Poprawiaj to szybko!");
+                           ReplyAsync("Correct it quickly!");
                        });
                 }
                 else
                 {
-                    await ReplyAsync("Nie uzupełniłeś wszystkich informacji ciołku!");
+                    await ReplyAsync("You did not give all the information!");
                 }
             }
             else
             {
-                await ReplyAsync("Co ty chcesz kończyć jak nic nie zacząłeś?");
+                await ReplyAsync("What do you want to finish, if you haven;t started anything?");
             }
         }
 
-        [Command("zaladowane")]
-        [Summary("Pokazuje załadowane misje do których odbywają się zapisy, opcja czysto debugowa.")]
+        [Command("loaded")]
+        [Summary("Shows missions with active sign-ups, purely debug option.")]
         [ContextDMOrChannel]
         public async Task Loaded()
         {
@@ -535,16 +539,16 @@ namespace ArmaforcesMissionBot.Modules
                     .WithTitle(mission.Title)
                     .WithDescription(mission.Description)
                     .WithFooter(mission.Date.ToString())
-                    .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
+                    .AddField("Closing time:", mission.CloseTime.ToString())
                     .WithAuthor(_client.GetUser(mission.Owner));
 
                 if (mission.Attachment != null)
                     embed.WithImageUrl(mission.Attachment);
 
                 if (mission.Modlist != null)
-                    embed.AddField("Modlista:", mission.Modlist);
+                    embed.AddField("Modlist:", mission.Modlist);
                 else
-                    embed.AddField("Modlista:", "Default");
+                    embed.AddField("Modlist:", "Default");
 
                 _miscHelper.BuildTeamsEmbed(mission.Teams, embed);
 
@@ -554,8 +558,8 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("anuluj")]
-        [Summary("Anuluje tworzenie misji, usuwa wszystkie zdefiniowane o niej informacje. Nie anuluje to już stworzonych zapisów.")]
+        [Command("cancel")]
+        [Summary("Cancels the creation of the mission, deletes all information defined about it. It does not cancel already made sing-ups.")]
         [ContextDMOrChannel]
         public async Task CancelSignups()
         {
@@ -563,14 +567,14 @@ namespace ArmaforcesMissionBot.Modules
             {
                 SignupsData.Missions.Remove(SignupsData.Missions.Single(x => x.Editing == Mission.EditEnum.New && x.Owner == Context.User.Id));
 
-                await ReplyAsync("I tak nikt nie chce grać na twoich misjach.");
+                await ReplyAsync("Noone wants to play your missions anyways.");
             }
             else
-                await ReplyAsync("Siebie anuluj, nie tworzysz żadnej misji aktualnie.");
+                await ReplyAsync("Cancel yourself. You are not editing anything.");
         }
 
-        [Command("aktualne-misje")]
-        [Summary("Wyświetla aktualnie przeprowadzane zapisy użytkownika wraz z indeksami.")]
+        [Command("current")]
+        [Summary("Displays the current sign-ups along with the indexes.")]
         [ContextDMOrChannel]
         public async Task ListMissions()
         {
@@ -590,12 +594,12 @@ namespace ArmaforcesMissionBot.Modules
             }
             else
             {
-                await ReplyAsync("Jesteś leniem i nie masz żadnych aktualnie trwających zapisów na twoje misje.");
+                await ReplyAsync("There are no sing-ups for your missions.");
             }
         }
 
-        [Command("odwolaj-misje")]
-        [Summary("Po użyciu #wzmianki kanału misji jako parametru anuluje całe zapisy usuwając kanał zapisów.")]
+        [Command("remove-mission")]
+        [Summary("After using #mission-channel-name as a parameter, cancels all sign-ups by deleting the sign-up channel.")]
         [ContextDMOrChannel]
         public async Task CancelMission(IGuildChannel channel)
         {
@@ -603,13 +607,13 @@ namespace ArmaforcesMissionBot.Modules
 
             if (missionToBeCancelled == null)
             {
-                await ReplyAsync("Nie ma misji o takiej nazwie.");
+                await ReplyAsync("There is no such mission.");
                 return;
             }
 
             if (missionToBeCancelled.Owner != Context.User.Id)
             {
-                await ReplyAsync("Nie nauczyli żeby nie ruszać nie swojego?");
+                await ReplyAsync("Don't touch what's not yours, maybe?");
                 return;
             }
 
@@ -618,7 +622,7 @@ namespace ArmaforcesMissionBot.Modules
             {
                 var chanelToBeDeleted = await channel.Guild.GetTextChannelAsync(channel.Id);
                 await chanelToBeDeleted.DeleteAsync();
-                await ReplyAsync("I tak by sie zjebała.");
+                await ReplyAsync("Would have had 3 FPS anyways.");
             }
             finally
             {
@@ -626,8 +630,8 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("edytuj-misje")]
-        [Summary("Po użyciu #wzmianki kanału misji jako parametru włączy edycje danej misji (część bez zespołów).")]
+        [Command("edit-mission")]
+        [Summary("After using #mission-channel-name as a parameter, it will enable editing of the given mission (part without squads).")]
         [ContextDMOrChannel]
         public async Task EditMission(IGuildChannel channel)
         {
@@ -638,29 +642,29 @@ namespace ArmaforcesMissionBot.Modules
                 var missionToBeEdited = SignupsData.Missions.FirstOrDefault(x => x.SignupChannel == channel.Id);
                 if (missionToBeEdited == null)
                 {
-                    await ReplyAsync("Nie ma misji o takiej nazwie.");
+                    await ReplyAsync("here is no such mission.");
                     return;
                 }    
                 
                 if (missionToBeEdited.Owner != Context.User.Id)
                 {
-                    await ReplyAsync("Nie nauczyli żeby nie ruszać nie swojego?");
+                    await ReplyAsync("Don't touch what's not yours, maybe?");
                     return;
                 }
 
                 var serialized = JsonConvert.SerializeObject(missionToBeEdited);
                 SignupsData.BeforeEditMissions[Context.User.Id] = JsonConvert.DeserializeObject<ArmaforcesMissionBotSharedClasses.Mission>(serialized);
                 missionToBeEdited.Editing = ArmaforcesMissionBotSharedClasses.Mission.EditEnum.Started;
-                await ReplyAsync($"A więc `{missionToBeEdited.Title}`. Co chcesz zmienić?");
+                await ReplyAsync($"So `{missionToBeEdited.Title}`. What do you want to change?");
             }
             else
             {
-                await ReplyAsync($"Hola hola, nie wszystko naraz. Skończ edytować `{currentlyEditedMission.Title}`.");
+                await ReplyAsync($"Finish editing - `{currentlyEditedMission.Title}` first.");
             }
         }
 
-        [Command("edytuj-nazwe-misji")]
-        [Summary("Edycja nazwy już utworzonej misji.")]
+        [Command("edit-name")]
+        [Summary("Edit the name of an already created mission.")]
         [ContextDMOrChannel]
         public async Task MissionName([Remainder] string newTitle)
         {
@@ -674,16 +678,16 @@ namespace ArmaforcesMissionBot.Modules
 
                 mission.Title = newTitle;
 
-                await ReplyAsync("Niech będzie...");
+                await ReplyAsync("So be it...");
             }
             else
             {
-                await ReplyAsync("Bez wybrania misji to dupę se edytuj. Pozdrawiam.");
+                await ReplyAsync("Choose mission to edit first.");
             }
         }
 
-        [Command("zapisz-zmiany")]
-        [Summary("Zapisuje zmiany w aktualnie edytowanej misji, jesli w parametrze zostanie podana wartość true to zostanie wysłane ogłoszenie o zmianach w misji.")]
+        [Command("edit-save")]
+        [Summary("Saves changes to the currently edited mission, if the parameter is set to true, an announcement about changes to the mission will be sent.")]
         [ContextDMOrChannel]
         public async Task SaveChanges(bool announce = false)
         {
@@ -703,18 +707,18 @@ namespace ArmaforcesMissionBot.Modules
                         mission.Editing = Mission.EditEnum.NotEditing;
 
                         if(announce)
-                            await channel.SendMessageAsync("@everyone Misja uległa modyfikacji, proszę zapoznać się z nowymi informacjami i dostosować swój beton.");
+                            await channel.SendMessageAsync("@everyone The mission has been modified, please see the new information and adjust your sign-ups.");
 
-                        await ReplyAsync("Się robi szefie!");
+                        await ReplyAsync("Sir, yes Sir!");
                     }
                     else
                     {
-                        await ReplyAsync("Nie uzupełniłeś wszystkich informacji ciołku!");
+                        await ReplyAsync("You haven't given all the information!");
                     }
                 }
                 catch (Exception e)
                 {
-                    await ReplyAsync($"Oj, coś poszło nie tak: {e.Message}");
+                    await ReplyAsync($"Oops, something went wrong: {e.Message}");
                 }
                 finally
                 {
@@ -723,8 +727,8 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("anuluj-edycje")]
-        [Summary("Anuluje aktualną edycję misji bez zapisywania zmian.")]
+        [Command("edit-cancel")]
+        [Summary("Cancels the current edition of the mission without saving the changes.")]
         [ContextDMOrChannel]
         public async Task CancelChanges(bool announce = false)
         {
@@ -742,11 +746,11 @@ namespace ArmaforcesMissionBot.Modules
                     SignupsData.Missions.Add(oldMission);
 
                     oldMission.Editing = Mission.EditEnum.NotEditing;
-                    await ReplyAsync("I dobrze, tylko byś ludzi wkurwiał...");
+                    await ReplyAsync("Good.");
                 }
                 catch (Exception e)
                 {
-                    await ReplyAsync($"Oj, coś poszło nie tak: {e.Message}");
+                    await ReplyAsync($"Oops, something went wrong : {e.Message}");
                 }
                 finally
                 {
@@ -755,8 +759,8 @@ namespace ArmaforcesMissionBot.Modules
             }
         }
 
-        [Command("upgrade")]
-        [Summary("Wykonuje potrzebne upgrade'y kanałów, może jej użyć tylko Ilddor.")]
+        /*[Command("upgrade")]
+        [Summary("Performs needed channel upgrades, only Ilddor can use it.")]
         [RequireOwner]
         public async Task Upgrade()
         {
@@ -778,7 +782,7 @@ namespace ArmaforcesMissionBot.Modules
                             mission.Modlist = $"https://modlist.armaforces.com/#/download/{mission.Modlist}";
                             var guild = _client.GetGuild(_config.AFGuild);
                             var channel = await SignupHelper.UpdateMission(guild, mission, SignupsData);
-                            await ReplyAsync($"Misja {mission.Title} zaktualizowana.");
+                            await ReplyAsync($"Mission {mission.Title} has been updated.");
                         }
                     }
                 }
@@ -788,10 +792,10 @@ namespace ArmaforcesMissionBot.Modules
                 }
             }
 
-            await ReplyAsync("No i cyk, gotowe.");
+            await ReplyAsync("Done.");
 
             await BanHelper.MakeBanHistoryMessage(_map, Context.Guild);
-        }
+        }*/
 
         /// <summary>
         /// Replies to user with message and throws <typeparamref name="T"/>.

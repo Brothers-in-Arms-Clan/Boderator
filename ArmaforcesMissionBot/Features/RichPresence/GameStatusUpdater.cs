@@ -72,15 +72,15 @@ namespace ArmaforcesMissionBot.Features.RichPresence {
                 : ++_statusCounter;
 
         private static Game CreateSignupsNoFreeSlotsDetails(int freeSlots, int allSignups) 
-            => new Game($"Brak miejsc w zapisach. {freeSlots}/{allSignups}");
+            => new Game($"No free slots. {freeSlots}/{allSignups}");
 
         private static Game CreateNoSignupsDetails() 
-            => new Game($"Brak prowadzonych zapisów.");
+            => new Game($"No sign-ups taking place atm.");
 
         private static Game CreateMissionSignupDetails(Mission mission) 
-            => new Game($"Miejsc: {Helpers.MiscHelper.CountFreeSlots(mission)}/{Helpers.MiscHelper.CountAllSlots(mission)} - {mission.Title}");
+            => new Game($"Slots: {Helpers.MiscHelper.CountFreeSlots(mission)}/{Helpers.MiscHelper.CountAllSlots(mission)} - {mission.Title}");
 
         private static Game CreateSignupsCounterDetails(int freeSlots, int allSignups) 
-            => new Game($"Zapisy: {freeSlots}/{allSignups}");
+            => new Game($"Sign-ups: {freeSlots}/{allSignups}");
     }
 }

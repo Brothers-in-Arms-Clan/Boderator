@@ -31,9 +31,9 @@ namespace ArmaforcesMissionBot.DependencyInjection
                 .AddHostedService<StartupService>()
                 .AddSingleton<IModsetsApiClient, ModsetsApiClient>()
                 .AddSingleton(provider => string.IsNullOrWhiteSpace(provider.GetService<Config>().ModsetsApiUrl)
-                    ? (IModsetProvider) new LegacyModsetProvider()
-                    : new ModsetProvider(provider.GetService<IModsetsApiClient>()))
-                .AddServerManager<ServerManagerConfiguration>();
+                    ? (IModsetProvider)new LegacyModsetProvider()
+                    : new ModsetProvider(provider.GetService<IModsetsApiClient>()));
+                //.AddServerManager<ServerManagerConfiguration>();
 
         private static Config CreateConfig(IServiceProvider serviceCollection)
         {

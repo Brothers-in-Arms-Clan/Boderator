@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static ArmaforcesMissionBot.Modules.Stats;
+//using static ArmaforcesMissionBot.Modules.Stats;
 
 namespace ArmaforcesMissionBot.Helpers
-{
+{/*
 	public class StatsHelper
 	{
         private class ChannelTask
@@ -244,5 +244,5 @@ namespace ArmaforcesMissionBot.Helpers
 
             return _cache;
         }
-    }
+    }*/
 }

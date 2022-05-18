@@ -26,7 +26,7 @@ namespace ArmaforcesMissionBot.Handlers
         private async Task GuildAvailable(SocketGuild guild)
         {
             var channel = guild.GetTextChannel(_config.CreateMissionChannel);
-            await channel.SendMessageAsync("Witam! Zalogowałem się.");
+            await channel.SendMessageAsync("Hello! I logged in.");
         }
 
 

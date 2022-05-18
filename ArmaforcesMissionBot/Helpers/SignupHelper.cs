@@ -168,19 +168,20 @@ namespace ArmaforcesMissionBot.Helpers
                     .WithColor(Color.Green)
                     .WithTitle(mission.Title)
                     .WithDescription(mission.Description)
-                    .AddField("Data:", mission.Date.ToString())
-                    .AddField("Zamknięcie zapisów:", mission.CloseTime.ToString())
+                    .AddField("Date:", mission.Date.ToString())
+                    .AddField("Closing time:", mission.CloseTime.ToString())
                     .WithAuthor(guild.GetUser(mission.Owner));
 
             mainEmbed.Author.Url = BotConstants.DISCORD_USER_URL_PREFIX + (mission.Owner).ToString();
+            
             
             if (mission.Attachment != null)
                 mainEmbed.WithImageUrl(mission.Attachment);
 
             if (mission.Modlist != null)
-                mainEmbed.AddField("Modlista:", mission.Modlist);
+                mainEmbed.AddField("Modlist:", mission.Modlist);
             else
-                mainEmbed.AddField("Modlista:", "https://modlist.armaforces.com/#/download/default");
+                mainEmbed.AddField("Modlist:", "Not defined");
 
             return mainEmbed;
         }
@@ -258,7 +259,7 @@ namespace ArmaforcesMissionBot.Helpers
             await signupChannel.RemovePermissionOverwriteAsync(everyone);
             if (mission.MentionEveryone)
             {
-                await signupChannel.SendMessageAsync("@everyone");
+                await signupChannel.SendMessageAsync(guild.Roles.First(x => x.Name == "Brothers in Arms (BiA)").Mention);
             }
         }
 
@@ -327,12 +328,12 @@ namespace ArmaforcesMissionBot.Helpers
                     }
                     else
                     {
-                        await channnel.SendMessageAsync("Nie uzupełniłeś wszystkich informacji ciołku!");
+                        await channnel.SendMessageAsync("You have not give all the information.");
                     }
                 }
                 catch (Exception e)
                 {
-                    await channnel.SendMessageAsync($"Oj, coś poszło nie tak: {e.Message}");
+                    await channnel.SendMessageAsync($"Oops, something went wrong: {e.Message}");
                 }
                 finally
                 {
@@ -341,7 +342,7 @@ namespace ArmaforcesMissionBot.Helpers
             }
             else
             {
-                await channnel.SendMessageAsync("A może byś mi najpierw powiedział co ty chcesz potwierdzić?");
+                await channnel.SendMessageAsync("And what is it that you're trying to confirm exatly?");
             }
         }
     }
