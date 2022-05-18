@@ -9,7 +9,7 @@ namespace ArmaforcesMissionBot.Features.Modsets.Legacy
     {
         public Result ModsetWithNameExists(string modsetName)
         {
-            var request = WebRequest.Create($"https://server.armaforces.com:8888/modsets/{modsetName}.csv");
+            /*var request = WebRequest.Create($"https://server.armaforces.com:8888/modsets/{modsetName}.csv");
             try
             {
                 _ = request.GetResponse();
@@ -17,7 +17,7 @@ namespace ArmaforcesMissionBot.Features.Modsets.Legacy
             catch (Exception)
             {
                 return Result.Failure("Modlist doesn't exist or the link in incorrect.");
-            }
+            }*/
 
             return Result.Success();
         }
@@ -30,6 +30,6 @@ namespace ArmaforcesMissionBot.Features.Modsets.Legacy
         }
 
         public Result<string> GetModsetDownloadUrl(string modsetName) 
-            => $"https://modlist.armaforces.com/#/download/{modsetName}";
+            => $"null";
     }
 }

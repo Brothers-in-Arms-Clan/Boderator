@@ -42,7 +42,7 @@ namespace ArmaforcesMissionBot.Attributes
 
             return ((SocketGuildUser) context.User).Roles.Any(x => x.Id == _role.GetID(config))
                 ? PreconditionResult.FromSuccess()
-                : PreconditionResult.FromError("Co ty próbujesz osiągnąć?");
+                : PreconditionResult.FromError("What are you trying to do, huh?");
         }
     }
 }

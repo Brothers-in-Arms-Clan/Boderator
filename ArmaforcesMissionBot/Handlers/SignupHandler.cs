@@ -67,7 +67,7 @@ namespace ArmaforcesMissionBot.Handlers
 
                 if (signups.SignupBans.ContainsKey(reaction.User.Value.Id) && signups.SignupBans[reaction.User.Value.Id] > mission.Date)
                 {
-                    await reaction.User.Value.SendMessageAsync("Masz bana na zapisy, nie możesz zapisać się na misję, która odbędzie się w czasie trwania bana.");
+                    await reaction.User.Value.SendMessageAsync("You were banned from the sign-ups. You won't be able to sign up druing the ban's duration.");
                     var teamMsg = await channel.GetMessageAsync(message.Id) as IUserMessage;
                     await teamMsg.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
                     return;
@@ -133,7 +133,7 @@ namespace ArmaforcesMissionBot.Handlers
             else if(signups.Missions.Any(x => x.SignupChannel == channel.Id) && reaction.UserId != _client.CurrentUser.Id)
             {
                 var user = _client.GetUser(reaction.UserId);
-                Console.WriteLine($"Naprawiam reakcje po spamie {user.Username}");
+                Console.WriteLine($"Fixing reactions after spam {user.Username}");
                 var teamMsg = await channel.GetMessageAsync(message.Id) as IUserMessage;
                 await teamMsg.RemoveReactionAsync(reaction.Emote, user);
             }

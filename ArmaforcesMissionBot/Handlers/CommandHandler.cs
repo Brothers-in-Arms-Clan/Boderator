@@ -22,8 +22,15 @@ namespace ArmaforcesMissionBot.Handlers
             _services = map;
             // Hook the MessageReceived event into our command handler
             _client.MessageReceived += HandleCommandAsync;
+            try
+            {
+                await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -37,7 +44,7 @@ namespace ArmaforcesMissionBot.Handlers
             int argPos = 0;
 
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-            if (!(message.HasStringPrefix("AF!", ref argPos) ||
+            if (!(message.HasStringPrefix("BIA!", ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;

@@ -18,25 +18,26 @@ namespace ArmaforcesMissionBot.Modules
         public DiscordSocketClient _client { get; set; }
         public Config _config { get; set; }
 
-        [Command("rekrutuj")]
-        [Summary("Przydziela rangę rekrut.")]
+        [Command("recruit")]
+        [Summary("Assigns rank of recruit.")]
         [RequireRank(RanksEnum.Recruiter)]
         public async Task Recruit(IGuildUser user)
         {
             Console.WriteLine($"[{DateTime.Now.ToString()}] {Context.User.Username} called recruit command");
             var signupRole = Context.Guild.GetRole(_config.SignupRole);
             if (user.RoleIds.Contains(_config.RecruitRole))
-                await ReplyAsync($"Przecież {user.Mention} już został zrekrutowany.");
+                await ReplyAsync($"But {user.Mention} has already been recruited.");
             else if (user.RoleIds.Contains(_config.SignupRole))
-                await ReplyAsync($"Przecież {user.Mention} jest już w {signupRole.Mention}!");
+                await ReplyAsync($"But {user.Mention} is already in {signupRole.Mention}!");
             else
             {
                 await user.AddRoleAsync(Context.Guild.GetRole(_config.RecruitRole));
                 var recruitMessageText =
-                    $"Gratulujemy przyjęcia {user.Mention} w grono rekrutów! Od teraz masz miesiąc na rozegranie swojej pierwszej misji z nami, wtedy otrzymasz rangę #{signupRole.Name}#! W innym wypadku zostaniesz usunięty z Discorda z możliwością powrotu.\n" +
-                    $"Polecamy też sprawdzić kanał {Context.Guild.GetTextChannel(_config.RecruitInfoChannel).Mention}.\n" +
-                    $"W razie pytań pisz na {Context.Guild.GetTextChannel(_config.RecruitAskChannel).Mention}.\n" +
-                    $"Twoim opiekunem do momentu dołączenia do grupy jest {Context.User.Mention}.";
+                    $"Congratiulation {user.Mention}! Welcome among the recruits. You have 3 weeks to play the mission and complete the preparatory training, " +
+                    $"after that you will recieve the rank of #{signupRole.Name}#! Otherwise you will be removed from the discord. " +
+                    $"With the possibility of returning in the future. " +
+                    $"It is advised to check out this channel: {Context.Guild.GetTextChannel(_config.RecruitInfoChannel).Mention}. " +
+                    $"If you have any questions, feel free to ask here: {Context.Guild.GetTextChannel(_config.RecruitAskChannel).Mention}.";
                 var recruitMessage = await ReplyAsync(recruitMessageText);
                 // Modify message to include rank mention but without mentioning it
                 var replacedMessage = recruitMessage.Content;
@@ -47,8 +48,8 @@ namespace ArmaforcesMissionBot.Modules
             await Context.Message.DeleteAsync();
         }
 
-        [Command("wyrzuc")]
-        [Summary("Wyrzuca rekruta bądź randoma z Discorda.")]
+        [Command("kick")]
+        [Summary("Kick the person from the Discord Server")]
         [RequireRank(RanksEnum.Recruiter)]
         public async Task Kick(IGuildUser user)
         {
@@ -63,7 +64,7 @@ namespace ArmaforcesMissionBot.Modules
                 };
                 var replyMessage =
                     await ReplyAsync(
-                        $"{user.Mention} został pomyślnie wykopany z serwera przez {Context.User.Mention}.",
+                        $"{user.Mention} was kicked by {Context.User.Mention}.",
                         embed: embedBuilder.Build());
                 await user.KickAsync("AFK");
                 _ = Task.Run(async () =>
@@ -74,7 +75,7 @@ namespace ArmaforcesMissionBot.Modules
             }
             else
             {
-                await ReplyAsync($"Nie możesz wyrzucić {user.Mention}, nie jest on rekrutem.");
+                await ReplyAsync($"You cannot kick {user.Mention}, he is not a recruit.");
             }
 
             await Context.Message.DeleteAsync();

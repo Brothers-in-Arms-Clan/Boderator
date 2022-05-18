@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ArmaforcesMissionBot.Modules
 {
-    [Name("Statystyki")]
+    /*[Name("Statystyki")]
     [Group("stats")]
     public class Stats : ModuleBase<SocketCommandContext>
 	{
@@ -154,5 +154,5 @@ namespace ArmaforcesMissionBot.Modules
 
             await status.ModifyAsync(x => x.Embed = newEmbed.Build());
         }
-    }
+    }*/
 }

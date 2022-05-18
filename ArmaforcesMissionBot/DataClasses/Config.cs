@@ -29,6 +29,12 @@ namespace ArmaforcesMissionBot.DataClasses
         public ulong HallOfShameChannel { get; set; }
         public ulong RecruitInfoChannel { get; set; }
         public ulong RecruitAskChannel { get; set; }
+        public ulong IgnoreChannel_1 { get; set; }
+        public ulong IgnoreChannel_2 { get; set; }
+        public ulong IgnoreChannel_3 { get; set; }
+        public ulong IgnoreChannel_4 { get; set; }
+        public ulong IgnoreChannel_5 { get; set; }
+        public ulong IgnoreChannel_6 { get; set; }
 
         public void Load()
         {

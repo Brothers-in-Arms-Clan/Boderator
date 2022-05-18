@@ -13,7 +13,7 @@ using ArmaforcesMissionBot.Helpers;
 
 namespace ArmaforcesMissionBot.Modules
 {
-    [Name("Bany")]
+    [Name("Bans")]
     public class Bans : ModuleBase<SocketCommandContext>
     {
         public IServiceProvider _map { get; set; }
@@ -28,7 +28,7 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("ban")]
-        [Summary("Banuje daną osobę z zapisów do podanego terminu. Jako drugi argument można podać liczbę dni bana, domyślnie jest to 7.")]
+        [Summary("Ban the given person from signing up until the given date. The number of days of the ban can be given as the second argument, the default is 7.")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
         public async Task BanSignups(SocketUser user, uint days = 7)
         {
@@ -58,7 +58,7 @@ namespace ArmaforcesMissionBot.Modules
                     signups.SignupBans, 
                     signups.SignupBansMessage, 
                     _config.HallOfShameChannel, 
-                    "Bany na zapisy:");
+                    "Sign-up bans:");
 
                 await Helpers.BanHelper.MakeBanHistoryMessage(_map, Context.Guild);
                 
@@ -66,7 +66,7 @@ namespace ArmaforcesMissionBot.Modules
                 {
                     ImageUrl = _config.BanImageUrl
                 };
-                await ReplyAsync("Niech ginie.",
+                await ReplyAsync("Die, Die, Die My Darling.",
                 embed: embedBuilder.Build());
 
                 await Helpers.BanHelper.UnsignUser(_map, Context.Guild, user);
@@ -78,7 +78,7 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("unban")]
-        [Summary("Odbanowuje podaną osobę.")]
+        [Summary("Unbans the person.")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
         public async Task UnbanSignups(SocketUser user)
         {
@@ -97,8 +97,8 @@ namespace ArmaforcesMissionBot.Modules
                         signups.SignupBans, 
                         signups.SignupBansMessage, 
                         _config.HallOfShameChannel, 
-                        "Bany na zapisy:");
-                    await ReplyAsync("Jesteś zbyt pobłażliwy...");
+                        "Sign-up bans:");
+                    await ReplyAsync("You're just too nice...");
                 }
             }
             finally
@@ -108,7 +108,7 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("banSpam")]
-        [Summary("Ban za spam reakcjami.")]
+        [Summary("Spam ban")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
         public async Task BanSpam(SocketUser user)
         {
@@ -119,7 +119,7 @@ namespace ArmaforcesMissionBot.Modules
             try
             {
                 await Helpers.BanHelper.BanUserSpam(_map, user);
-                await ReplyAsync("A to śmierdziel jeden");
+                await ReplyAsync("You little shit you...");
             }
             finally
             {
@@ -128,7 +128,7 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("unbanSpam")]
-        [Summary("Zdejmuje ban za spam reakcjami.")]
+        [Summary("Removes Spam ban.")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
         public async Task UnbanSpam(SocketUser user)
         {
@@ -147,7 +147,7 @@ namespace ArmaforcesMissionBot.Modules
                         signups.SpamBans,
                         signups.SpamBansMessage,
                         _config.HallOfShameChannel,
-                        "Bany za spam reakcjami:");
+                        "Spam bans:");
 
                     // Remove permissions override from channels
                     if (signups.Missions.Count > 0)
@@ -158,7 +158,7 @@ namespace ArmaforcesMissionBot.Modules
                             await channel.RemovePermissionOverwriteAsync(user);
                         }
                     }
-                    await ReplyAsync("Tylko nie marudź na lagi...");
+                    await ReplyAsync("Be happy you have FPS not FPM...");
                 }
             }
             finally
@@ -168,7 +168,7 @@ namespace ArmaforcesMissionBot.Modules
         }
 
         [Command("unsign")]
-        [Summary("Wypisuje gracza z podanej misji.")]
+        [Summary("Unsigns the user from the mission")]
         [RequireUserPermission(GuildPermission.ManageRoles)]
         public async Task Unsign(ulong userID, IMessageChannel channel)
         {

@@ -63,7 +63,6 @@ namespace ArmaforcesMissionBot.Services
             foreach (var handler in Assembly.GetEntryAssembly().DefinedTypes)
             {
                 if (!handler.ImplementedInterfaces.Contains(typeof(IInstallable))) continue;
-
                 _handlers.Add((IInstallable)Activator.CreateInstance(handler));
                 _ = _handlers.Last().Install(_serviceProvider);
             }
@@ -84,7 +83,7 @@ namespace ArmaforcesMissionBot.Services
             _botStarted = true;
 
             if (guild.GetChannel(_config.CreateMissionChannel) is SocketTextChannel signupsChannel) 
-                await signupsChannel.SendMessageAsync("Bot stoi! 🍆");
+                await signupsChannel.SendMessageAsync("Bot is up! 🍆");
         }
     }
 }
