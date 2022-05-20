@@ -708,7 +708,7 @@ namespace ArmaforcesMissionBot.Modules
                         mission.Editing = Mission.EditEnum.NotEditing;
 
                         if(announce)
-                            await channel.SendMessageAsync("@everyone The mission has been modified, please see the new information and adjust your sign-ups.");
+                            await channel.SendMessageAsync(guild.Roles.First(x => x.Name == "Brothers in Arms (BiA)").Mention + " The mission has been modified, please see the new information and adjust your sign-ups.");
 
                         await ReplyAsync("Sir, yes Sir!");
                     }
