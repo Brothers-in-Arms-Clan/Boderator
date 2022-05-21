@@ -221,7 +221,7 @@ namespace ArmaforcesMissionBot.Handlers
 
             foreach (var message in messagesNormal)
             {
-                if (message.Embeds.Count == 1 && message.Content == "Sign-ups ban:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Sign-up bans:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SignupBans.Count > 0)
                         continue;
@@ -245,7 +245,7 @@ namespace ArmaforcesMissionBot.Handlers
                         signups.BanAccess.Release();
                     }
                 }
-                if (message.Embeds.Count == 1 && message.Content == "Spam ban:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Spam bans:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SpamBans.Count > 0)
                         continue;
@@ -293,7 +293,7 @@ namespace ArmaforcesMissionBot.Handlers
 
             foreach (var message in messagesNormal)
             {
-                if (message.Embeds.Count == 1 && message.Content == "Sing-up ban hisotry:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Record of Sign-up bans:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SignupBansHistory.Count > 0)
                         continue;
@@ -322,7 +322,7 @@ namespace ArmaforcesMissionBot.Handlers
                         signups.BanAccess.Release();
                     }
                 }
-                if (message.Embeds.Count == 1 && message.Content == "Spam ban hisotry:" && message.Author.Id == _client.CurrentUser.Id)
+                if (message.Embeds.Count == 1 && message.Content == "Record of Spam bans:" && message.Author.Id == _client.CurrentUser.Id)
                 {
                     if (signups.SpamBansHistory.Count > 0)
                         continue;
